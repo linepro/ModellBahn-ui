@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <link rel="stylesheet" href="css/site.css"/>
+  <script type="text/javascript" src="js/i18n.js"></script>
+  <script type="text/javascript" src="js/utils.js"></script>
+  <script type="text/javascript" src="js/dropdown.js"></script>
+  <script type="text/javascript" src="js/fields.js"></script>
+  <script type="text/javascript" src="js/grids.js"></script>
+  <script type="text/javascript">
+    const consistColumns = [
+      POSITION(Editable.NEVER),
+      ARTIKEL_SELECT(Editable.UPDATE, true),
+      UNTER_KATEGORIE_SELECT(Editable.NEVER, false, artikelProduktKategorieGetter, noOpSetter),
+      BEZEICHNUNG(Editable.NEVER, false, artikelBezeichnungGetter, noOpSetter),
+      LANGE(Editable.NEVER, false, artikelProduktLangeGetter, noOpSetter),
+      gridButtonColumn()
+    ];
+
+    const consisten = new ItemGrid(2, "consist", "consist", consistColumns, Paged.EXPAND, EditMode.ADD, undefined);
+
+    const columns = [
+      NAMEN(Editable.ADD, true),
+      ZUG_TYP_SELECT(Editable.UPDATE, true),
+      BEZEICHNUNG(Editable.UPDATE, true),
+      LANGE(Editable.NEVER),
+      new ButtonColumn([], [updateRow])
+    ];
+
+    const zug = new ItemGrid(1, fetchUrl("zug"), "zug", columns, Paged.FORM, EditMode.UPDATE, [consisten]);
+
+    async function init() {
+      addNavBar(NavMenu.BACK);
+      addFooter();
+      await ZUG_TYP_DROP.init()
+      .then(() => ARTIKEL_DROP.init())
+      .then(() => UNTER_KATEGORIE_DROP.init())
+      .then(() => zug.init());
+    }
+  </script>
+  <title>Zugen</title>
+</head>
+<body onLoad="init()">
+<header>
+</header>
+
+<section>
+  <article>
+    <div id="data">
+      <div id="zug">
+      </div>
+      <div id="consist">
+      </div>
+    </div>
+  </article>
+</section>
+
+<footer>
+</footer>
+</body>
+</html>

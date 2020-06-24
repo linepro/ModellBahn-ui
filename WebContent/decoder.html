@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <link rel="stylesheet" href="css/site.css"/>
+  <script type="text/javascript" src="js/i18n.js"></script>
+  <script type="text/javascript" src="js/utils.js"></script>
+  <script type="text/javascript" src="js/dropdown.js"></script>
+  <script type="text/javascript" src="js/fields.js"></script>
+  <script type="text/javascript" src="js/grids.js"></script>
+  <script type="text/javascript">
+    const adress = ADRESS(Editable.UPDATE, true);
+
+    const adressColumns = [
+      INDEX(Editable.NEVER, false),
+      ADRESS_TYP_SELECT(Editable.UPDATE, true),
+      adress,
+      new ButtonColumn([], [ (grid, rowId) => { return getButton( 'update', 'save', () => { updateByFieldValue(grid, rowId, adress) } ) } ])
+    ];
+
+    const adressen = new ItemGrid(2, undefined, "adressen", adressColumns, Paged.EXPAND, EditMode.UPDATE, undefined);
+
+    const wert = WERT(Editable.UPDATE, false);
+
+    const cvColumns = [
+      CV(Editable.NEVER, false, decoderCvCvGetter, noOpSetter),
+      BEZEICHNUNG(Editable.NEVER, false, decoderCvBezeichnungGetter, noOpSetter),
+      WERKSEINSTELLUNG(Editable.NEVER, false, decoderCvWerkseinstellungGetter, noOpSetter),
+      wert,
+      new ButtonColumn([], [ (grid, rowId) => { return getButton( 'update', 'save', () => { updateByFieldValue(grid, rowId, wert) } ) } ])
+    ];
+
+    const cvs = new ItemGrid(10, undefined, "cvs", cvColumns, Paged.EXPAND, EditMode.UPDATE, undefined);
+
+    const funktion = FUNKTION(Editable.NEVER, false, decoderFunktionFunktionGetter, noOpSetter);
+
+    const funktiononenColumns = [
+      REIHE(Editable.NEVER, false, decoderFunktionReiheGetter, noOpSetter),
+      funktion,
+      BEZEICHNUNG(Editable.UPDATE, true),
+      PROGRAMMABLE(Editable.NEVER, false, decoderFunktionProgrammableGetter, noOpSetter),
+      new ButtonColumn([], [ (grid, rowId) => { return getButton( 'update', 'save', () => { updateByFieldValue(grid, rowId, funktion) } ) } ])
+    ];
+
+    const funktionen = new ItemGrid(10, undefined, "funktionen", funktiononenColumns, Paged.EXPAND, EditMode.UPDATE, undefined);
+
+    const decoderColumns = [
+      DECODER(Editable.NEVER, true),
+      DECODER_TYP_SELECT(Editable.NEVER, true),
+      BEZEICHNUNG(Editable.NEVER, true, decoderTypBezeichnungGetter, noOpSetter),
+      PROTOKOLL_SELECT(Editable.UPDATE, true),
+      FAHRSTUFE(Editable.UPDATE, false),
+      GERAUSCH(Editable.NEVER, true, decoderTypSoundGetter, noOpSetter),
+      I_MAX(Editable.NEVER, true, decoderTypIMaxGetter, noOpSetter),
+      KONFIGURATION_SELECT(Editable.NEVER, true, decoderTypKonfigurationGetter, noOpSetter),
+      ANLEITUNGEN(Editable.NEVER),
+      new ButtonColumn([], [updateRow])
+    ];
+
+    const children = [adressen, cvs, funktionen];
+
+    const decoder = new ItemGrid(1, fetchUrl("decoder"), "decoder", decoderColumns, Paged.FORM,  EditMode.UPDATE, children);
+
+    async function init() {
+      addNavBar(NavMenu.BACK);
+      addFooter();
+      await DECODER_TYP_DROP.init()
+      .then(() => PROTOKOLL_DROP.init())
+      .then(() => KONFIGURATION_DROP.init())
+      .then(() => ADRESS_TYP_DROP.init())
+      .then(() => decoder.init());
+
+      setActiveTab(undefined, "adressenTab");
+    }
+  </script>
+  <title>Decoder</title>
+</head>
+<body onload="init()">
+<header>
+</header>
+
+<section>
+  <article>
+    <div id="data">
+      <div id="decoder">
+      </div>
+
+      <div id="tabbedArea">
+        <div class="tab">
+          <button id="adressenLink" class="tabLinks" onclick="setActiveTab(event, 'adressenTab')">Adressen</button>
+          <button id="cvsLink" class="tabLinks" onclick="setActiveTab(event, 'cvsTab')">CVS</button>
+          <button id="funktionenLink" class="tabLinks" onclick="setActiveTab(event, 'funktionenTab')">Funktionen</button>
+        </div>
+
+        <div id="adressenTab" class="tabContent">
+          <h3>Addressen</h3>
+          <div id="adressen">
+          </div>
+        </div>
+        <div id="cvsTab" class="tabContent">
+          <h3>cvs</h3>
+          <div id="cvs">
+          </div>
+        </div>
+        <div id="funktionenTab" class="tabContent">
+          <h3>Funktionen</h3>
+          <div id="funktionen">
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+</section>
+
+<footer>
+</footer>
+</body>
+</html>

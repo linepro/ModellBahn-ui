@@ -1,0 +1,130 @@
+# Handle line endings automatically for files detected as text
+# and leave all files detected as binary untouched.
+* text=auto
+
+#
+# The above will handle all files NOT found below
+#
+# These files are text and should be normalized (Convert crlf => lf)
+# git config
+.gitattributes  text
+.gitconfig      text
+.gitignore      text
+
+#
+# The above will handle all files NOT found below
+#
+# These files are text and should be normalized (Convert crlf => lf)
+
+*.bat           text
+*.coffee        text
+*.cmd           text
+*.css           text
+*.df            text
+*.htm           text
+*.html          text
+*.inc           text
+*.ini           text
+*.java          text
+*.js            text
+*.json          text
+*.jsp           text
+*.jspf          text
+*.less          text
+*.php           text
+*.pl            text
+*.properties    text
+*.py            text
+*.rb            text
+*.sass          text
+*.scm           text
+*.scss          text
+*.sh            text
+*.sql           text
+*.styl          text
+*.svg           text
+*.tld           text
+*.ts            text
+*.txt           text
+*.xml           text
+
+# These files are binary and should be left untouched
+# (binary is a macro for -text -diff)
+
+*.7z            binary
+*.class         binary
+*.dll           binary
+*.ear           binary
+*.eot           binary
+*.fla           binary
+*.flv           binary
+*.gif           binary
+*.gz            binary
+*.ico           binary
+*.jar           binary
+*.jpeg          binary
+*.jpg           binary
+*.mov           binary
+*.mp3           binary
+*.mp4           binary
+*.pdf           binary
+*.png           binary
+*.so            binary
+*.swf           binary
+*.ttf           binary
+*.war           binary
+*.woff          binary
+*.woff2         binary
+*.zip           binary
+
+
+# python
+
+# Source files
+# ============
+*.pxd           text
+*.py            text
+*.py3           text
+*.pyw           text
+*.pyx           text
+
+# Binary files
+# ============
+*.db            binary
+*.p             binary
+*.pkl           binary
+*.pyc           binary
+*.pyd           binary
+*.pyo           binary
+
+# Note: .db, .p, and .pkl files are associated
+# with the python modules ``pickle``, ``dbm.*``,
+# ``shelve``, ``marshal``, ``anydbm``, & ``bsddb``
+# (among others).
+
+# templates
+*.dot           text
+*.ejs           text
+*.haml          text
+*.hbs           text
+*.hbt           text
+*.jade          text
+*.latte         text
+*.phtml         text
+*.tmpl          text
+
+# code analysis config
+.csslintrc      text
+.jscsrc         text
+.jshintignore   text
+.jshintrc       text
+
+# misc config
+.editorconfig  text
+*.yaml         text
+*.yml          text
+
+# Documentation
+*.md           text
+AUTHORS        text
+LICENSE        text

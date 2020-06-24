@@ -1,0 +1,56 @@
+# Eclipse artefacts
+.metadata/
+.settings/
+eclipse/
+.checkstyle
+.classpath
+.project
+
+# Intellij artefacts
+.idea/
+.DS_Store
+*.iml
+
+# java build artefacts
+bin/
+target/
+test-output/
+*.class
+*.ear
+*.jar
+*.war
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+# Maven artefacts
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+buildNumber.properties
+dependency-reduced-pom.xml
+release.properties
+
+# ModellBahn artefacts
+docs/
+/modellbahn.lock.db
+/modellbahn.mv.db
+/modellbahn.trace.db
+/src/main/resources/webapp/store
+/webapp
+*.log
+
+# Windows stuff
+Thumbs.db
+
+# Unused icons
+src/main/resources/webapp/static/img/18/
+src/main/resources/webapp/static/img/24/
+src/main/resources/webapp/static/img/36/
+src/main/resources/webapp/static/img/48/
+
+# Node stuff
+node_modules/
+package.json
+package-lock.json

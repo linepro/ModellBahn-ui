@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <link rel="stylesheet" href="css/site.css"/>
+  <script type="text/javascript" src="js/i18n.js"></script>
+  <script type="text/javascript" src="js/utils.js"></script>
+  <script type="text/javascript" src="js/dropdown.js"></script>
+  <script type="text/javascript" src="js/fields.js"></script>
+  <script type="text/javascript">
+    async function init() {
+      addNavBar(NavMenu.HOME);
+      addFooter();
+      await ACHSFOLG_DROP.init()
+      .then(() => ADRESS_TYP_DROP.init())
+      .then(() => ANDERUNGS_TYP_DROP.init())
+      .then(() => ANTRIEB_DROP.init())
+      .then(() => ARTIKEL_DROP.init())
+      .then(() => AUFBAU_DROP.init())
+      .then(() => BAHNVERWALTUNG_DROP.init())
+      .then(() => DECODER_DROP.init())
+      .then(() => DECODER_TYP_DROP.init())
+      .then(() => EPOCH_DROP.init())
+      .then(() => GATTUNG_DROP.init())
+      .then(() => HERSTELLER_DROP.init())
+      .then(() => KONFIGURATION_DROP.init())
+      .then(() => KUPPLUNG_DROP.init())
+      .then(() => LEISTUNGSUBERTRAGUNG_DROP.init())
+      .then(() => LICHT_DROP.init())
+      .then(() => MASSSTAB_DROP.init())
+      .then(() => MOTOR_TYP_DROP.init())
+      .then(() => PRODUKT_DROP.init())
+      .then(() => PROTOKOLL_DROP.init())
+      .then(() => SONDERMODELL_DROP.init())
+      .then(() => SPURWEITE_DROP.init())
+      .then(() => STATUS_DROP.init())
+      .then(() => STECKER_DROP.init())
+      .then(() => STEUERUNG_DROP.init())
+      .then(() => UNTER_KATEGORIE_DROP.init())
+      .then(() => VORBILD_DROP.init())
+      .then(() => WAHRUNG_DROP.init())
+      .then(() => ZUG_TYP_DROP.init())
+      .catch(error => reportError(error));
+    }
+  </script>
+  <title>ModellBahn</title>
+</head>
+<body onload="init()">
+<header>
+  <h1>ModellBahn</h1>
+</header>
+
+<section>
+  <article>
+  </article>
+</section>
+
+<footer>
+</footer>
+</body>
+</html>

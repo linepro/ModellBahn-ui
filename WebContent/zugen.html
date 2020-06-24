@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link rel="stylesheet" href="css/site.css"/>
+  <script type="text/javascript" src="js/i18n.js"></script>
+  <script type="text/javascript" src="js/utils.js"></script>
+  <script type="text/javascript" src="js/dropdown.js"></script>
+  <script type="text/javascript" src="js/fields.js"></script>
+  <script type="text/javascript" src="js/grids.js"></script>
+  <script type="text/javascript">
+    const columns = [
+      NAMEN(EditMode.ADD),
+      ZUG_TYP_SELECT(EditMode.ADD),
+      BEZEICHNUNG(EditMode.ADD),
+      LANGE(EditMode.ADD),
+      new ButtonColumn([newRow], [editRow, deleteRow])
+    ];
+
+    const zugen = new ItemGrid(10, fetchUrl("zug"), "zugen", columns, Paged.PAGED, EditMode.UPDATE, undefined, "zug.html");
+
+    async function init() {
+      addNavBar(NavMenu.INVENTORY);
+      addFooter();
+      await ZUG_TYP_DROP.init()
+      .then(() => zugen.init());
+    }
+  </script>
+  <title>Zugen</title>
+</head>
+<body onLoad="init()">
+<header>
+</header>
+
+<section>
+  <article>
+    <div id="data">
+      <div id="zugen">
+      </div>
+    </div>
+  </article>
+</section>
+
+<footer>
+</footer>
+</body>
+</html>

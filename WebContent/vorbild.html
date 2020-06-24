@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <link rel="stylesheet" href="css/site.css"/>
+  <script type="text/javascript" src="js/i18n.js"></script>
+  <script type="text/javascript" src="js/utils.js"></script>
+  <script type="text/javascript" src="js/dropdown.js"></script>
+  <script type="text/javascript" src="js/fields.js"></script>
+  <script src="js/lib/DatePickerX-1.0.4.min.js"></script>
+  <script type="text/javascript" src="js/grids.js"></script>
+  <script type="text/javascript">
+    const columns = [
+      GATTUNG_SELECT(Editable.ADD, true),
+      UNTER_KATEGORIE_SELECT(Editable.UPDATE),
+      BAHNVERWALTUNG_SELECT(Editable.UPDATE),
+      HERSTELLER(Editable.UPDATE),
+      BAUZEIT(Editable.UPDATE),
+      ANZAHL(Editable.UPDATE),
+      BETREIBSNUMMER(Editable.UPDATE),
+      ANTRIEB_SELECT(Editable.UPDATE),
+      ACHSFOLG_SELECT(Editable.UPDATE),
+      ANFAHRZUGKRAFT(Editable.UPDATE),
+      LEISTUNG(Editable.UPDATE),
+      DIENSTGEWICHT(Editable.UPDATE),
+      GESCHWINDIGKEIT(Editable.UPDATE),
+      LANGE(Editable.UPDATE),
+      AUSSERDIENST(Editable.UPDATE),
+      DMTREIBRAD(Editable.UPDATE),
+      DMLAUFRADVORN(Editable.UPDATE),
+      DMLAUFRADHINTEN(Editable.UPDATE),
+      ZYLINDER(Editable.UPDATE),
+      DMZYLINDER(Editable.UPDATE),
+      KOLBENHUB(Editable.UPDATE),
+      KESSELUBERDRUCK(Editable.UPDATE),
+      ROSTFLACHE(Editable.UPDATE),
+      UBERHITZERFLACHE(Editable.UPDATE),
+      WASSERVORRAT(Editable.UPDATE),
+      VERDAMPFUNG(Editable.UPDATE),
+      FAHRMOTOREN(Editable.UPDATE),
+      MOTORBAUART(Editable.UPDATE),
+      LEISTUNGSUBERTRAGUNG_SELECT(Editable.UPDATE),
+      REICHWEITE(Editable.UPDATE),
+      KAPAZITAT(Editable.UPDATE),
+      KLASSE(Editable.UPDATE),
+      SITZPLATZEKL1(Editable.UPDATE),
+      SITZPLATZEKL2(Editable.UPDATE),
+      SITZPLATZEKL3(Editable.UPDATE),
+      SITZPLATZEKL4(Editable.UPDATE),
+      AUFBAU(Editable.UPDATE),
+      TRIEBKOPF(Editable.UPDATE),
+      MITTELWAGEN(Editable.UPDATE),
+      DREHGESTELLBAUART(Editable.UPDATE),
+      ABBILDUNG(Editable.NEVER),
+      new ButtonColumn([], [updateRow])
+    ];
+
+    const vorbild = new ItemGrid(1, fetchUrl("vorbild"), "vorbild", columns, Paged.FORM, EditMode.UPDATE, undefined);
+
+    async function init() {
+      addNavBar(NavMenu.BACK);
+      addFooter();
+      await GATTUNG_DROP.init()
+      .then(() => UNTER_KATEGORIE_DROP.init())
+      .then(() => BAHNVERWALTUNG_DROP.init())
+      .then(() => ANTRIEB_DROP.init())
+      .then(() => ACHSFOLG_DROP.init())
+      .then(() => LEISTUNGSUBERTRAGUNG_DROP.init())
+      .then(() => vorbild.init());
+    }
+  </script>
+  <title>Vorbild</title>
+</head>
+<body onload="init()">
+<header>
+</header>
+
+<section>
+  <article>
+    <div id="data">
+      <div id="vorbild">
+      </div>
+    </div>
+  </article>
+</section>
+
+<footer>
+</footer>
+</body>
+</html>

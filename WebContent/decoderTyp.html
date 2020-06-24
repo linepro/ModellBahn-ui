@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <link rel="stylesheet" href="css/site.css"/>
+  <script type="text/javascript" src="js/i18n.js"></script>
+  <script type="text/javascript" src="js/utils.js"></script>
+  <script type="text/javascript" src="js/dropdown.js"></script>
+  <script type="text/javascript" src="js/fields.js"></script>
+  <script type="text/javascript" src="js/grids.js"></script>
+  <script type="text/javascript">
+    const adressColumns = [
+      INDEX(Editable.ADD, true),
+      ADRESS_TYP_SELECT(Editable.UPDATE, true),
+      SPAN(Editable.UPDATE, true),
+      WERKSEINSTELLUNG(Editable.UPDATE, true),
+      gridButtonColumn()
+    ];
+
+    const adressen = new ItemGrid(2, "adressen", "adressen", adressColumns, Paged.EXPAND, EditMode.ADD, undefined);
+
+    const cvColumns = [
+      CV(Editable.ADD, true),
+      BEZEICHNUNG(Editable.UPDATE, true),
+      MAXIMAL(Editable.UPDATE, false),
+      MINIMAL(Editable.UPDATE, false),
+      WERKSEINSTELLUNG(Editable.UPDATE, false),
+      gridButtonColumn()
+    ];
+
+    const cvs = new ItemGrid(10, "cvs", "cvs", cvColumns, Paged.EXPAND, EditMode.ADD, undefined);
+
+    const funktionenColumns = [
+      REIHE(Editable.ADD, true),
+      FUNKTION(Editable.ADD, true),
+      WERKSEINSTELLUNG(Editable.UPDATE, true),
+      PROGRAMMABLE(Editable.UPDATE, true),
+      gridButtonColumn()
+    ];
+
+    const funktionen = new ItemGrid(10, "funktionen", "funktionen", funktionenColumns, Paged.EXPAND, EditMode.ADD, undefined);
+
+    const columns = [
+      HERSTELLER_SELECT(Editable.ADD, true),
+      BESTELL_NR(Editable.ADD, true),
+      BEZEICHNUNG(Editable.UPDATE, true),
+      PROTOKOLL_SELECT(Editable.UPDATE, true),
+      FAHRSTUFE(Editable.UPDATE, true),
+      GERAUSCH(Editable.UPDATE, true),
+      I_MAX(Editable.UPDATE, true),
+      KONFIGURATION_SELECT(Editable.UPDATE, true),
+      STECKER_SELECT(Editable.UPDATE, true),
+      new ButtonColumn([], [updateRow])];
+
+    const children = [adressen, cvs, funktionen];
+
+    const decoderTyp = new ItemGrid(1, fetchUrl("decoderTyp"), "decoderTyp", columns, Paged.FORM, EditMode.UPDATE, children);
+
+    async function init() {
+      addNavBar(NavMenu.BACK);
+      addFooter();
+      await HERSTELLER_DROP.init()
+      .then(() => PROTOKOLL_DROP.init())
+      .then(() => KONFIGURATION_DROP.init())
+      .then(() => ADRESS_TYP_DROP.init())
+      .then(() => STECKER_DROP.init())
+      .then(() => decoderTyp.init());
+
+      setActiveTab(undefined, "adressenTab");
+    }
+  </script>
+  <title>Decoder Typ</title>
+</head>
+<body onload="init()">
+<header>
+</header>
+
+<section>
+  <article>
+    <div id="data">
+      <div id="decoderTyp">
+      </div>
+
+      <div id="tabbedArea">
+        <div class="tab">
+          <button id="adressenLink" class="tabLinks" onclick="setActiveTab(event, 'adressenTab')">Adressen</button>
+          <button id="cvsLink" class="tabLinks" onclick="setActiveTab(event, 'cvsTab')">CVS</button>
+          <button id="funktionenLink" class="tabLinks" onclick="setActiveTab(event, 'funktionenTab')">Funktionen</button>
+        </div>
+
+        <div id="adressenTab" class="tabContent">
+          <div id="adressen">
+          </div>
+        </div>
+        <div id="cvsTab" class="tabContent">
+          <div id="cvs">
+          </div>
+        </div>
+        <div id="funktionenTab" class="tabContent">
+          <div id="funktionen">
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </article>
+</section>
+
+<footer>
+</footer>
+</body>
+</html>

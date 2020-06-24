@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <link rel="stylesheet" href="css/site.css"/>
+  <script type="text/javascript" src="js/i18n.js"></script>
+  <script type="text/javascript" src="js/utils.js"></script>
+  <script type="text/javascript" src="js/dropdown.js"></script>
+  <script type="text/javascript" src="js/fields.js"></script>
+  <script src="js/lib/DatePickerX-1.0.4.min.js"></script>
+  <script type="text/javascript" src="js/grids.js"></script>
+  <script type="text/javascript">
+    const columns = [
+      GATTUNG_SELECT(Editable.ADD, true),
+      UNTER_KATEGORIE_SELECT(Editable.ADD, true),
+      BAHNVERWALTUNG_SELECT(Editable.ADD, false),
+      HERSTELLER(Editable.ADD, false),
+      BAUZEIT(Editable.ADD, false),
+      AUSSERDIENST(Editable.ADD, false),
+      ANZAHL(Editable.ADD, false),
+      ABBILDUNG(Editable.NEVER, false),
+      new ButtonColumn(
+          [newRow],
+          [editRow, deleteRow])
+    ];
+
+    const vorbilder = new ItemGrid(10, fetchUrl("vorbild"), "vorbilder", columns, Paged.PAGED, EditMode.UPDATE, undefined, "vorbild.html");
+
+    async function init() {
+      addNavBar(NavMenu.INVENTORY);
+      addFooter();
+      await GATTUNG_DROP.init()
+      .then(() => UNTER_KATEGORIE_DROP.init())
+      .then(() => BAHNVERWALTUNG_DROP.init())
+      .then(() => vorbilder.init());
+    }
+  </script>
+  <title>Vorbilder</title>
+</head>
+<body onLoad="init()">
+<header>
+</header>
+
+<section>
+  <article>
+    <div id="data">
+      <div id="vorbilder">
+      </div>
+    </div>
+  </article>
+</section>
+
+<footer>
+</footer>
+</body>
+</html>

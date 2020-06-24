@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <link rel="stylesheet" href="css/site.css"/>
+  <script type="text/javascript" src="js/i18n.js"></script>
+  <script type="text/javascript" src="js/utils.js"></script>
+  <script type="text/javascript" src="js/dropdown.js"></script>
+  <script type="text/javascript" src="js/fields.js"></script>
+  <script src="js/lib/DatePickerX-1.0.4.min.js"></script>
+  <script type="text/javascript" src="js/grids.js"></script>
+  <script type="text/javascript">
+    const artikelUnterKategorieGetter = (entity) => {
+      return entity.produkt ? unterKategorieGetter(entity.produkt) : undefined
+    };
+
+    const columns = [
+      ARTIKEL(Editable.ADD, true),
+      PRODUKT_SELECT(Editable.ADD, false),
+      UNTER_KATEGORIE_SELECT(Editable.ADD, false, artikelUnterKategorieGetter),
+      BEZEICHNUNG(Editable.ADD),
+      DECODER_SELECT(Editable.ADD, false),
+      ANMERKUNG(Editable.ADD, false),
+      ABBILDUNG(Editable.NEVER),
+      STATUS_SELECT(Editable.ADD, true),
+      new ButtonColumn([newRow], [editRow, deleteRow])
+    ];
+
+    const artikelen = new ItemGrid(10, fetchUrl("artikel"), "artikelen", columns, Paged.PAGED, EditMode.UPDATE, undefined, "artikel.html");
+
+    async function init() {
+      addNavBar(NavMenu.INVENTORY);
+      addFooter();
+      await PRODUKT_DROP.init()
+      .then(() => UNTER_KATEGORIE_DROP.init())
+      .then(() => DECODER_DROP.init())
+      .then(() => STATUS_DROP.init())
+      .then(() => artikelen.init());
+    }
+  </script>
+  <title>Artikelen</title>
+</head>
+<body onload="init()">
+<header>
+</header>
+
+<section>
+  <article>
+    <div id="data">
+      <div id="artikelen">
+      </div>
+    </div>
+  </article>
+</section>
+
+<footer>
+</footer>
+</body>
+</html>

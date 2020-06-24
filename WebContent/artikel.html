@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <link rel="stylesheet" href="css/site.css"/>
+  <script type="text/javascript" src="js/i18n.js"></script>
+  <script type="text/javascript" src="js/utils.js"></script>
+  <script type="text/javascript" src="js/dropdown.js"></script>
+  <script type="text/javascript" src="js/fields.js"></script>
+  <script src="js/lib/DatePickerX-1.0.4.min.js"></script>
+  <script type="text/javascript" src="js/grids.js"></script>
+  <script type="text/javascript">
+    const anderungenColumns = [
+      ANDERUNGS_ID(Editable.NEVER, true),
+      ANDERUNGS_TYP_SELECT(Editable.UPDATE, true),
+      ANDERUNGS_DATUM(Editable.UPDATE, true),
+      BEZEICHNUNG(Editable.UPDATE, true),
+      STUCK(Editable.UPDATE, true),
+      gridButtonColumn()
+    ];
+
+    const anderungen = new ItemGrid(5, "anderungen", "anderungen", anderungenColumns, Paged.EXPAND, EditMode.ADD, undefined);
+
+    const columns = [
+      ARTIKEL(Editable.NEVER, true),
+      PRODUKT_SELECT(Editable.ADD, true),
+      BEZEICHNUNG(Editable.UPDATE, true),
+      KAUFDATUM(Editable.UPDATE, false),
+      WAHRUNG_SELECT(Editable.UPDATE, false),
+      PREIS(Editable.UPDATE, false),
+      STUCK(Editable.UPDATE, true),
+      VERBLEIBENDE(Editable.UPDATE, true),
+      STEUERUNG_SELECT(Editable.UPDATE, false),
+      MOTOR_TYP_SELECT(Editable.UPDATE, false),
+      LICHT_SELECT(Editable.UPDATE, false),
+      KUPPLUNG_SELECT(Editable.UPDATE, false),
+      DECODER_SELECT(Editable.UPDATE, false),
+      ANMERKUNG(Editable.UPDATE, false),
+      BELADUNG(Editable.UPDATE, false),
+      ABBILDUNG(Editable.UPDATE, false),
+      STATUS_SELECT(Editable.UPDATE, true),
+      new ButtonColumn([], [updateRow])];
+
+    const artikel = new ItemGrid(1, fetchUrl("artikel"), "artikel", columns, Paged.FORM, EditMode.UPDATE, [anderungen]);
+
+    async function init() {
+      addNavBar(NavMenu.BACK);
+      addFooter();
+      await ANDERUNGS_TYP_DROP.init()
+      .then(() => PRODUKT_DROP.init())
+      .then(() => WAHRUNG_DROP.init())
+      .then(() => STEUERUNG_DROP.init())
+      .then(() => MOTOR_TYP_DROP.init())
+      .then(() => LICHT_DROP.init())
+      .then(() => KUPPLUNG_DROP.init())
+      .then(() => DECODER_DROP.init())
+      .then(() => STATUS_DROP.init())
+      .then(() => artikel.init());
+    }
+  </script>
+  <title>Artikelen</title>
+</head>
+<body onload="init()">
+<header>
+</header>
+
+<section>
+  <article>
+    <div id="data">
+      <div id="artikel">
+      </div>
+      <div id="anderungen">
+      </div>
+    </div>
+  </article>
+</section>
+
+<footer>
+</footer>
+</body>
+</html>
