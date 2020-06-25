@@ -1,2 +1,2 @@
 # ModellBahn-ui
-Front end for ModellBahn
+Pure js front end for ModellBahn, split from ModellBahn and deployed as a webjar.
