@@ -31,24 +31,22 @@ pom.xml.next
 buildNumber.properties
 dependency-reduced-pom.xml
 release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+# https://github.com/takari/maven-wrapper#usage-without-binary-jar
+.mvn/wrapper/maven-wrapper.jar
 
-# ModellBahn artefacts
+# ModellBahn artifacts
 docs/
-/modellbahn.lock.db
-/modellbahn.mv.db
-/modellbahn.trace.db
+/modellbahn.*.db
 /src/main/resources/webapp/store
+/store
 /webapp
 *.log
 
 # Windows stuff
 Thumbs.db
-
-# Unused icons
-src/main/resources/webapp/static/img/18/
-src/main/resources/webapp/static/img/24/
-src/main/resources/webapp/static/img/36/
-src/main/resources/webapp/static/img/48/
 
 # Node stuff
 node_modules/
