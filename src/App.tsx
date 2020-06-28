@@ -1,28 +1,20 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import ReactDOM from 'react-dom';
-import Button from '@material-ui/core/Button';
+import MenuAppBar from './components/MenuAppBar';
+import NamedItemTable from './components/NamedItemTable';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    return (
+        <div className="App">
+            <MenuAppBar />
+            <NamedItemTable
+                title={"Achsfolg"}
+                url={"http://127.0.0.1:8086/ModellBahn/api"}
+                path={"/achsfolg"}
+                />
+        </div>
+    );
 }
 
 export default App;

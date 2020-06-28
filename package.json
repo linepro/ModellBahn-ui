@@ -5,6 +5,8 @@
   "dependencies": {
     "@material-ui/core": "^4.10.2",
     "@material-ui/icons": "^4.9.1",
+    "@material-ui/styles": "^4.10.0",
+    "@material-ui/system": "^4.9.14",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
@@ -14,6 +16,7 @@
     "@types/react-dom": "^16.9.8",
     "axios": "^0.19.2",
     "fontsource-roboto": "^2.1.4",
+    "material-table": "^1.62.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-jss": "^10.3.0",
