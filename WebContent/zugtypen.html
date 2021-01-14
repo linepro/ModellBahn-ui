@@ -14,9 +14,9 @@
     const zugTypen = new NamedItemGrid("zugTyp", "zugTypen");
 
     async function init() {
-      addNavBar(NavMenu.REF_DATA);
-      addFooter();
-      await zugTypen.init();
+      await layout(NavMenu.REF_DATA)
+      .then(zugTypen.init())
+      .catch(error => reportError(error));
     }
   </script>
   <title>Zug Typen</title>

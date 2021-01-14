@@ -27,11 +27,11 @@ window.onerror = function (msg, url, lineNo, columnNo, error) {
 };
 
 const apiRoot = () => {
-  return '/ModellBahn/api/';
+  return window.location.origin + '/ModellBahn/api/';
 };
 
 const siteRoot = () => {
-  return '/';
+  return window.location.origin + '/ModellBahn/modellbahn-ui/';
 };
 
 const fetchUrl = (dataType) => {
@@ -97,8 +97,8 @@ const reportError = (error) => {
 };
 
 const getLink = (links, rel) => {
-  if (!links) { return; }
-  return links.find((lnk) => { return lnk.rel === rel; });
+  if (!links || !links[rel]) { return; }
+  return links[rel][0].href;
 };
 
 const getImgSrc = (image) => {
@@ -389,7 +389,6 @@ const addNavBar = (menuStyle) => {
       lnks.push(navLink('HERSTELLERN', siteRoot() + 'herstellern.html'));
       lnks.push(navLink('KATEGORIEN', siteRoot() + 'kategorien.html'));
       lnks.push(navLink('KUPPLUNGEN', siteRoot() + 'kupplungen.html'));
-      lnks.push(navLink('LANDER', siteRoot() + 'lander.html'));
       lnks.push(navLink('LICHTEN', siteRoot() + 'lichten.html'));
       lnks.push(navLink('MASSSTABEN', siteRoot() + 'massstaben.html'));
       lnks.push(navLink('MOTOR_TYPEN', siteRoot() + 'motorTypen.html'));
@@ -397,7 +396,6 @@ const addNavBar = (menuStyle) => {
       lnks.push(navLink('SONDERMODELLEN', siteRoot() + 'sonderModellen.html'));
       lnks.push(navLink('SPURWEITEN', siteRoot() + 'spurweiten.html'));
       lnks.push(navLink('STEUERUNGEN', siteRoot() + 'steuerungen.html'));
-      lnks.push(navLink('WAHRUNGEN', siteRoot() + 'wahrungen.html'));
       lnks.push(navLink('ZUG_TYPEN', siteRoot() + 'zugtypen.html'));
       lnks.filter(li => { return document.location.href !== li.firstChild.href })
           .sort((a, b) => { return a.innerText.localeCompare(b.innerText) })
@@ -461,4 +459,10 @@ const createStyle = (className, values) => {
   style.type = 'text/css';
   style.innerHTML = className & ' ' & JSON.stringify(values, null, 1).replace(/"/g, '');
   document.getElementsByTagName('head')[0].appendChild(style);
+};
+
+const layout = async (menuStyle) => {
+    await loadTranslations(siteRoot(), language());
+    addNavBar(menuStyle);
+    addFooter();
 };

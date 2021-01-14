@@ -14,9 +14,9 @@
     const steuerungen = new NamedItemGrid("steuerung", "steuerungen");
 
     async function init() {
-      addNavBar(NavMenu.REF_DATA);
-      addFooter();
-      await steuerungen.init();
+      await layout(NavMenu.REF_DATA)
+      .then(() => steuerungen.init())
+      .catch(error => reportError(error));
     }
   </script>
   <title>Steuerungen</title>

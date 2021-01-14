@@ -14,9 +14,9 @@
     const motorTypen = new NamedItemGrid("motorTyp", "motorTypen");
 
     async function init() {
-      addNavBar(NavMenu.REF_DATA);
-      addFooter();
-      await motorTypen.init();
+      await layout(NavMenu.REF_DATA)
+      .then(() => motorTypen.init())
+      .catch(error => reportError(error));
     }
   </script>
   <title>MotorTypen</title>

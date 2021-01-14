@@ -60,15 +60,15 @@
     const vorbild = new ItemGrid(1, fetchUrl("vorbild"), "vorbild", columns, Paged.FORM, EditMode.UPDATE, undefined);
 
     async function init() {
-      addNavBar(NavMenu.BACK);
-      addFooter();
-      await GATTUNG_DROP.init()
+      await layout(NavMenu.BACK)
+      .then(() => GATTUNG_DROP.init())
       .then(() => UNTER_KATEGORIE_DROP.init())
       .then(() => BAHNVERWALTUNG_DROP.init())
       .then(() => ANTRIEB_DROP.init())
       .then(() => ACHSFOLG_DROP.init())
       .then(() => LEISTUNGSUBERTRAGUNG_DROP.init())
-      .then(() => vorbild.init());
+      .then(() => vorbild.init())
+      .catch(error => reportError(error));
     }
   </script>
   <title>Vorbild</title>

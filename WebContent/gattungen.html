@@ -14,9 +14,9 @@
     const gattungen = new NamedItemGrid("gattung", "gattungen");
 
     async function init() {
-      addNavBar(NavMenu.REF_DATA);
-      addFooter();
-      await gattungen.init();
+      await layout(NavMenu.REF_DATA)
+      .then(() => gattungen.init())
+      .catch(error => reportError(error));
     }
   </script>
   <title>Gattungen</title>

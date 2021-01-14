@@ -25,9 +25,9 @@
     const wert = WERT(Editable.UPDATE, false);
 
     const cvColumns = [
-      CV(Editable.NEVER, false, decoderCvCvGetter, noOpSetter),
-      BEZEICHNUNG(Editable.NEVER, false, decoderCvBezeichnungGetter, noOpSetter),
-      WERKSEINSTELLUNG(Editable.NEVER, false, decoderCvWerkseinstellungGetter, noOpSetter),
+      CV(Editable.NEVER, false),
+      BEZEICHNUNG(Editable.NEVER, false),
+      WERKSEINSTELLUNG(Editable.NEVER, false),
       wert,
       new ButtonColumn([], [ (grid, rowId) => { return getButton( 'update', 'save', () => { updateByFieldValue(grid, rowId, wert) } ) } ])
     ];
@@ -37,10 +37,10 @@
     const funktion = FUNKTION(Editable.NEVER, false, decoderFunktionFunktionGetter, noOpSetter);
 
     const funktiononenColumns = [
-      REIHE(Editable.NEVER, false, decoderFunktionReiheGetter, noOpSetter),
+      REIHE(Editable.NEVER, false),
       funktion,
       BEZEICHNUNG(Editable.UPDATE, true),
-      PROGRAMMABLE(Editable.NEVER, false, decoderFunktionProgrammableGetter, noOpSetter),
+      PROGRAMMABLE(Editable.NEVER, false),
       new ButtonColumn([], [ (grid, rowId) => { return getButton( 'update', 'save', () => { updateByFieldValue(grid, rowId, funktion) } ) } ])
     ];
 
@@ -49,12 +49,18 @@
     const decoderColumns = [
       DECODER(Editable.NEVER, true),
       DECODER_TYP_SELECT(Editable.NEVER, true),
-      BEZEICHNUNG(Editable.NEVER, true, decoderTypBezeichnungGetter, noOpSetter),
+      BEZEICHNUNG(Editable.NEVER, true),
       PROTOKOLL_SELECT(Editable.UPDATE, true),
       FAHRSTUFE(Editable.UPDATE, false),
-      GERAUSCH(Editable.NEVER, true, decoderTypSoundGetter, noOpSetter),
-      I_MAX(Editable.NEVER, true, decoderTypIMaxGetter, noOpSetter),
-      KONFIGURATION_SELECT(Editable.NEVER, true, decoderTypKonfigurationGetter, noOpSetter),
+      GERAUSCH(Editable.NEVER, true),
+      I_MAX(Editable.NEVER, true),
+      KONFIGURATION_SELECT(Editable.NEVER, true),
+      STECKER_SELECT(Editable.UPDATE, true),
+      KAUFDATUM(Editable.UPDATE, true),
+      WAHRUNG_SELECT(Editable.UPDATE, true),
+      PREIS(Editable.UPDATE, true),
+      ANMERKUNG(Editable.UPDATE, true),
+      DECODER_STATUS_SELECT(Editable.UPDATE, true),
       ANLEITUNGEN(Editable.NEVER),
       new ButtonColumn([], [updateRow])
     ];
@@ -64,13 +70,13 @@
     const decoder = new ItemGrid(1, fetchUrl("decoder"), "decoder", decoderColumns, Paged.FORM,  EditMode.UPDATE, children);
 
     async function init() {
-      addNavBar(NavMenu.BACK);
-      addFooter();
-      await DECODER_TYP_DROP.init()
+      await layout(NavMenu.BACK)
+      .then(() => DECODER_TYP_DROP.init())
       .then(() => PROTOKOLL_DROP.init())
       .then(() => KONFIGURATION_DROP.init())
       .then(() => ADRESS_TYP_DROP.init())
-      .then(() => decoder.init());
+      .then(() => decoder.init())
+      .catch(error => reportError(error));
 
       setActiveTab(undefined, "adressenTab");
     }

@@ -31,30 +31,18 @@ class DropOption {
 }
 
 class DropDown {
-  constructor(apiQuery, optionExtractor) {
+  constructor(apiQuery, valuesExtractor, rowExtractor) {
     this.apiQuery = apiQuery;
-    this.optionExtractor = optionExtractor;
-    this.length = 0;
+    this.valuesExtractor = valuesExtractor;
+    this.rowExtractor = rowExtractor;
+    this.length = 10;
     this.options = [];
     this.initialized = false;
   }
 
   loadOptions(jsonData) {
-    let entities = jsonData.entities ? jsonData.entities : jsonData;
     let dropDown = this;
-    let length = 0;
-
-    dropDown.options = [];
-
-    entities.forEach(entity => {
-      let opt = dropDown.optionExtractor(entity);
-
-      dropDown.options.push(opt);
-
-      length = Math.max(opt.getLength(), length);
-    });
-
-    dropDown.length = length;
+    dropDown.valuesExtractor(jsonData).forEach(o => dropDown.addOption(dropDown.rowExtractor(o)));
   }
 
   getOptions() {
@@ -76,5 +64,10 @@ class DropDown {
 
   getLength() {
     return this.length;
+  }
+  
+  addOption(option) {
+    this.options.push(option);
+    this.length = Math.max(this.length, option.getDisplay().length); 
   }
 }

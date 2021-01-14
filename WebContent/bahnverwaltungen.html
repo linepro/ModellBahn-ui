@@ -11,12 +11,19 @@
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
-    const bahnverwaltungen = new NamedItemGrid("bahnverwaltung", "bahnverwaltungen");
+    const columns = [
+      NAMEN(Editable.ADD, true),
+      BEZEICHNUNG(Editable.UPDATE, true),
+      LAND_SELECT(Editable.UPDATE, true)
+    ];
+
+    const bahnverwaltungen = new ListEditGrid(10, "bahnverwaltung", "bahnverwaltungen", columns, Paged.PAGED, EditMode.UPDATE);
 
     async function init() {
-      addNavBar(NavMenu.REF_DATA);
-      addFooter();
-      await bahnverwaltungen.init();
+      await layout(NavMenu.REF_DATA)
+      .then(() => LAND_DROP.init())
+      .then(() => bahnverwaltungen.init())
+      .catch(error => reportError(error));
     }
   </script>
   <title>Bahnverwaltungen</title>

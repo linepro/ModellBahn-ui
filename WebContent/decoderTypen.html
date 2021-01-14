@@ -22,12 +22,12 @@
     const decoderTypen = new ItemGrid(10, fetchUrl("decoderTyp"), "decoderTypen", columns, Paged.PAGED, EditMode.UPDATE, undefined, "decoderTyp.html");
 
     async function init() {
-      addNavBar(NavMenu.REF_DATA);
-      addFooter();
-      await HERSTELLER_DROP.init()
+      await layout(NavMenu.REF_DATA)
+      .then(() => HERSTELLER_DROP.init())
       .then(() => PROTOKOLL_DROP.init())
       .then(() => STECKER_DROP.init())
-      .then(() => decoderTypen.init());
+      .then(() => decoderTypen.init())
+      .catch(error => reportError(error));
     }
   </script>
   <title>Decoder Typen</title>

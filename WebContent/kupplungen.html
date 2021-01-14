@@ -20,9 +20,9 @@
     const kupplungen = new ListEditGrid(10, "kupplung", "kupplungen", columns, Paged.PAGED, EditMode.UPDATE);
 
     async function init() {
-      addNavBar(NavMenu.REF_DATA);
-      addFooter();
-      await kupplungen.init();
+      await layout(NavMenu.REF_DATA)
+      .then(() => kupplungen.init())
+      .catch(error => reportError(error));
     }
   </script>
   <title>Kupplungen</title>

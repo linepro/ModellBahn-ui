@@ -14,9 +14,9 @@
     const spurweiten = new NamedItemGrid("spurweite", "spurweiten");
 
     async function init() {
-      addNavBar(NavMenu.REF_DATA);
-      addFooter();
-      await spurweiten.init();
+      await layout(NavMenu.REF_DATA)
+      .then(() => spurweiten.init())
+      .catch(error => reportError(error));
     }
   </script>
   <title>Spurweiten</title>

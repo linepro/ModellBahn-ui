@@ -14,9 +14,9 @@
     const epochen = new NamedItemGrid("epoch", "epochen");
 
     async function init() {
-      addNavBar(NavMenu.REF_DATA);
-      addFooter();
-      await epochen.init();
+      await layout(NavMenu.REF_DATA)
+      .then(() => epochen.init())
+      .catch(error => reportError(error));
     }
   </script>
   <title>Epochen</title>

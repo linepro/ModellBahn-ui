@@ -16,9 +16,9 @@ const setTranslations = (language, data) => {
   TRANSLATIONS[language] = 'loaded';
 };
 
-const loadTranslations = async (language) => {
+const loadTranslations = async (siteRoot, language) => {
   if (TRANSLATIONS[language] !== 'loaded') {
-    let translations = '/_locales/' + language + '/messages.json';
+    let translations = siteRoot + '_locales/' + language + '/messages.json';
 
     await fetch(translations)
       .then(response => response.json())
@@ -27,8 +27,6 @@ const loadTranslations = async (language) => {
     });
   }
 };
-
-(async () => { await loadTranslations(language()) })();
 
 const getMessage = (messageKey, substitutions) => {
   if (/^\s*$/.test(messageKey)) return messageKey;

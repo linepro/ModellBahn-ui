@@ -56,9 +56,8 @@
     const produkt = new ItemGrid(1, fetchUrl("produkt"), "produkt", columns, Paged.FORM, EditMode.UPDATE, [teilen]);
 
     async function init() {
-      addNavBar(NavMenu.BACK);
-      addFooter();
-      await HERSTELLER_DROP.init()
+      await layout(NavMenu.BACK)
+      .then(() => HERSTELLER_DROP.init())
       .then(() => UNTER_KATEGORIE_DROP.init())
       .then(() => MASSSTAB_DROP.init())
       .then(() => SPURWEITE_DROP.init())
@@ -75,7 +74,8 @@
       .then(() => DECODER_TYP_DROP.init())
       .then(() => MOTOR_TYP_DROP.init())
       .then(() => PRODUKT_DROP.init())
-      .then(() => produkt.init());
+      .then(() => produkt.init())
+      .catch(error => reportError(error));
     }
   </script>
   <title>Produkt</title>

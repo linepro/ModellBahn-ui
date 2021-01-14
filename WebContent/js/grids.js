@@ -367,22 +367,22 @@ class FileColumn extends Column {
       bar.className = 'img-button';
       cell.append(bar);
 
-      let add = getLink(entity.links, 'update-' + this.fieldName);
+      let add = getLink(entity._links, 'update-' + this.fieldName);
       let grid = this.grid;
       let rowId = getCellRowId(cell);
 
       if (add) {
-        let btn = getButton('add', 'add', (e) => { this.select(e, grid, rowId, add.href); });
+        let btn = getButton('add', 'add', (e) => { this.select(e, grid, rowId, add); });
         btn.className = 'img-button';
         btn.id = cell.id + '_add';
         btn.firstChild.className = 'img-button';
         bar.appendChild(btn);
       }
 
-      let remove = getLink(entity.links, 'delete-' + this.fieldName);
+      let remove = getLink(entity._links, 'delete-' + this.fieldName);
 
       if (remove) {
-        let btn = getButton('delete', 'delete', (e) => { this.remove(e, grid, rowId, remove.href); });
+        let btn = getButton('delete', 'delete', (e) => { this.remove(e, grid, rowId, remove); });
         btn.className = 'img-button';
         btn.id = cell.id + '_delete';
         btn.firstChild.className = 'img-button';
@@ -934,11 +934,13 @@ const initializeTable = (grid, table) => {
   grid.columns.forEach(column => {
     column.setContext(grid, table);
     totalLength += column.getLength();
+    console.log(column.getLength());
   });
-
+  console.log(totalLength);
   grid.columns.forEach(column => {
     let col = document.createElement('col');
     let colWidth = Math.floor((column.getLength() * 100) / totalLength) + '%';
+    console.log(colWidth);
     column.setWidth(colWidth);
     setWidths(col, column.getWidth());
     colGroup.append(col);
@@ -1155,7 +1157,7 @@ class ItemGrid {
   renderRow(rowId, entity, columns, editMode) {
 
     let key = document.getElementById(getKeyId(rowId));
-    key.value = entity ? getLink(entity.links, 'self').href : '';
+    key.value = entity ? getLink(entity._links, 'self') : '';
 
     columns.forEach(column => {
       let cell = document.getElementById(getCellId(rowId, column));
@@ -1176,7 +1178,7 @@ class ItemGrid {
     let grid = this;
 
     if (grid.editMode === EditMode.ADD) {
-      let self = getLink(jsonData.links, 'self').href;
+      let self = getLink(jsonData._links, 'self');
       grid.current = self;
       grid.apiUrl = self;
       grid.editMode = EditMode.UPDATE;
@@ -1196,16 +1198,25 @@ class ItemGrid {
     grid.renderRow(rowId, jsonData, grid.columns, grid.editMode);
   }
 
+  getEntities(jsonData) {
+    let grid = this;
+    if (!jsonData) {
+      return {};
+    } else if (grid.parent) {
+      return jsonData[grid.tableId];
+    } else if (jsonData._embedded && jsonData._embedded.data) {
+      return jsonData._embedded.data; 
+    }
+
+     return [jsonData];
+  }
+
   renderData(jsonData) {
     let grid = this;
     let columns = grid.columns;
     let editMode = grid.editMode;
-    let entities = (grid.parent ? jsonData[grid.tableId] : jsonData.entities ? jsonData.entities : [jsonData]);
+    let entities = grid.getEntities(jsonData);
     let tableId = grid.tableId;
-
-    if (!entities) {
-      entities = {};
-    }
 
     let rowCount = grid.paged === Paged.PAGED ? grid.pageSize : Math.max(grid.pageSize, entities.length);
 
@@ -1224,10 +1235,10 @@ class ItemGrid {
     if (prev) {
       removeChildren(prev);
 
-      let prevLnk = getLink(jsonData.links, 'previous');
+      let prevLnk = getLink(jsonData._links, 'previous');
 
       if (prevLnk) {
-        prev.appendChild(getButton('vorige', 'prev', () => { grid.getData(prevLnk.href) }));
+        prev.appendChild(getButton('vorige', 'prev', () => { grid.getData(prevLnk) }));
       } else {
         addText(prev, '');
       }
@@ -1238,10 +1249,10 @@ class ItemGrid {
     if (next) {
       removeChildren(next);
 
-      let nextLnk = getLink(jsonData.links, 'next');
+      let nextLnk = getLink(jsonData._links, 'next');
 
       if (nextLnk) {
-        next.appendChild(getButton('nachste', 'next', () => { grid.getData(nextLnk.href) }));
+        next.appendChild(getButton('nachste', 'next', () => { grid.getData(nextLnk) }));
       } else {
         addText(next, '');
       }

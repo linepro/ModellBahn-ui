@@ -11,16 +11,16 @@
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
-    const consistColumns = [
+    const fahrzeugColumns = [
       POSITION(Editable.NEVER),
       ARTIKEL_SELECT(Editable.UPDATE, true),
-      UNTER_KATEGORIE_SELECT(Editable.NEVER, false, artikelProduktKategorieGetter, noOpSetter),
-      BEZEICHNUNG(Editable.NEVER, false, artikelBezeichnungGetter, noOpSetter),
-      LANGE(Editable.NEVER, false, artikelProduktLangeGetter, noOpSetter),
+      UNTER_KATEGORIE_SELECT(Editable.NEVER, false),
+      BEZEICHNUNG(Editable.NEVER, false),
+      LANGE(Editable.NEVER, false),
       gridButtonColumn()
     ];
 
-    const consisten = new ItemGrid(2, "consist", "consist", consistColumns, Paged.EXPAND, EditMode.ADD, undefined);
+    const fahrzeugen = new ItemGrid(2, "fahrzeugen", "fahrzeugen", fahrzeugColumns, Paged.EXPAND, EditMode.ADD, undefined);
 
     const columns = [
       NAMEN(Editable.ADD, true),
@@ -30,15 +30,15 @@
       new ButtonColumn([], [updateRow])
     ];
 
-    const zug = new ItemGrid(1, fetchUrl("zug"), "zug", columns, Paged.FORM, EditMode.UPDATE, [consisten]);
+    const zug = new ItemGrid(1, fetchUrl("zug"), "zug", columns, Paged.FORM, EditMode.UPDATE, [fahrzeugen]);
 
     async function init() {
-      addNavBar(NavMenu.BACK);
-      addFooter();
-      await ZUG_TYP_DROP.init()
+      await layout(NavMenu.BACK)
+      .then(() => ZUG_TYP_DROP.init())
       .then(() => ARTIKEL_DROP.init())
       .then(() => UNTER_KATEGORIE_DROP.init())
-      .then(() => zug.init());
+      .then(() => zug.init())
+      .catch(error => reportError(error));
     }
   </script>
   <title>Zugen</title>
@@ -52,7 +52,7 @@
     <div id="data">
       <div id="zug">
       </div>
-      <div id="consist">
+      <div id="fahrzeugen">
       </div>
     </div>
   </article>

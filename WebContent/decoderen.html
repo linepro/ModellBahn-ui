@@ -20,11 +20,11 @@
     const decoderen = new ItemGrid(10, fetchUrl("decoder"), "decoderen", columns, Paged.PAGED, EditMode.UPDATE, undefined, "decoder.html");
 
     async function init() {
-      addNavBar(NavMenu.INVENTORY);
-      addFooter();
-      await DECODER_TYP_DROP.init()
+      await layout(NavMenu.INVENTORY)
+      .then(() => DECODER_TYP_DROP.init())
       .then(() => PROTOKOLL_DROP.init())
-      .then(() => decoderen.init());
+      .then(() => decoderen.init())
+      .catch(error => reportError(error));
     }
   </script>
   <title>Decoder list</title>

@@ -14,9 +14,9 @@
     const protokollen = new NamedItemGrid("protokoll", "protokollen");
 
     async function init() {
-      addNavBar(NavMenu.REF_DATA);
-      addFooter();
-      await protokollen.init();
+      await layout(NavMenu.REF_DATA)
+      .then(() => protokollen.init())
+      .catch(error => reportError(error));
     }
   </script>
   <title>Protokollen</title>

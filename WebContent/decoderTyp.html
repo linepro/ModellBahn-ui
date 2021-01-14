@@ -59,14 +59,14 @@
     const decoderTyp = new ItemGrid(1, fetchUrl("decoderTyp"), "decoderTyp", columns, Paged.FORM, EditMode.UPDATE, children);
 
     async function init() {
-      addNavBar(NavMenu.BACK);
-      addFooter();
-      await HERSTELLER_DROP.init()
+      await layout(NavMenu.BACK)
+      .then(() => HERSTELLER_DROP.init())
       .then(() => PROTOKOLL_DROP.init())
       .then(() => KONFIGURATION_DROP.init())
       .then(() => ADRESS_TYP_DROP.init())
       .then(() => STECKER_DROP.init())
-      .then(() => decoderTyp.init());
+      .then(() => decoderTyp.init())
+      .catch(error => reportError(error));
 
       setActiveTab(undefined, "adressenTab");
     }

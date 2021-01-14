@@ -14,9 +14,9 @@
     const antrieben = new NamedItemGrid("antrieb", "antrieben");
 
     async function init() {
-      addNavBar(NavMenu.REF_DATA);
-      addFooter();
-      await antrieben.init();
+      await layout(NavMenu.REF_DATA)
+      .then(() => antrieben.init())
+      .catch(error => reportError(error));
     }
   </script>
   <title>Antrieben</title>

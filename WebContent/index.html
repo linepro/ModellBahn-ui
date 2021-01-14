@@ -11,9 +11,8 @@
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript">
     async function init() {
-      addNavBar(NavMenu.HOME);
-      addFooter();
-      await ACHSFOLG_DROP.init()
+      await layout(NavMenu.HOME)
+      .then(() => ACHSFOLG_DROP.init())
       .then(() => ADRESS_TYP_DROP.init())
       .then(() => ANDERUNGS_TYP_DROP.init())
       .then(() => ANTRIEB_DROP.init())
@@ -27,6 +26,7 @@
       .then(() => HERSTELLER_DROP.init())
       .then(() => KONFIGURATION_DROP.init())
       .then(() => KUPPLUNG_DROP.init())
+      .then(() => LAND_DROP.init())
       .then(() => LEISTUNGSUBERTRAGUNG_DROP.init())
       .then(() => LICHT_DROP.init())
       .then(() => MASSSTAB_DROP.init())

@@ -19,7 +19,7 @@
     const columns = [
       ARTIKEL(Editable.ADD, true),
       PRODUKT_SELECT(Editable.ADD, false),
-      UNTER_KATEGORIE_SELECT(Editable.ADD, false, artikelUnterKategorieGetter),
+      UNTER_KATEGORIE_SELECT(Editable.ADD, false),
       BEZEICHNUNG(Editable.ADD),
       DECODER_SELECT(Editable.ADD, false),
       ANMERKUNG(Editable.ADD, false),
@@ -31,13 +31,13 @@
     const artikelen = new ItemGrid(10, fetchUrl("artikel"), "artikelen", columns, Paged.PAGED, EditMode.UPDATE, undefined, "artikel.html");
 
     async function init() {
-      addNavBar(NavMenu.INVENTORY);
-      addFooter();
-      await PRODUKT_DROP.init()
+      await layout(NavMenu.INVENTORY)
+      .then(() => PRODUKT_DROP.init())
       .then(() => UNTER_KATEGORIE_DROP.init())
       .then(() => DECODER_DROP.init())
       .then(() => STATUS_DROP.init())
-      .then(() => artikelen.init());
+      .then(() => artikelen.init())
+      .catch(error => reportError(error));
     }
   </script>
   <title>Artikelen</title>

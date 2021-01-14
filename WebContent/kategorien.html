@@ -20,9 +20,9 @@
     const kategorien = new ItemGrid(10, fetchUrl("kategorie"), "kategorien", columns, Paged.PAGED, EditMode.UPDATE, undefined, "unterkategorien.html");
 
     async function init() {
-      addNavBar(NavMenu.REF_DATA);
-      addFooter();
-      await kategorien.init();
+      await layout(NavMenu.REF_DATA)
+      .then(() => kategorien.init())
+      .catch(error => reportError(error));
     }
   </script>
   <title>Kategorien</title>

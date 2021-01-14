@@ -29,12 +29,12 @@
     const vorbilder = new ItemGrid(10, fetchUrl("vorbild"), "vorbilder", columns, Paged.PAGED, EditMode.UPDATE, undefined, "vorbild.html");
 
     async function init() {
-      addNavBar(NavMenu.INVENTORY);
-      addFooter();
-      await GATTUNG_DROP.init()
+      await layout(NavMenu.INVENTORY)
+      .then(() => GATTUNG_DROP.init())
       .then(() => UNTER_KATEGORIE_DROP.init())
       .then(() => BAHNVERWALTUNG_DROP.init())
-      .then(() => vorbilder.init());
+      .then(() => vorbilder.init())
+      .catch(error => reportError(error));
     }
   </script>
   <title>Vorbilder</title>

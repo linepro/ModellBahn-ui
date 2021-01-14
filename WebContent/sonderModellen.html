@@ -14,9 +14,9 @@
     const sondermodellen = new NamedItemGrid("sonderModell", "sondermodellen");
 
     async function init() {
-      addNavBar(NavMenu.REF_DATA);
-      addFooter();
-      await sondermodellen.init();
+      await layout(NavMenu.REF_DATA)
+      .then(() => sondermodellen.init())
+      .catch(error => reportError(error));
     }
   </script>
   <title>SonderModellen</title>

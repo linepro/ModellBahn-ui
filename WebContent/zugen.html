@@ -21,10 +21,10 @@
     const zugen = new ItemGrid(10, fetchUrl("zug"), "zugen", columns, Paged.PAGED, EditMode.UPDATE, undefined, "zug.html");
 
     async function init() {
-      addNavBar(NavMenu.INVENTORY);
-      addFooter();
-      await ZUG_TYP_DROP.init()
-      .then(() => zugen.init());
+      await layout(NavMenu.INVENTORY)
+      .then(() => ZUG_TYP_DROP.init())
+      .then(() => zugen.init())
+      .catch(error => reportError(error));
     }
   </script>
   <title>Zugen</title>

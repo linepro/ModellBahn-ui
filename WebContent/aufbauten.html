@@ -20,9 +20,9 @@
     const aufbauten = new ListEditGrid(10, "aufbau", "aufbauten", columns, Paged.PAGED, EditMode.UPDATE);
 
     async function init() {
-      addNavBar(NavMenu.REF_DATA);
-      addFooter();
-      await aufbauten.init();
+      await layout(NavMenu.REF_DATA)
+      .then(() => aufbauten.init())
+      .catch(error => reportError(error));
     }
   </script>
   <title>Aufbauten</title>

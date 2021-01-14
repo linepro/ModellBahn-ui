@@ -20,9 +20,9 @@
     const lichten = new ListEditGrid(10, "licht", "lichten", columns, Paged.PAGED, EditMode.UPDATE);
 
     async function init() {
-      addNavBar(NavMenu.REF_DATA);
-      addFooter();
-      await lichten.init();
+      await layout(NavMenu.REF_DATA)
+      .then(() => lichten.init())
+      .catch(error => reportError(error));
     }
   </script>
   <title>Lichten</title>

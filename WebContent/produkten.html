@@ -24,16 +24,16 @@
     const produkten = new ItemGrid(10, fetchUrl("produkt"), "produkten", columns, Paged.PAGED, EditMode.UPDATE, undefined, "produkt.html");
 
     async function init() {
-      addNavBar(NavMenu.INVENTORY);
-      addFooter();
-      await HERSTELLER_DROP.init()
+      await layout(NavMenu.INVENTORY)
+      .then(() => HERSTELLER_DROP.init())
       .then(() => UNTER_KATEGORIE_DROP.init())
       .then(() => MASSSTAB_DROP.init())
       .then(() => SPURWEITE_DROP.init())
       .then(() => EPOCH_DROP.init())
       .then(() => BAHNVERWALTUNG_DROP.init())
       .then(() => GATTUNG_DROP.init())
-      .then(() => produkten.init());
+      .then(() => produkten.init())
+      .catch(error => reportError(error));
     }
   </script>
   <title>Produkten</title>

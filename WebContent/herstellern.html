@@ -12,18 +12,20 @@
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
     const columns = [
-      NAMEN(),
-      BEZEICHNUNG(),
-      HERSTELLER_TELEFON(),
-      HERSTELLER_URL()
+      NAMEN(Editable.ADD, true),
+      BEZEICHNUNG(Editable.UPDATE, true),
+      LAND_SELECT(Editable.UPDATE, true),
+      TELEFON(Editable.UPDATE, true),
+      URL(Editable.UPDATE, true)
     ];
 
     const herstellern = new ListEditGrid(10, "hersteller", "herstellern", columns, Paged.PAGED, EditMode.UPDATE);
 
     async function init() {
-      addNavBar(NavMenu.REF_DATA);
-      addFooter();
-      await herstellern.init();
+      await layout(NavMenu.REF_DATA)
+      .then(() => LAND_DROP.init())
+      .then(() => herstellern.init())
+      .catch(error => reportError(error));
     }
   </script>
   <title>Hersterllern</title>

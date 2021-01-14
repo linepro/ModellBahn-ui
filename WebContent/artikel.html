@@ -46,9 +46,8 @@
     const artikel = new ItemGrid(1, fetchUrl("artikel"), "artikel", columns, Paged.FORM, EditMode.UPDATE, [anderungen]);
 
     async function init() {
-      addNavBar(NavMenu.BACK);
-      addFooter();
-      await ANDERUNGS_TYP_DROP.init()
+      await layout(NavMenu.BACK)
+      .then(() => ANDERUNGS_TYP_DROP.init())
       .then(() => PRODUKT_DROP.init())
       .then(() => WAHRUNG_DROP.init())
       .then(() => STEUERUNG_DROP.init())
@@ -57,7 +56,8 @@
       .then(() => KUPPLUNG_DROP.init())
       .then(() => DECODER_DROP.init())
       .then(() => STATUS_DROP.init())
-      .then(() => artikel.init());
+      .then(() => artikel.init())
+      .catch(error => reportError(error));
     }
   </script>
   <title>Artikelen</title>
