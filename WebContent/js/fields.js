@@ -33,6 +33,7 @@ const ARTIKEL_DROP = new DropDown(apiRoot() + 'artikel', optionExtractor, artike
 const AUFBAU_DROP = new DropDown(apiRoot() + 'aufbau', optionExtractor, bezeichnungOption);
 const BAHNVERWALTUNG_DROP = new DropDown(apiRoot() + 'bahnverwaltung', optionExtractor, bezeichnungOption);
 const DECODER_DROP = new DropDown(apiRoot() + 'decoder', optionExtractor, decoderOption);
+const DECODER_STATUS_DROP = new DropDown(apiRoot() + 'enums/decoderStatus', optionExtractor, decoderOption);
 const DECODER_TYP_DROP = new DropDown(apiRoot() + 'decoderTyp', optionExtractor, produktOption);
 const EPOCH_DROP = new DropDown(apiRoot() + 'epoch', optionExtractor, bezeichnungOption);
 const GATTUNG_DROP = new DropDown(apiRoot() + 'gattung', optionExtractor, bezeichnungOption);
@@ -83,6 +84,7 @@ const ARTIKEL_SELECT = (editable, required, getter = artikelIdGetter, setter = a
 const AUFBAU_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new DropDownColumn('AUFBAU', 'aufbau', getter, setter, AUFBAU_DROP, editable, required, 30, 5) };
 const BAHNVERWALTUNG_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new DropDownColumn('BAHNVERWALTUNG', 'bahnverwaltung', getter, setter, BAHNVERWALTUNG_DROP, editable, required, 30, 5) };
 const DECODER_SELECT = (editable, required, getter = decoderIdGetter, setter = decoderIdSetter) => { return new DropDownColumn('DECODER', 'decoder', getter, setter, DECODER_DROP, editable, required, 30, 5) };
+const DECODER_STATUS_SELECT = (editable, required, getter = decoderIdGetter, setter = decoderIdSetter) => { return new DropDownColumn('DECODER_STATUS', 'decoder', getter, setter, DECODER_STATUS_DROP, editable, required, 30, 5) };
 const DECODER_TYP_SELECT = (editable, required, getter = decoderTypGetter, setter = decoderTypSetter) => { return new DropDownColumn('DECODER_TYP', 'decoderTyp', getter, setter, DECODER_TYP_DROP, editable, required, 50, 5) };
 const EPOCH_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new DropDownColumn('EPOCH', 'epoch', getter, setter, EPOCH_DROP, editable, required, 30, 5) };
 const GATTUNG_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new DropDownColumn('GATTUNG', 'gattung', getter, setter, GATTUNG_DROP, editable, required, 30, 5) };

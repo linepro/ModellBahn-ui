@@ -196,6 +196,10 @@ h1 {
   font-size: 3rem;
 }
 
+h1.title {
+  float: left;
+}
+
 h2 {
   font-size: 2.5rem;
 }
@@ -352,6 +356,11 @@ div.form-btn {
   padding-right: 0.5rem;
   text-align: right;
   vertical-align: top;
+}
+
+div.home,
+div.title {
+  display: flow-root;
 }
 
 tbody {
@@ -765,8 +774,18 @@ img.img-display {
   height: 100%;
   margin: 0.1rem 0.3rem;
   padding: 0;
-  width: auto;
   vertical-align: bottom;
+  width: auto;
+}
+
+img.logo {
+  border: 0;
+  height: 40px;
+  margin: 0.1rem 0.3rem;
+  padding: 0;
+  float: right;
+  vertical-align: middle;
+  width: auto;
 }
 
 div.img-button {
@@ -780,8 +799,8 @@ button.img-button {
   height: 1.2rem;
   margin: 0.1rem;
   padding: 0;
-  width: 1.2rem;
   vertical-align: top;
+  width: 1.2rem;
 }
 
 button.img-button:disabled {

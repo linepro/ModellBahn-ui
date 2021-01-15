@@ -102,7 +102,11 @@ const getLink = (links, rel) => {
 };
 
 const getImgSrc = (image) => {
-  return 'img/' + image + '.png';
+  return getImgSource(image, '.png');
+};
+
+const getImgSource = (image, extension) => {
+  return siteRoot() + 'img/' + image + extension;
 };
 
 const getImg = (action) => {
@@ -112,6 +116,14 @@ const getImg = (action) => {
   img.src = getImgSrc(action);
 
   return img;
+};
+
+const addLogo = (element) => {
+  let logo = document.createElement('img');
+  logo.src = getImgSource('ModellBahn', '.svg');
+  logo.className = 'logo';
+  element.appendChild(logo);
+  return logo;
 };
 
 const getButton = (value, alt, action) => {
@@ -247,7 +259,9 @@ const about = () => {
     heading.className = 'about-header';
     about.appendChild(heading);
 
-    addHeading(heading, 'h2', 'ABOUT');
+    let h2 = addHeading(heading, 'h2', 'ABOUT');
+    h2.className = 'about-h2';
+    addLogo(heading);
 
     let body = document.createElement('div');
     body.className = 'about-body';
@@ -351,6 +365,11 @@ const navLink = (title, href, action, id) => {
   return li;
 };
 
+const addHomeBack = (ul) => {
+  ul.appendChild(navLink('HOME', siteRoot() + 'index.html'));
+  ul.appendChild(navLink('BACK', '#', () => { history.back() }));
+};
+
 const addNavBar = (menuStyle) => {
   let header = document.getElementsByTagName('HEADER')[0];
   removeChildren(header);
@@ -359,19 +378,19 @@ const addNavBar = (menuStyle) => {
   header.appendChild(nav);
 
   if (menuStyle === NavMenu.HOME) {
-    addHeading(nav, 'H1', 'MODELLBAHN');
+    let div = document.createElement('div');
+    div.className = 'home';
+    nav.appendChild(div);
+    let heading = addHeading(div, 'H1', 'MODELLBAHN');
+    heading.className = 'title';
+    addLogo(div);
     addRule(nav);
   }
-
-  const addHomeBack = (ul) => {
-    ul.appendChild(navLink('HOME', siteRoot() + 'index.html'));
-    ul.appendChild(navLink('BACK', '#', () => { history.back() }));
-  };
 
   if (menuStyle !== NavMenu.INVENTORY) {
     let ul = document.createElement('ul');
     ul.className = 'nav';
-    
+
     if (menuStyle === NavMenu.HOME) {
       addHeading(nav, 'H3', 'REF_DATA');
     } else {
@@ -403,6 +422,9 @@ const addNavBar = (menuStyle) => {
     }
 
     nav.appendChild(ul);
+    if (menuStyle !== NavMenu.HOME) {
+      addLogo(nav);
+    }
     addRule(nav);
   }
 
@@ -427,6 +449,9 @@ const addNavBar = (menuStyle) => {
         .forEach(li => ul.appendChild(li));
 
     nav.appendChild(ul);
+    if (menuStyle !== NavMenu.HOME) {
+      addLogo(nav);
+    }
     addRule(nav);
   }
 

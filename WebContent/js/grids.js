@@ -462,7 +462,7 @@ class IMGColumn extends FileColumn {
   }
 
   setValue(img, value) {
-    img.src = value ? value : siteRoot() + getImgSrc('add-picture');
+    img.src = value ? value : getImgSrc('add-picture');
   }
 
 }
@@ -473,7 +473,7 @@ class PDFColumn extends FileColumn {
   }
 
   setValue(img, value) {
-    img.src = siteRoot() + (value ? getImgSrc('pdf') : getImgSrc('add-document'));
+    img.src = (value ? getImgSrc('pdf') : getImgSrc('add-document'));
   }
 
   showContent(pdf) {
