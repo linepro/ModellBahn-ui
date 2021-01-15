@@ -12,7 +12,7 @@ class PDFViewer {
   load(file) {
     let pdfjsLib = window['pdfjs-dist/build/pdf'];
 
-    pdfjsLib.GlobalWorkerOptions.workerSrc = siteRoot() + '/js/lib/pdf.min-2.0.943.worker.js';
+    pdfjsLib.GlobalWorkerOptions.workerSrc = siteRoot() + 'js/lib/pdf.min-2.0.943.worker.js';
 
     pdfjsLib.getDocument({url: file, disableRange: true, disableStream: true})
     .then(pdf => this.initialPage(pdf))
