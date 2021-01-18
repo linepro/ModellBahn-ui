@@ -1,11 +1,14 @@
 // module "dropdown.js"
 "use strict";
 
+const utf8decoder = new TextDecoder();
+const utf8encoder = new TextEncoder();
+
 class DropOption {
   constructor(value, display, tooltip, image) {
-    this.display = display;
+    this.display = utf8decoder.decode(utf8encoder.encode(display));
     this.value = value;
-    this.tooltip = tooltip;
+    this.tooltip = utf8decoder.decode(utf8encoder.encode(display));
     this.image = image;
   }
 
@@ -56,7 +59,7 @@ class DropDown {
       await fetch(select.apiQuery, { method: "GET", headers: {"Content-type": "application/json"} })
       .then(response => checkResponse(response))
       .then(jsonData => select.loadOptions(jsonData))
-      .catch(error => reportError(error));
+      .catch(error => reportError("init " + apiQuery, error));
     }
 
     select.initialized = true;

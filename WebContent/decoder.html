@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <link rel="stylesheet" href="css/site.css"/>
+  <script type="text/javascript" src="js/api.js"></script>
   <script type="text/javascript" src="js/i18n.js"></script>
   <script type="text/javascript" src="js/utils.js"></script>
   <script type="text/javascript" src="js/dropdown.js"></script>
@@ -14,13 +16,16 @@
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript" src="js/lib/pdf.min-2.0.943.js"></script>
   <script type="text/javascript">
+    const DECODER_STATUS_SELECT = (editable, required, getter = decoderIdGetter, setter = decoderIdSetter) => { return new DropDownColumn("DECODER_STATUS", "decoder", getter, setter, DECODER_STATUS_DROP, editable, required, 30, 5) }
+    const WERT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("WERT", "wert", getter, setter, editable, required, 65535, 1) }
+
     const adress = ADRESS(Editable.UPDATE, true);
 
     const adressColumns = [
       INDEX(Editable.NEVER, false),
       ADRESS_TYP_SELECT(Editable.UPDATE, true),
       adress,
-      new ButtonColumn([], [ (grid, rowId) => { return getButton( 'update', 'save', () => { updateByFieldValue(grid, rowId, adress) } ) } ])
+      new ButtonColumn([], [ (grid, rowId) => { return createButton( 'update', 'save', () => { updateByFieldValue(grid, rowId, adress) } ) } ])
     ];
 
     const adressen = new ItemGrid(2, undefined, "adressen", adressColumns, Paged.EXPAND, EditMode.UPDATE, undefined);
@@ -32,19 +37,19 @@
       BEZEICHNUNG(Editable.NEVER, false),
       WERKSEINSTELLUNG(Editable.NEVER, false),
       wert,
-      new ButtonColumn([], [ (grid, rowId) => { return getButton( 'update', 'save', () => { updateByFieldValue(grid, rowId, wert) } ) } ])
+      new ButtonColumn([], [ (grid, rowId) => { return createButton( 'update', 'save', () => { updateByFieldValue(grid, rowId, wert) } ) } ])
     ];
 
     const cvs = new ItemGrid(10, undefined, "cvs", cvColumns, Paged.EXPAND, EditMode.UPDATE, undefined);
 
-    const funktion = FUNKTION(Editable.NEVER, false, decoderFunktionFunktionGetter, noOpSetter);
+    const funktion = FUNKTION(Editable.NEVER, false);
 
     const funktiononenColumns = [
       REIHE(Editable.NEVER, false),
       funktion,
       BEZEICHNUNG(Editable.UPDATE, true),
       PROGRAMMABLE(Editable.NEVER, false),
-      new ButtonColumn([], [ (grid, rowId) => { return getButton( 'update', 'save', () => { updateByFieldValue(grid, rowId, funktion) } ) } ])
+      new ButtonColumn([], [ (grid, rowId) => { return createButton( 'update', 'save', () => { updateByFieldValue(grid, rowId, funktion) } ) } ])
     ];
 
     const funktionen = new ItemGrid(10, undefined, "funktionen", funktiononenColumns, Paged.EXPAND, EditMode.UPDATE, undefined);
@@ -80,7 +85,7 @@
       .then(() => KONFIGURATION_DROP.init())
       .then(() => ADRESS_TYP_DROP.init())
       .then(() => decoder.init())
-      .catch(error => reportError(error));
+      .catch(error => reportError("load", error));
 
       setActiveTab(undefined, "adressenTab");
     }

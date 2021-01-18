@@ -1,16 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <link rel="stylesheet" href="css/site.css"/>
+  <script type="text/javascript" src="js/api.js"></script>
   <script type="text/javascript" src="js/i18n.js"></script>
   <script type="text/javascript" src="js/utils.js"></script>
   <script type="text/javascript" src="js/dropdown.js"></script>
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
+    const ARTIKEL_SELECT = (editable, required, getter = artikelIdGetter, setter = artikelIdSetter) => { return new DropDownColumn("ARTIKEL", "artikel", getter, setter, ARTIKEL_DROP, editable, required, 50, 5) }
+
     const fahrzeugColumns = [
       POSITION(Editable.NEVER),
       ARTIKEL_SELECT(Editable.UPDATE, true),
@@ -38,7 +42,7 @@
       .then(() => ARTIKEL_DROP.init())
       .then(() => UNTER_KATEGORIE_DROP.init())
       .then(() => zug.init())
-      .catch(error => reportError(error));
+      .catch(error => reportError("load", error));
     }
   </script>
   <title>Zugen</title>

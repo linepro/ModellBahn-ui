@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <link rel="stylesheet" href="css/site.css"/>
+  <script type="text/javascript" src="js/api.js"></script>
   <script type="text/javascript" src="js/i18n.js"></script>
   <script type="text/javascript" src="js/utils.js"></script>
   <script type="text/javascript" src="js/dropdown.js"></script>
@@ -24,7 +25,7 @@
       .then(() => DECODER_TYP_DROP.init())
       .then(() => PROTOKOLL_DROP.init())
       .then(() => decoderen.init())
-      .catch(error => reportError(error));
+      .catch(error => reportError("load", error));
     }
   </script>
   <title>Decoder list</title>

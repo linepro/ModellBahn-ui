@@ -91,6 +91,7 @@
   "LEISTUNGSUBERTRAGUNG": { "message": "Drive", "description": "" },
   "LICHT": { "message": "Lights", "description": "" },
   "LICHTEN": { "message": "Lights", "description": "" },
+  "LIZENZ": { "message": "_locales/en/LICENSE.txt", "description": "" },
   "MASSSTAB": { "message": "Scale", "description": "" },
   "MASSSTABEN": { "message": "Scales", "description": "" },
   "MAXIMAL": { "message": "Maximum", "description": "" },

@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <link rel="stylesheet" href="css/site.css"/>
+  <script type="text/javascript" src="js/api.js"></script>
   <script type="text/javascript" src="js/i18n.js"></script>
   <script type="text/javascript" src="js/utils.js"></script>
   <script type="text/javascript" src="js/dropdown.js"></script>
@@ -12,6 +14,36 @@
   <script type="text/javascript" src="js/lib/DatePickerX-1.0.4.min.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
+    const ANFAHRZUGKRAFT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("ANFAHRZUGKRAFT", "anfahrzugkraft", getter, setter, editable, required, 300000, 1) }
+    const ANTRIEB_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new DropDownColumn("ANTRIEB", "antrieb", getter, setter, ANTRIEB_DROP, editable, required, 30, 5) }
+    const DIENSTGEWICHT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("DIENSTGEWICHT", "dienstgewicht", getter, setter, editable, required, 999, 1) }
+    const DMLAUFRADHINTEN = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("DM_LAUFRAD_HINTEN", "dmLaufradHinten", getter, setter, editable, required, 3000, 1) }
+    const DMLAUFRADVORN = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("DM_LAUFRAD_VORN", "dmLaufradVorn", getter, setter, editable, required, 3000, 1) }
+    const DMTREIBRAD = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("DM_TREIBRAD", "dmTreibrad", getter, setter, editable, required, 3000, 1) }
+    const DMZYLINDER = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("DM_ZYLINDER", "dmZylinder", getter, setter, editable, required, 3000, 1) }
+    const DREHGESTELLBAUART = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new TextColumn("DREHGESTELL", "drehgestellBauart", getter, setter, editable, required, 30) }
+    const FAHRMOTOREN = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("FAHRMOTOREN", "fahrmotoren", getter, setter, editable, required, 5, 1) }
+    const GESCHWINDIGKEIT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("GESCHWINDIGKEIT", "geschwindigkeit", getter, setter, editable, required, 300, 1) }
+    const KAPAZITAT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("KAPAZITAT", "kapazitat", getter, setter, editable, required, 3000, 1, 2) }
+    const KESSELUBERDRUCK = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("KESSELUBERDRUCK", "kesseluberdruck", getter, setter, editable, required, 3000, 0, 2) }
+    const KLASSE = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("KLASSE", "klasse", getter, setter, editable, required, 4, 0) }
+    const KOLBENHUB = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("KOLBENHUB", "kolbenhub", getter, setter, editable, required, 3000, 1, 2) }
+    const LEISTUNG = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("LEISTUNG", "leistung", getter, setter, editable, required, 10000, 0, 2) }
+    const LEISTUNGSUBERTRAGUNG_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new DropDownColumn("LEISTUNGSUBERTRAGUNG", "leistungsubertragung", getter, setter, LEISTUNGSUBERTRAGUNG_DROP, editable, required, 30, 5) }
+    const MITTELWAGEN = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("MITTELWAGEN", "mittelwagen", getter, setter, editable, required, 30, 0) }
+    const MOTORBAUART = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new TextColumn("MOTORBAUART", "motorbauart", getter, setter, editable, required, 30) }
+    const REICHWEITE = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("REICHWEITE", "reichweite", getter, setter, editable, required, 3000, 0) }
+    const ROSTFLACHE = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("ROSTFLACHE", "rostflache", getter, setter, editable, required, 3000, 0, 2) }
+    const SITZPLATZEKL1 = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("SITZPLATZE_KL1", "sitzplatzeKL1", getter, setter, editable, required, 300, 0) }
+    const SITZPLATZEKL2 = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("SITZPLATZE_KL2", "sitzplatzeKL2", getter, setter, editable, required, 300, 0) }
+    const SITZPLATZEKL3 = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("SITZPLATZE_KL3", "sitzplatzeKL3", getter, setter, editable, required, 300, 0) }
+    const SITZPLATZEKL4 = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("SITZPLATZE_KL4", "sitzplatzeKL4", getter, setter, editable, required, 300, 0) }
+    const TRIEBKOPF = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("TRIEBKOPFE", "triebkopf", getter, setter, editable, required, 2, 0) }
+    const UBERHITZERFLACHE = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("UBERHITZERFLACHE", "uberhitzerflache", getter, setter, editable, required, 3000, 0, 2) }
+    const VERDAMPFUNG = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>  { return new NumberColumn("VERDAMPFUNG", "verdampfung", getter, setter, editable, required, 3000, 0, 2) }
+    const WASSERVORRAT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("WASSERVORRAT", "wasservorrat", getter, setter, editable, required, 3000, 0, 2) }
+    const ZYLINDER = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("ZYLINDER", "zylinder", getter, setter, editable, required, 100, 1) }
+
     const columns = [
       GATTUNG_SELECT(Editable.ADD, true),
       UNTER_KATEGORIE_SELECT(Editable.UPDATE),
@@ -68,7 +100,7 @@
       .then(() => ACHSFOLG_DROP.init())
       .then(() => LEISTUNGSUBERTRAGUNG_DROP.init())
       .then(() => vorbild.init())
-      .catch(error => reportError(error));
+      .catch(error => reportError("load", error));
     }
   </script>
   <title>Vorbild</title>

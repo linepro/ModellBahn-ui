@@ -237,7 +237,7 @@ class NumberColumn extends Column {
 
   setValue(num, value) {
     if (value) {
-      num.value = value.toLocaleString(language(), { minimumFractionDigits: this.places, maximumFractionDigits: this.places } );
+      num.value = value.toLocaleString(getLanguage(), { minimumFractionDigits: this.places, maximumFractionDigits: this.places } );
     }
   }
 }
@@ -297,23 +297,23 @@ class DateColumn extends TextColumn {
       dte.DatePickerX.init({
         minDate: new Date('1800-01-01'),
         weekDayLabels: [
-          getMessage('MO'), getMessage('TU'), getMessage('WE'),
-          getMessage('TH'), getMessage('FR'), getMessage('SA'),
-          getMessage('SU')
+          translate('MO'), translate('TU'), translate('WE'),
+          translate('TH'), translate('FR'), translate('SA'),
+          translate('SU')
         ],
         shortMonthLabels: [
-          getMessage('JAN'), getMessage('FEB'), getMessage('MAR'),
-          getMessage('APR'),
-          getMessage('MAY'), getMessage('JUN'), getMessage('JUL'),
-          getMessage('AUG'),
-          getMessage('SEP'), getMessage('OCT'), getMessage('NOV'),
-          getMessage('DEC')
+          translate('JAN'), translate('FEB'), translate('MAR'),
+          translate('APR'),
+          translate('MAY'), translate('JUN'), translate('JUL'),
+          translate('AUG'),
+          translate('SEP'), translate('OCT'), translate('NOV'),
+          translate('DEC')
         ],
         singleMonthLabels: [
-          getMessage('JANUARY'), getMessage('FEBRUARY'), getMessage('MARCH'),
-          getMessage('APRIL'), getMessage('MAY'), getMessage('JUNE'),
-          getMessage('JULY'), getMessage('AUGUST'), getMessage('SEPTEMBER'),
-          getMessage('OCTOBER'), getMessage('NOVEMBER'), getMessage('DECEMBER')
+          translate('JANUARY'), translate('FEBRUARY'), translate('MARCH'),
+          translate('APRIL'), translate('MAY'), translate('JUNE'),
+          translate('JULY'), translate('AUGUST'), translate('SEPTEMBER'),
+          translate('OCTOBER'), translate('NOVEMBER'), translate('DECEMBER')
         ],
         todayButton: false,
         clearButton: false
@@ -326,7 +326,7 @@ class DateColumn extends TextColumn {
 
   setValue(inp, value) {
     if (value) {
-      inp.value = new Date(value).toLocaleDateString(language());
+      inp.value = new Date(value).toLocaleDateString(getLanguage());
     }
   }
 
@@ -343,6 +343,25 @@ class DateColumn extends TextColumn {
 
     return iso;
   }
+}
+
+const readFile = (uploadUrl, fileData, grid, rowId) => {
+  let reader = new FileReader()
+  reader.onload = (e) => { uploadFile(uploadUrl, fileData, grid.renderUpdate(jsonData, rowId), reportError(uploadUrl, error)) }
+  reader.onerror = (e) => {
+    reader.abort()
+    reportError("readFile", translate('BADFILE', [fileData, e]))
+  }
+  reader.readAsDataURL(fileData)
+}
+
+const removeFile = async (deleteUrl, grid, rowId) => {
+  await deleteRest(deleteUrl, grid.renderUpdate(jsonData, rowId), reportError(deleteUrl, error))
+}
+
+const getLink = (links, rel) => {
+  if (!links || !links[rel]) { return undefined }
+  return links[rel][0].href
 }
 
 class FileColumn extends Column {
@@ -372,7 +391,7 @@ class FileColumn extends Column {
       let rowId = getCellRowId(cell);
 
       if (add) {
-        let btn = getButton('add', 'add', (e) => { this.select(e, grid, rowId, add); });
+        let btn = createButton('add', 'add', (e) => { this.select(e, grid, rowId, add); });
         btn.className = 'img-button';
         btn.id = cell.id + '_add';
         btn.firstChild.className = 'img-button';
@@ -382,7 +401,7 @@ class FileColumn extends Column {
       let remove = getLink(entity._links, 'delete-' + this.fieldName);
 
       if (remove) {
-        let btn = getButton('delete', 'delete', (e) => { this.remove(e, grid, rowId, remove); });
+        let btn = createButton('delete', 'delete', (e) => { this.remove(e, grid, rowId, remove); });
         btn.className = 'img-button';
         btn.id = cell.id + '_delete';
         btn.firstChild.className = 'img-button';
@@ -462,7 +481,7 @@ class IMGColumn extends FileColumn {
   }
 
   setValue(img, value) {
-    img.src = value ? value : getImgSrc('add-picture');
+    img.src = value ? value : getImageSource('add-picture');
   }
 
 }
@@ -473,7 +492,7 @@ class PDFColumn extends FileColumn {
   }
 
   setValue(img, value) {
-    img.src = (value ? getImgSrc('pdf') : getImgSrc('add-document'));
+    img.src = (value ? getImageSource('pdf') : getImageSource('add-document'));
   }
 
   showContent(pdf) {
@@ -490,11 +509,11 @@ class PDFColumn extends FileColumn {
 
     let viewer = new PDFViewer(canvas);
 
-    let prev = getButton('vorig', 'previous', () => { viewer.prevPage(); });
+    let prev = createButton('vorig', 'prev', () => { viewer.prevPage(); });
     prev.style.cssFloat = 'left';
     bar.appendChild(prev);
 
-    let next = getButton('nachste', 'next', () => { viewer.nextPage(); });
+    let next = createButton('nachste', 'next', () => { viewer.nextPage(); });
     next.style.cssFloat = 'right';
     bar.appendChild(next);
 
@@ -527,7 +546,7 @@ class SelectColumn extends Column {
 
   addOptions(select, dropDown) {
     if (!this.required) {
-      addOption(select, undefined, getMessage('NICHT_BENOTIGT'));
+      addOption(select, undefined, translate('NICHT_BENOTIGT'));
     }
 
     dropDown.options.forEach(opt => {
@@ -550,6 +569,13 @@ const closeAutoLists = (elmnt = document) => {
 };
 
 document.addEventListener('click', () => { closeAutoLists() }, false);
+
+const valueAndUnits = (cssSize) => {
+  let dims = /^(\d+)([^\d]+)$/.exec(cssSize)
+  return { value: dims[1], units: dims[2] }
+}
+
+const boxSize = (length) => { return Math.ceil(length / 5) * 5 }
 
 class AutoCompleteColumn extends SelectColumn {
   constructor(heading, fieldName, getter, setter, dropDown, editable, required, length, dropSize) {
@@ -783,23 +809,23 @@ class ButtonColumn {
 }
 
 const addRow = (grid) => {
-  return getButton('add', 'add', () => { grid.addRow() });
+  return createButton('add', 'add', () => { grid.addRow() });
 };
 
 const deleteRow = (grid, rowId) => {
-  return getButton('delete', 'delete', () => { grid.deleteRow(rowId) });
+  return createButton('delete', 'delete', () => { grid.deleteRow(rowId) });
 };
 
 const editRow = (grid, rowId) => {
-  return getButton('update', 'update', () => { grid.editRow(rowId) });
+  return createButton('update', 'update', () => { grid.editRow(rowId) });
 };
 
 const newRow = (grid) => {
-  return getButton('new', 'add', () => { grid.newRow() });
+  return createButton('new', 'add', () => { grid.newRow() });
 };
 
 const updateRow = (grid, rowId) => {
-  return getButton('update', 'save', () => { grid.updateRow(rowId) });
+  return createButton('update', 'save', () => { grid.updateRow(rowId) });
 };
 
 const gridButtonColumn = () => {
@@ -918,7 +944,7 @@ const initializeTable = (grid, table) => {
   let tab = document.getElementById(table.id+'Link');
 
   if (tab) {
-    tab.innerText = getMessage(tab.id);
+    tab.innerText = translate(tab.id);
   } else {
     let caption = document.createElement('caption');
     addText(caption, grid.tableId);
@@ -934,13 +960,10 @@ const initializeTable = (grid, table) => {
   grid.columns.forEach(column => {
     column.setContext(grid, table);
     totalLength += column.getLength();
-    console.log(column.getLength());
   });
-  console.log(totalLength);
   grid.columns.forEach(column => {
     let col = document.createElement('col');
     let colWidth = Math.floor((column.getLength() * 100) / totalLength) + '%';
-    console.log(colWidth);
     column.setWidth(colWidth);
     setWidths(col, column.getWidth());
     colGroup.append(col);
@@ -1068,7 +1091,7 @@ class ItemGrid {
     this.pageSize = pageSize;
     this.rowCount = pageSize;
     this.apiUrl = apiUrl;
-    this.apiRoot = apiUrl;
+    this.apiUrl = apiUrl;
     this.tableId = tableId;
     this.columns = columns;
     this.paged = paged;
@@ -1094,8 +1117,8 @@ class ItemGrid {
       }
 
       if (paged === Paged.PAGED) {
-        search.set('pageNumber', '0');
-        search.set('pageSize', pageSize.toString());
+        search.set('page', '0');
+        search.set('size', pageSize.toString());
       }
 
       let searchString = search.toString();
@@ -1113,7 +1136,7 @@ class ItemGrid {
 
   setParent(parent) {
     this.parent = parent;
-    this.apiUrl = parent.apiUrl + '/' + this.apiRoot;
+    this.apiUrl = parent.apiUrl + '/' + this.apiUrl;
     this.editMode = parent.editMode;
   }
 
@@ -1235,10 +1258,10 @@ class ItemGrid {
     if (prev) {
       removeChildren(prev);
 
-      let prevLnk = getLink(jsonData._links, 'previous');
+      let prevLnk = getLink(jsonData._links, 'prev');
 
       if (prevLnk) {
-        prev.appendChild(getButton('vorige', 'prev', () => { grid.getData(prevLnk) }));
+        prev.appendChild(createButton('vorige', 'prev', () => { grid.getData(prevLnk) }));
       } else {
         addText(prev, '');
       }
@@ -1252,7 +1275,7 @@ class ItemGrid {
       let nextLnk = getLink(jsonData._links, 'next');
 
       if (nextLnk) {
-        next.appendChild(getButton('nachste', 'next', () => { grid.getData(nextLnk) }));
+        next.appendChild(createButton('nachste', 'next', () => { grid.getData(nextLnk) }));
       } else {
         addText(next, '');
       }
@@ -1281,7 +1304,7 @@ class ItemGrid {
     fetch(restUrl, { method: 'get', headers: {'Content-type': 'application/json'} })
     .then(response => checkResponse(response))
     .then(jsonData => grid.renderJson(jsonData, restUrl))
-    .catch(error => reportError(error));
+    .catch(error => reportError(restUrl, error));
   }
 
   rowData(rowId) {
@@ -1365,7 +1388,7 @@ class ItemGrid {
         if (prev) {
           removeChildren(prev);
 
-          prev.appendChild(getButton(prev, grid.current, () => { grid.getData(grid.current) }));
+          prev.appendChild(createButton(prev, grid.current, () => { grid.getData(grid.current) }));
         }
 
         let next = document.getElementById(tableId + 'Next');
@@ -1400,9 +1423,9 @@ class ItemGrid {
     });
 
     let td = document.getElementById(getCellId(rowId, 'buttons'));
-    let save = getButton('save', 'save', () => { grid.saveRow(rowId) });
+    let save = createButton('save', 'save', () => { grid.saveRow(rowId) });
     td.appendChild(save);
-    let del = getButton('delete', 'delete', () => { grid.removeRow(rowId) });
+    let del = createButton('delete', 'delete', () => { grid.removeRow(rowId) });
     td.appendChild(del);
 
   }
@@ -1413,7 +1436,7 @@ class ItemGrid {
     if (deleteUrl) {
       await fetch(deleteUrl,{method: 'DELETE', headers: {'Content-type': 'application/json'}})
       .then(response => checkResponse(response))
-      .catch(error => reportError(error));
+      .catch(error => reportError("deleteRow", error));
 
       grid.loadData();
     } else {
@@ -1452,7 +1475,7 @@ class ItemGrid {
       })
       .then(response => checkResponse(response))
       .then(jsonData => grid.renderUpdate(jsonData, rowId))
-      .catch(error => reportError(error));
+      .catch(error => reportError("saveRow", error));
     }
   }
 
@@ -1470,7 +1493,7 @@ class ItemGrid {
       })
       .then(response => checkResponse(response))
       .then(jsonData => grid.renderUpdate(jsonData, rowId))
-      .catch(error => reportError(error));
+      .catch(error => reportError("updateRow", error));
     }
   }
 }
@@ -1512,7 +1535,7 @@ const updateByFieldValue = async (grid, rowId, column) => {
     })
     .then(response => checkResponse(response))
     .then(jsonData => grid.renderUpdate(jsonData, rowId))
-    .catch(error => reportError(error));
+    .catch(error => reportError("updateByFieldValue", error));
   }
 };
 
