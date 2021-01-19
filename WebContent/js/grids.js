@@ -1384,7 +1384,7 @@ class ItemGrid {
         if (prev) {
           removeChildren(prev)
 
-          prev.appendChild(createButton(prev, grid.current, () => { grid.getData(grid.current) }))
+          prev.appendChild(createButton("vorige", "prev", () => { grid.getData(grid.current) }))
         }
 
         let next = document.getElementById(tableId + "Next")
@@ -1419,7 +1419,7 @@ class ItemGrid {
     })
 
     let td = document.getElementById(getCellId(rowId, "buttons"))
-    let save = createButton("save", "save", () => { grid.saveRow(rowId) })
+    let save = createButton("update", "save", () => { grid.saveRow(rowId) })
     td.appendChild(save)
     let del = createButton("delete", "delete", () => { grid.removeRow(rowId) })
     td.appendChild(del)

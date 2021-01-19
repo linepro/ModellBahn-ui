@@ -145,7 +145,7 @@
   "VERDAMPFUNG": { "message": "Evaporative Area", "description": "" },
   "VORBILD": { "message": "Prototype", "description": "" },
   "VORBILDER": { "message": "Prototypes", "description": "" },
-  "VORIG": { "message": "Previous", "description": "" },
+  "VORIGE": { "message": "Previous", "description": "" },
   "WAHRUNG": { "message": "Currency", "description": "" },
   "WAHRUNGEN": { "message": "Currencies", "description": "" },
   "WASSERVORRAT": { "message": "Water Capacity", "description": "" },

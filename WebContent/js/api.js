@@ -22,7 +22,7 @@ const checkResponse = async (response) => {
     let errorMessage = ""
     try {
       let jsonData = await response.json()
-      errorMessage = jsonData.errorCode + ": " + jsonData.userMessage
+      errorMessage = jsonData.error + ": " + jsonData.message
     } catch (error) {
       errorMessage = await clone.text()
     }
@@ -73,7 +73,7 @@ const postRest = async (endPoint, data, success, failure) => {
 
 const putRest = async (endPoint, data, success, failure) => {
   await fetch(endPoint, {
-      method: "GET",
+      method: "PUT",
       headers: headers("application/json"),
       body: JSON.stringify(data)
     })
