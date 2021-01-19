@@ -3,39 +3,47 @@
 "use strict"
 
 const DEFAULT_LANGUAGE = "de-DE"
+const ALTERNATE_LANGUAGE = "en-US"
 
 const TRANSLATIONS = {}
 
+const getLanguage = () => {
+  return localStorage.getItem("language") ? localStorage.getItem("language") : DEFAULT_LANGUAGE
+}
+
+const setLanguage = (language) => {
+  localStorage.setItem("language", language) 
+  console.log("language: " + language)
+}
+
+const primaryLanguage = (language) => {
+  return language.split("-")[0]
+}
+
 const loadTranslations = async (language) => {
-  let code = language.split("-")[0]
   await download(
-    window.location.origin + "/ModellBahn/modellbahn-ui/_locales/" + code + "/messages.json",
+    window.location.origin + "/ModellBahn/modellbahn-ui/_locales/" + primaryLanguage(language) + "/messages.json",
     (data) => {
       try {
         Object.keys(data)
               .forEach(key => TRANSLATIONS[key] = data[key].message)
+        TRANSLATIONS[language] = "loaded"
+        console.log(language +  " loaded")
       } catch (error) {
-        console.log(error)
+        console.log(language + " load failed: " + error)
       }
-      TRANSLATIONS[language] = "loaded"
     },
     () => { if (language !== DEFAULT_LANGUAGE) { loadTranslations(DEFAULT_LANGUAGE) } }
   )
 }
 
-const getLanguage = () => {
-  return sessionStorage.getItem("language")
-}
-
-const setLanguage = (code) => { 
-  console.log("language: " + code)
-  loadTranslations(code)
-  sessionStorage.setItem("language", code) 
+const toggleLanguage = async () => {
+  setLanguage(getLanguage() === DEFAULT_LANGUAGE ? ALTERNATE_LANGUAGE : DEFAULT_LANGUAGE)
+  location.reload()
 }
 
 const translate = (messageKey, substitutions) => {
   if (/^\s*$/.test(messageKey)) return messageKey
-
   try {
     let key = messageKey.toUpperCase()
     if (!TRANSLATIONS[key]) {
@@ -49,11 +57,8 @@ const translate = (messageKey, substitutions) => {
         message = message.replace(token, substitution)
       });
     }
-
     return message
   } catch (err) {
     return messageKey
   }
 }
-
-setLanguage(DEFAULT_LANGUAGE);

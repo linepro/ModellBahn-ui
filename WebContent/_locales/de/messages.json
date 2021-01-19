@@ -1,6 +1,6 @@
 {
   "ABBILDUNG": { "message": "Abbildung", "description": "" },
-  "ABOUT": { "message": "Über", "description": "" },
+  "ABOUT": { "message": "Über ModellBahn", "description": "" },
   "ACHSFOLG": { "message": "Achsfolg", "description": "" },
   "ACHSFOLGEN": { "message": "Achsfolgen", "description": "" },
   "ADD": { "message": "Hinzufügen", "description": "" },
@@ -60,6 +60,7 @@
   "FAHRMOTOREN": { "message": "Fahrmotoren", "description": "" },
   "FAHRSTUFE": { "message": "Fahrstufe", "description": "" },
   "FAHRZEUGEN": { "message": "Fahrzeugen", "description": "" },
+  "FLAG": { "message": "_locales/de/flag.svg", "description": "" },
   "FUNKTION": { "message": "Funktion", "description": "" },
   "FUNKTIONEN": { "message": "Funktionen", "description": "" },
   "FUNKTIONENLINK": { "message": "Funktionen", "description": "" },

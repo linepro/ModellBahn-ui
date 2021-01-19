@@ -61,6 +61,7 @@
   "FAHRMOTOREN": { "message": "Motors", "description": "" },
   "FAHRSTUFE": { "message": "Speed Steps", "description": "" },
   "FAHRZEUGEN": { "message": "Formation", "description": "" },
+  "FLAG": { "message": "_locales/en/flag.svg", "description": "" },
   "FUNKTION": { "message": "Function", "description": "" },
   "FUNKTIONEN": { "message": "Functions", "description": "" },
   "FUNKTIONENLINK": { "message": "Functions", "description": "" },

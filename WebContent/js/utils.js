@@ -231,12 +231,22 @@ const NavMenu = {
   HOME: 3
 }
 
+const addLingo = (element) => {
+  let lingo = document.createElement("img")
+  lingo.src = fileUrl(translate("FLAG"))
+  lingo.className = "lingo"
+  element.appendChild(lingo)
+  lingo.addEventListener('click', () => toggleLanguage())
+  return lingo
+}
+
 const addLogo = (element) => {
   let logo = document.createElement("img")
   logo.src = imageSource("ModellBahn", ".svg")
   logo.className = "logo"
   element.appendChild(logo)
-  logo.addEventListener('click', () => showAbout(fileUrl(translate("LIZENZ")), "license"))
+  logo.addEventListener('click', () => showAbout(fileUrl(translate("LIZENZ"))))
+  addLingo(element)
   return logo
 }
 
@@ -348,6 +358,7 @@ const addFooter = () => {
 }
 
 const layout = async (menuStyle) => {
+    await loadTranslations(getLanguage())
     addNavBar(menuStyle)
     addFooter()
 }
@@ -355,20 +366,17 @@ const layout = async (menuStyle) => {
 window.addEventListener("resize", () => { resizeAll() }, true)
 
 window.onerror = function (message, path, lineNo, columnNo, error) {
-  if (msg.toLowerCase().includes("script error")) {
+  if (message.toLowerCase().includes("script error")) {
     reportError("Script Error: See Browser Console for Detail")
   } else {
-    let message = translate("ERROR_DETAIL", {
+    reportError(translate("ERROR_DETAIL", {
       msg: message,
       url: path,
       lineNo: lineNo,
       columnNo: columnNo,
       error:  error.toString()
-    })
-
-    reportError(message, error)
+    }), error)
   }
-
   return false
 }
 
