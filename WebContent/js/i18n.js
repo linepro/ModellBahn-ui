@@ -1,5 +1,4 @@
 // module "i18n.js"
-// import getRest from "api.js"
 "use strict"
 
 const DEFAULT_LANGUAGE = "de-DE"
