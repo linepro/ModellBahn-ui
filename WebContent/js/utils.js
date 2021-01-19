@@ -358,6 +358,7 @@ const addFooter = () => {
 }
 
 const layout = async (menuStyle) => {
+    setAuthorisation("johng","password")
     await loadTranslations(getLanguage())
     addNavBar(menuStyle)
     addFooter()

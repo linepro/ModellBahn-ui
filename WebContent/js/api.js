@@ -1,7 +1,7 @@
 // module "api.js"
 "use strict"
 
-const setAuthorisation = (userName, password) => { sessionStorage.setItem( "authorisation", "Basic " + btoa(userName + ":" + password) ) }
+const setAuthorisation = (userName, password) => { localStorage.setItem( "authorisation", "Basic " + btoa(userName + ":" + password) ) }
 
 const checkResponse = async (response) => {
   let clone = response.clone()
@@ -38,7 +38,7 @@ const headers = (contentType, accept) => {
   let httpHeaders = {
     "Accept": accept ? accept : "application/json, text/html, application/xhtml+xml, application/xml",
     "Accept-Encoding": "gzip, deflate, br",
-    "Accept-Language": sessionStorage.getItem("language"),
+    "Accept-Language": localStorage.getItem("language"),
     "Cache-Control": "no-cache"
   }
   if (sessionStorage.getItem("authorisation")) { 
