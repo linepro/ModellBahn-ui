@@ -12,10 +12,10 @@
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
     const columns = [
-      NAMEN(EditMode.ADD),
-      ZUG_TYP_SELECT(EditMode.ADD),
-      BEZEICHNUNG(EditMode.ADD),
-      LANGE(EditMode.ADD),
+      NAMEN(Editable.ADD),
+      ZUG_TYP_SELECT(Editable.ADD),
+      BEZEICHNUNG(Editable.ADD),
+      LANGE(Editable.NEVER),
       new ButtonColumn([newRow], [editRow, deleteRow])
     ];
 

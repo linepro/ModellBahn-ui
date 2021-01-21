@@ -41,7 +41,7 @@
   "DECODER_TYP": { "message": "Decoder Typ", "description": "" },
   "DECODER_TYPEN": { "message": "Decoder Typen ", "description": "" },
   "DECODERID": { "message": "Decoder", "description": "" },
-  "DECODEREN": { "message": "Decoderwn", "description": "" },
+  "DECODEREN": { "message": "Decoderen", "description": "" },
   "DECODERTYP": { "message": "Decoder Typ", "description": "" },
   "DELETE": { "message": "Löschen", "description": "" },
   "DELETED": { "message": "Gelöscht", "description": "" },
