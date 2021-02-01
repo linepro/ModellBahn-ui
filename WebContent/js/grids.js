@@ -386,22 +386,20 @@ class FileColumn extends Column {
       bar.className = "img-button"
       cell.append(bar)
 
-      let add = getLink(entity._links, "update-" + this.fieldName)
+      let link = getLink(entity._links, this.fieldName)
       let grid = this.grid
       let rowId = getCellRowId(cell)
 
-      if (add) {
-        let btn = createButton("add", "add", (e) => { this.select(e, grid, rowId, add) })
+      if (link) {
+        let btn = createButton("add", "add", (e) => { this.select(e, grid, rowId, link) })
         btn.className = "img-button"
         btn.id = cell.id + "_add"
         btn.firstChild.className = "img-button"
         bar.appendChild(btn)
       }
 
-      let remove = getLink(entity._links, "delete-" + this.fieldName)
-
-      if (remove) {
-        let btn = createButton("delete", "delete", (e) => { this.remove(e, grid, rowId, remove) })
+      if (link) {
+        let btn = createButton("delete", "delete", (e) => { this.remove(e, grid, rowId, link) })
         btn.className = "img-button"
         btn.id = cell.id + "_delete"
         btn.firstChild.className = "img-button"
