@@ -1,4 +1,5 @@
 # Eclipse artefacts
+.externalToolBuilders/
 .metadata/
 .settings/
 eclipse/

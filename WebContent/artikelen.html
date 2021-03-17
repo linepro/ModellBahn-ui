@@ -10,6 +10,7 @@
   <script type="text/javascript" src="js/i18n.js"></script>
   <script type="text/javascript" src="js/utils.js"></script>
   <script type="text/javascript" src="js/dropdown.js"></script>
+  <script type="text/javascript" src="js/columns.js"></script>
   <script type="text/javascript" src="js/fields.js"></script>
   <script src="js/lib/DatePickerX-1.0.4.min.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
@@ -34,10 +35,10 @@
 
     async function init() {
       await layout(NavMenu.INVENTORY)
-      .then(() => PRODUKT_DROP.init())
-      .then(() => UNTER_KATEGORIE_DROP.init())
-      .then(() => DECODER_DROP.init())
-      .then(() => STATUS_DROP.init())
+      .then(() => initDropDown(PRODUKT_DROP))
+      .then(() => initDropDown(UNTER_KATEGORIE_DROP))
+      .then(() => initDropDown(DECODER_DROP))
+      .then(() => initDropDown(STATUS_DROP))
       .then(() => artikelen.init())
       .catch(error => reportError("load", error));
     }

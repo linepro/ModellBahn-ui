@@ -10,6 +10,7 @@
   <script type="text/javascript" src="js/i18n.js"></script>
   <script type="text/javascript" src="js/utils.js"></script>
   <script type="text/javascript" src="js/dropdown.js"></script>
+  <script type="text/javascript" src="js/columns.js"></script>
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
@@ -62,11 +63,11 @@
 
     async function init() {
       await layout(NavMenu.BACK)
-      .then(() => HERSTELLER_DROP.init())
-      .then(() => PROTOKOLL_DROP.init())
-      .then(() => KONFIGURATION_DROP.init())
-      .then(() => ADRESS_TYP_DROP.init())
-      .then(() => STECKER_DROP.init())
+      .then(() => initDropDown(HERSTELLER_DROP))
+      .then(() => initDropDown(PROTOKOLL_DROP))
+      .then(() => initDropDown(KONFIGURATION_DROP))
+      .then(() => initDropDown(ADRESS_TYP_DROP))
+      .then(() => initDropDown(STECKER_DROP))
       .then(() => decoderTyp.init())
       .catch(error => reportError("load", error));
 

@@ -10,10 +10,13 @@
   <script type="text/javascript" src="js/i18n.js"></script>
   <script type="text/javascript" src="js/utils.js"></script>
   <script type="text/javascript" src="js/dropdown.js"></script>
+  <script type="text/javascript" src="js/columns.js"></script>
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
     const ARTIKEL_SELECT = (editable, required, getter = artikelIdGetter, setter = artikelIdSetter) => { return new DropDownColumn("ARTIKEL", "artikel", getter, setter, ARTIKEL_DROP, editable, required, 50, 5) }
+
+    const THUMBNAIL = (getter = fieldGetter) => { return new ThumbColumn("abbildung", getter); };
 
     const fahrzeugColumns = [
       POSITION(Editable.NEVER),
@@ -21,7 +24,8 @@
       UNTER_KATEGORIE_SELECT(Editable.NEVER, false),
       BEZEICHNUNG(Editable.NEVER, false),
       LANGE(Editable.NEVER, false),
-      gridButtonColumn()
+      THUMBNAIL(),
+      new ButtonColumn([addRow], [ updateValue, deleteRow ])
     ];
 
     const fahrzeugen = new ItemGrid(2, "fahrzeugen", "fahrzeugen", fahrzeugColumns, Paged.EXPAND, EditMode.ADD, undefined);
@@ -38,9 +42,9 @@
 
     async function init() {
       await layout(NavMenu.BACK)
-      .then(() => ZUG_TYP_DROP.init())
-      .then(() => ARTIKEL_DROP.init())
-      .then(() => UNTER_KATEGORIE_DROP.init())
+      .then(() => initDropDown(ZUG_TYP_DROP))
+      .then(() => initDropDown(ARTIKEL_DROP))
+      .then(() => initDropDown(UNTER_KATEGORIE_DROP))
       .then(() => zug.init())
       .catch(error => reportError("load", error));
     }
@@ -55,6 +59,40 @@
   <article>
     <div id="data">
       <div id="zug">
+      </div>
+      <div id="abbildung">
+        <div id="abbildung_0" class="thumb-container">
+          <div id="abbildung_0_abbildung" class="thumb-item">
+            <img id="abbildung_0_abbildung_img" class="thumb-display">
+          </div>
+          <div id="abbildung_1_abbildung" class="thumb-item">
+            <img id="abbildung_1_abbildung_img" class="thumb-display">
+          </div>
+          <div id="abbildung_2_abbildung" class="thumb-item">
+            <img id="abbildung_2_abbildung_img" class="thumb-display">
+          </div>
+          <div id="abbildung_3_abbildung" class="thumb-item">
+            <img id="abbildung_3_abbildung_img" class="thumb-display">
+          </div>
+          <div id="abbildung_4_abbildung" class="thumb-item">
+            <img id="abbildung_4_abbildung_img" class="thumb-display">
+          </div>
+          <div id="abbildung_5_abbildung" class="thumb-item">
+            <img id="abbildung_5_abbildung_img" class="thumb-display">
+          </div>
+          <div id="abbildung_6_abbildung" class="thumb-item">
+            <img id="abbildung_6_abbildung_img" class="thumb-display">
+          </div>
+          <div id="abbildung_7_abbildung" class="thumb-item">
+            <img id="abbildung_7_abbildung_img" class="thumb-display">
+          </div>
+          <div id="abbildung_8_abbildung" class="thumb-item">
+            <img id="abbildung_8_abbildung_img" class="thumb-display">
+          </div>
+          <div id="abbildung_9_abbildung" class="thumb-item">
+            <img id="abbildung_9_abbildung_img" class="thumb-display">
+          </div>
+        </div>
       </div>
       <div id="fahrzeugen">
       </div>

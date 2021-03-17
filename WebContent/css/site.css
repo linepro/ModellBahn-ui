@@ -909,9 +909,9 @@ img.img-button {
   /* optional - enable iOS momentum scrolling */
   -webkit-overflow-scrolling: touch;
   /* scrolling shadows */
-  background: radial-gradient(left, ellipse, rgba(0, 0, 0, .2) 0 %, rgba(0, 0, 0, 0) 75 %) 0 center;
+  background: radial-gradient(left, ellipse, rgba(0, 0, 0, .2) 0%, rgba(0, 0, 0, 0) 75%) 0 center;
   background-attachment: scroll, scroll;
-  background-image: radial-gradient(right, ellipse, rgba(0, 0, 0, .2) 0 %, rgba(0, 0, 0, 0) 75 %) 100 % center;
+  background-image: radial-gradient(right, ellipse, rgba(0, 0, 0, .2) 0%, rgba(0, 0, 0, 0) 75%) 100% center;
   background-repeat: no-repeat;
   background-size: 10px 100%, 10px 100%;
 }
@@ -1212,9 +1212,6 @@ ul.nav > li {
   box-shadow: inset 0 0 0 1px DodgerBlue, inset 0 0 0 2px Moccasin;
 }
 
-.date-picker-x .dpx-weekday {
-}
-
 .date-picker-x[data-dpx-type="day"] .dpx-item {
   -ms-flex-preferred-size: 1.8rem;
   flex-basis: 1.8rem;
@@ -1244,4 +1241,36 @@ ul.nav > li {
 
 .date-picker-x .dpx-disabled.dpx-current {
   box-shadow: inset 0 0 0 1px LightSkyBlue !important;
+}
+
+div.thumb-container {
+  align-content: flex-start;
+  align-items: baseline;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  overflow: hidden;
+  width: 100%;
+}
+
+div.thumb-item {
+  display: inline-block;
+  flex-grow: 1;
+  flex-shrink: 0;
+  height: 3.1rem;
+  min-width: 10%;
+  order: 1;
+  margin: 0.1rem 0 0.1rem 0;
+  padding: 0.3rem 0 0.3rem 0;
+  width: 10%;
+}
+
+img.thumb-display {
+  border: 0;
+  height: 3.1rem;
+  margin: 0.1rem 0 0.1rem 0;
+  padding: 0;
+  vertical-align: bottom;
+  width: 100%;
 }

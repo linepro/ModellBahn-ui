@@ -10,6 +10,7 @@
   <script type="text/javascript" src="js/i18n.js"></script>
   <script type="text/javascript" src="js/utils.js"></script>
   <script type="text/javascript" src="js/dropdown.js"></script>
+  <script type="text/javascript" src="js/columns.js"></script>
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
@@ -27,13 +28,13 @@
 
     async function init() {
       await layout(NavMenu.INVENTORY)
-      .then(() => HERSTELLER_DROP.init())
-      .then(() => UNTER_KATEGORIE_DROP.init())
-      .then(() => MASSSTAB_DROP.init())
-      .then(() => SPURWEITE_DROP.init())
-      .then(() => EPOCH_DROP.init())
-      .then(() => BAHNVERWALTUNG_DROP.init())
-      .then(() => GATTUNG_DROP.init())
+      .then(() => initDropDown(HERSTELLER_DROP))
+      .then(() => initDropDown(UNTER_KATEGORIE_DROP))
+      .then(() => initDropDown(MASSSTAB_DROP))
+      .then(() => initDropDown(SPURWEITE_DROP))
+      .then(() => initDropDown(EPOCH_DROP))
+      .then(() => initDropDown(BAHNVERWALTUNG_DROP))
+      .then(() => initDropDown(GATTUNG_DROP))
       .then(() => produkten.init())
       .catch(error => reportError("load", error));
     }

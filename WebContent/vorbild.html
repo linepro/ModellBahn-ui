@@ -10,6 +10,7 @@
   <script type="text/javascript" src="js/i18n.js"></script>
   <script type="text/javascript" src="js/utils.js"></script>
   <script type="text/javascript" src="js/dropdown.js"></script>
+  <script type="text/javascript" src="js/columns.js"></script>
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/lib/DatePickerX-1.0.4.min.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
@@ -93,12 +94,12 @@
 
     async function init() {
       await layout(NavMenu.BACK)
-      .then(() => GATTUNG_DROP.init())
-      .then(() => UNTER_KATEGORIE_DROP.init())
-      .then(() => BAHNVERWALTUNG_DROP.init())
-      .then(() => ANTRIEB_DROP.init())
-      .then(() => ACHSFOLG_DROP.init())
-      .then(() => LEISTUNGSUBERTRAGUNG_DROP.init())
+      .then(() => initDropDown(GATTUNG_DROP))
+      .then(() => initDropDown(UNTER_KATEGORIE_DROP))
+      .then(() => initDropDown(BAHNVERWALTUNG_DROP))
+      .then(() => initDropDown(ANTRIEB_DROP))
+      .then(() => initDropDown(ACHSFOLG_DROP))
+      .then(() => initDropDown(LEISTUNGSUBERTRAGUNG_DROP))
       .then(() => vorbild.init())
       .catch(error => reportError("load", error));
     }

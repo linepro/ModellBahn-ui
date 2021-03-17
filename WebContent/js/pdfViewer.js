@@ -1,66 +1,61 @@
 // module "pdfViewer.js"
-"use strict"
+"use strict";
 
-class PDFViewer {
-  constructor(canvas) {
-    this.pdfDoc = undefined
-    this.pageNum = 1
-    this.scale = 1
-    this.canvas = canvas
-  }
+const pdfViewer = (canvas) => {
+  return {
+    pdfDoc: undefined,
+    pageNum: 1,
+    scale: 1,
+    canvas: canvas
+  };
+};
 
-  load(file) {
-    let pdfjsLib = window["pdfjs-dist/build/pdf"]
+const showPdfPage = async (pageNum, viewer) => {
+  viewer.pageNum = pageNum;
+  await viewer.pdfDoc
+              .getPage(pageNum)
+              .then(page => renderPdf(page, viewer))
+              .catch(error => reportError("showPdfPage", error));
+};
 
-    pdfjsLib.GlobalWorkerOptions.workerSrc = fileUrl("js/lib/pdf.min-2.0.943.worker.js")
+const loadPdf = async (file, viewer) => {
+  let pdfjsLib = window["pdfjs-dist/build/pdf"];
+  pdfjsLib.GlobalWorkerOptions.workerSrc = fileUrl("js/lib/pdf.min-2.0.943.worker.js");
+  await pdfjsLib.getDocument({
+                  url: file,
+                  disableRange: true,
+                  disableStream: true
+                })
+                .then(pdf => {
+      viewer.pdfDoc = pdf;
+      showPdfPage(1, viewer);
+                })
+                .catch(error => reportError(file, error));
+};
 
-    pdfjsLib.getDocument({url: file, disableRange: true, disableStream: true})
-    .then(pdf => this.initialPage(pdf))
-    .catch(error => reportError(file, error))
-  }
+const renderPdf = async (page, viewer) => {
+  let canvas = viewer.canvas;
+  let viewport = page.getViewport(viewer.scale);
+  let context = canvas.getContext("2d");
+  canvas.height = viewport.height;
+  canvas.width = viewport.width;
+  return page.render({
+    canvasContext: context,
+    viewport: viewport,
+  });
+};
 
-  async initialPage(pdfDoc) {
-    this.pdfDoc = pdfDoc
+const zoomPdf = async (newScale, viewer) => {
+  viewer.scale = newScale;
+  await showPdfPage(viewer.pageNum, viewer);
+};
 
-    await this.showPage(1)
-  }
+const prevPdfPage = async (viewer) => {
+  let prev = viewer.pageNum > 1 ? viewer.pageNum - 1 : 1;
+  await showPdfPage(prev, viewer);
+};
 
-  async showPage(pageNum) {
-    this.pageNum = pageNum
-
-    this.pdfDoc.getPage(pageNum)
-    .then(page => this.renderPage(page))
-    .catch(error => reportError("showPage", error))
-  }
-
-  async renderPage(page) {
-    let canvas = this.canvas
-    let viewport = page.getViewport(this.scale)
-
-    let context = canvas.getContext("2d")
-    canvas.height = viewport.height
-    canvas.width = viewport.width
-
-    let renderContext = {
-      canvasContext: context,
-      viewport: viewport
-    }
-
-    return await page.render(renderContext)
-  }
-
-  async zoom(newScale) {
-    this.scale = newScale
-    await this.showPage(this.pageNum)
-  }
-
-  async prevPage() {
-    let prev = this.pageNum > 1 ? this.pageNum - 1 : 1
-    await this.showPage(prev)
-  }
-
-  async nextPage() {
-    let next = this.pageNum < this.pdfDoc.numPages ? this.pageNum + 1 : this.pdfDoc.numPages
-    await this.showPage(next)
-  }
-}
+const nextPdfPage = async (viewer) => {
+  let next = viewer.pageNum < viewer.pdfDoc.numPages ? viewer.pageNum + 1 : viewer.pdfDoc.numPages;
+  await showPdfPage(next, viewer);
+};
