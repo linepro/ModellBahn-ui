@@ -1,4 +1,4 @@
-// module "i18n.js"
+// module "i18n.js";
 "use strict";
 
 const DEFAULT_LANGUAGE = "de-DE";

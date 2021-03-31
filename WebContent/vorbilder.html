@@ -24,9 +24,7 @@
       AUSSERDIENST(Editable.ADD, false),
       ANZAHL(Editable.ADD, false),
       ABBILDUNG(Editable.NEVER, false),
-      new ButtonColumn(
-          [newRow],
-          [editRow, deleteRow])
+      new ButtonColumn([newAction], [editAction, deleteAction])
     ];
 
     const vorbilder = new ItemGrid(10, fetchUrl("vorbild"), "vorbilder", columns, Paged.PAGED, EditMode.UPDATE, undefined, "vorbild.html");

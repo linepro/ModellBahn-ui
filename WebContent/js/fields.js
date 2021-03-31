@@ -1,4 +1,4 @@
-// module "fields.js"
+// module "fields.js";
 "use strict";
 
 const optionExtractor = (jsonData) => jsonData._embedded.data;
@@ -14,7 +14,10 @@ const bezeichnungOption = (entity) =>
 const artikelOption = (entity) => 
   dropOption(
     entity.artikelId,
-    [ entity.hersteller, entity.bestellNr, entity.gattung, entity.betreibsnummer, entity.bahnverwaltung ].filter(x => x).join(" ") + " (" + entity.artikelId + ")"
+    [ entity.hersteller, entity.bestellNr, entity.gattung, entity.betreibsnummer, entity.bahnverwaltung ].filter(x => x).join(" ") + " (" + entity.artikelId + ")",
+    entity.bezeichnung,
+    entity.abbildung,
+    translate(entity.kategorie)
   );
 
 const decoderOption = (entity) => 
@@ -26,19 +29,28 @@ const decoderOption = (entity) =>
 const kategorieOption = (entity) =>
   dropOption(
     entity.kategorie + "/" + entity.name,
-    entity.kategorie + " - " + entity.bezeichnung
+    entity.bezeichnung,
+    entity.bezeichnung,
+    undefined,
+    entity.kategorie
   );
 
 const produktOption = (entity) =>
   dropOption(
     entity.hersteller + "/" + entity.bestellNr, 
-    entity.hersteller + " - " + entity.bestellNr
+    entity.hersteller + " - " + entity.bestellNr,
+    entity.bezeichnung,
+    entity.abbildung,
+    entity.kategorie
   );
 
 const vorbildOption = (entity) =>
   dropOption(
     entity.gattung, 
-    entity.bezeichnung
+    entity.bezeichnung,
+    entity.bezeichnung,
+    entity.abbildung,
+    entity.kategorie
   );
 
 const unterKategorieExtractor = (jsonData) => 
@@ -202,13 +214,13 @@ const ZUG_TYP_SELECT = (editable = Editable.UPDATE, required = false, getter = f
   new DropDownColumn("ZUG_TYP", "zugTyp", getter, setter, ZUG_TYP_DROP, editable, required, 30, 5);
 
 const ABBILDUNG = (editable = Editable.UPDATE, required = false, getter = fieldGetter) =>
-  new IMGColumn("ABBILDUNG", "abbildung", getter, editable, required);
+  new ImageColumn("ABBILDUNG", "abbildung", getter, editable, required);
 
 const ADRESS = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
   new NumberColumn("ADRESS", "adress", getter, setter, editable, required, 65535, 1);
 
 const ANLEITUNGEN = (editable = Editable.UPDATE, required = false, getter = fieldGetter) =>
-  new PDFColumn("ANLEITUNGEN", "anleitungen", getter, editable, required);
+  new PdfColumn("ANLEITUNGEN", "anleitungen", getter, editable, required);
 
 const ANZAHL = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
   new NumberColumn("ANZAHL", "anzahl", getter, setter, editable, required, 300000, 1);
@@ -244,7 +256,7 @@ const DECODER = (editable = Editable.UPDATE, required = false, getter = fieldGet
   new TextColumn("DECODER", "decoderId", getter, setter, editable, required, 5, "^[A-Z0-9]+$");
 
 const EXPLOSIONSZEICHNUNG = (editable = Editable.UPDATE, required = false, getter = fieldGetter) =>
-  new PDFColumn("EXPLOSIONSZEICHNUNG", "explosionszeichnung", getter, editable, required);
+  new PdfColumn("EXPLOSIONSZEICHNUNG", "explosionszeichnung", getter, editable, required);
 
 const FAHRSTUFE = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
   new NumberColumn("FAHRSTUFE", "fahrstufe", getter, setter, editable, required, 127, 1);
@@ -307,7 +319,7 @@ const STUCK = (editable = Editable.UPDATE, required = false, getter = fieldGette
   new NumberColumn("STUCK", "stuck", getter, setter, editable, required, 300, 0);
 
 const URL = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new URLColumn("URL", "url", getter, setter, editable, required);
+  new UrlColumn("URL", "url", getter, setter, editable, required);
 
 const WERKSEINSTELLUNG = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
   new NumberColumn("WERKSEINSTELLUNG", "werkseinstellung", getter, setter, editable, required, 65535, 1);

@@ -1,15 +1,5 @@
-// module "utils.js"
+//module "utils.js";
 "use strict";
-
-const resizeAll = (element = document) => {
-  let nav = element.getElementsByTagName("NAV")[0];
-  let rect = nav.getBoundingClientRect();
-  let section = document.getElementsByTagName("SECTION")[0];
-  section.style.top = rect.height + "px";
-
-  element.getElementsByTagName("TABLE")
-         .forEach(t => setWidths(t.getElementsByTagName("TBODY")[0], t.getBoundingClientRect().width + "px"));
-};
 
 const apiUrl = path => {
   return window.location.origin + "/ModellBahn/api/" + path;
@@ -90,15 +80,15 @@ const addModal = () => {
   return modal;
 };
 
-const createButton = (value, alt, action) => {
+const createButton = (caption, image, action, className = "nav-button") => {
   let btn = document.createElement("button");
-  btn.value = translate(value.toUpperCase());
+  btn.value = translate(caption.toUpperCase());
   if (action) {
     btn.addEventListener("click", action);
   }
-  btn.className = "nav-button";
-  let img = createImage(alt);
-  img.className = "nav-button";
+  btn.className = className;
+  let img = createImage(image);
+  img.className = className;
   btn.appendChild(img);
   return btn;
 };
@@ -119,7 +109,7 @@ const removeChildren = node => {
   }
 };
 
-const addOption = (select, value, text) => {
+const addOption = (select, value, text, tooltip, abbildung) => {
   let opt = document.createElement("option");
   opt.value = value;
   opt.text = text;
@@ -218,8 +208,6 @@ const setActiveTab = (event, tabName) => {
   let tabContents = document.getElementsByClassName("tabContent");
   tabContents.forEach((t) => t.style.display = t.id === tabName ? "block" : "none");
 
-  resizeAll();
-
   let tabLinks = document.getElementsByClassName("tabLinks");
   let linkName = tabName.replace("Tab", "Link");
   tabLinks.forEach((l) => l.className = l.id === linkName ? "tabLinks active" : "tabLinks");
@@ -258,7 +246,7 @@ const NavMenu = {
   HOME: 3,
 };
 
-const addLingo = element => {
+const addLingo = (element) => {
   let lingo = document.createElement("img");
   lingo.src = fileUrl(translate("FLAG"));
   lingo.className = "lingo";
@@ -267,7 +255,7 @@ const addLingo = element => {
   return lingo;
 };
 
-const addLogo = element => {
+const addLogo = (element) => {
   let logo = document.createElement("img");
   logo.src = imageSource("ModellBahn", ".svg");
   logo.className = "logo";
@@ -277,6 +265,34 @@ const addLogo = element => {
   return logo;
 };
 
+const refData = () => [
+  navLink("ANTRIEBEN", fileUrl("antrieben.html")),
+  navLink("AUFBAUTEN", fileUrl("aufbauten.html")),
+  navLink("BAHNVERWALTUNGEN", fileUrl("bahnverwaltungen.html")),
+  navLink("DECODER_TYPEN", fileUrl("decoderTypen.html")),
+  navLink("EPOCHEN", fileUrl("epochen.html")),
+  navLink("GATTUNGEN", fileUrl("gattungen.html")),
+  navLink("HERSTELLERN", fileUrl("herstellern.html")),
+  navLink("KATEGORIEN", fileUrl("kategorien.html")),
+  navLink("KUPPLUNGEN", fileUrl("kupplungen.html")),
+  navLink("LICHTEN", fileUrl("lichten.html")),
+  navLink("MASSSTABEN", fileUrl("massstaben.html")),
+  navLink("MOTOR_TYPEN", fileUrl("motorTypen.html")),
+  navLink("PROTOKOLLEN", fileUrl("protokollen.html")),
+  navLink("SONDERMODELLEN", fileUrl("sonderModellen.html")),
+  navLink("SPURWEITEN", fileUrl("spurweiten.html")),
+  navLink("STEUERUNGEN", fileUrl("steuerungen.html")),
+  navLink("ZUG_TYPEN", fileUrl("zugTypen.html"))
+  ];
+
+const inventory = () => [
+  navLink("ARTIKELEN", fileUrl("artikelen.html")),
+  navLink("DECODEREN", fileUrl("decoderen.html")),
+  navLink("PRODUKTEN", fileUrl("produkten.html")),
+  navLink("VORBILDER", fileUrl("vorbilder.html")),
+  navLink("ZUGEN", fileUrl("zugen.html"))
+  ];
+  
 const addNavBar = (menuStyle) => {
   let header = document.getElementsByTagName("HEADER")[0];
   removeChildren(header);
@@ -305,32 +321,9 @@ const addNavBar = (menuStyle) => {
     }
 
     if (menuStyle !== NavMenu.BACK) {
-      let lnks = [];
-      lnks.push(navLink("ANTRIEBEN", fileUrl("antrieben.html")));
-      lnks.push(navLink("AUFBAUTEN", fileUrl("aufbauten.html")));
-      lnks.push(navLink("BAHNVERWALTUNGEN", fileUrl("bahnverwaltungen.html")));
-      lnks.push(navLink("DECODER_TYPEN", fileUrl("decoderTypen.html")));
-      lnks.push(navLink("EPOCHEN", fileUrl("epochen.html")));
-      lnks.push(navLink("GATTUNGEN", fileUrl("gattungen.html")));
-      lnks.push(navLink("HERSTELLERN", fileUrl("herstellern.html")));
-      lnks.push(navLink("KATEGORIEN", fileUrl("kategorien.html")));
-      lnks.push(navLink("KUPPLUNGEN", fileUrl("kupplungen.html")));
-      lnks.push(navLink("LICHTEN", fileUrl("lichten.html")));
-      lnks.push(navLink("MASSSTABEN", fileUrl("massstaben.html")));
-      lnks.push(navLink("MOTOR_TYPEN", fileUrl("motorTypen.html")));
-      lnks.push(navLink("PROTOKOLLEN", fileUrl("protokollen.html")));
-      lnks.push(navLink("SONDERMODELLEN", fileUrl("sonderModellen.html")));
-      lnks.push(navLink("SPURWEITEN", fileUrl("spurweiten.html")));
-      lnks.push(navLink("STEUERUNGEN", fileUrl("steuerungen.html")));
-      lnks.push(navLink("ZUG_TYPEN", fileUrl("zugTypen.html")));
-      lnks
-        .filter(li => {
-          return document.location.href !== li.firstChild.href;
-        })
-        .sort((a, b) => {
-          return a.innerText.localeCompare(b.innerText);
-        })
-        .forEach(li => ul.appendChild(li));
+      refData().filter((li) => document.location.href !== li.firstChild.href)
+               .sort((a, b) => a.innerText.localeCompare(b.innerText))
+               .forEach((li) => ul.appendChild(li));
     }
 
     nav.appendChild(ul);
@@ -350,20 +343,9 @@ const addNavBar = (menuStyle) => {
       addHomeBack(ul);
     }
 
-    let lnks = [];
-    lnks.push(navLink("ARTIKELEN", fileUrl("artikelen.html")));
-    lnks.push(navLink("DECODEREN", fileUrl("decoderen.html")));
-    lnks.push(navLink("PRODUKTEN", fileUrl("produkten.html")));
-    lnks.push(navLink("VORBILDER", fileUrl("vorbilder.html")));
-    lnks.push(navLink("ZUGEN", fileUrl("zugen.html")));
-    lnks
-      .filter(li => {
-        return document.location.href !== li.firstChild.href;
-      })
-      .sort((a, b) => {
-        return a.innerText.localeCompare(b.innerText);
-      })
-      .forEach(li => ul.appendChild(li));
+    inventory().filter((li) => document.location.href !== li.firstChild.href)
+               .sort((a, b) => a.innerText.localeCompare(b.innerText))
+               .forEach((li) => ul.appendChild(li));
 
     nav.appendChild(ul);
     if (menuStyle !== NavMenu.HOME) {
@@ -372,9 +354,8 @@ const addNavBar = (menuStyle) => {
     addRule(nav);
   }
 
-  let rect = nav.getBoundingClientRect();
   let section = document.getElementsByTagName("SECTION")[0];
-  section.style.top = rect.height + "px";
+  section.style.top = nav.getBoundingClientRect().height + "px";
 };
 
 const addFooter = () => {
@@ -401,15 +382,7 @@ const layout = async menuStyle => {
   addFooter();
 };
 
-window.addEventListener(
-  "resize",
-  () => {
-    resizeAll();
-  },
-  true
-);
-
-window.onerror = function (message, path, lineNo, columnNo, error) {
+window.onerror = (message, path, lineNo, columnNo, error) => {
   if (message.toLowerCase().includes("script error")) {
     reportError("Script Error: See Browser Console for Detail", error);
   } else {

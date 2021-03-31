@@ -17,7 +17,7 @@
       DECODER_TYP_SELECT(Editable.NEVER, true),
       BEZEICHNUNG(Editable.ADD, false),
       PROTOKOLL_SELECT(Editable.ADD, true),
-      new ButtonColumn([newRow], [editRow, deleteRow])
+      new ButtonColumn([newAction], [editAction, deleteAction])
     ];
     const decoderen = new ItemGrid(10, fetchUrl("decoder"), "decoderen", columns, Paged.PAGED, EditMode.UPDATE, undefined, "decoder.html");
 

@@ -21,7 +21,7 @@
       MASSSTAB_SELECT(Editable.ADD, false),
       SPURWEITE_SELECT(Editable.ADD, false),
       BEZEICHNUNG(Editable.ADD, true),
-      new ButtonColumn([newRow], [editRow, deleteRow])
+      new ButtonColumn([newAction], [editAction, deleteAction])
     ];
 
     const produkten = new ItemGrid(10, fetchUrl("produkt"), "produkten", columns, Paged.PAGED, EditMode.UPDATE, undefined, "produkt.html");

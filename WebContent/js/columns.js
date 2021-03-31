@@ -13,6 +13,24 @@ const EditMode = {
   ADD: 2
 };
 
+const actionLink = (entity, rel) =>
+  entity && entity._links && entity._links[rel] ? entity._links[rel][0].href : undefined;
+
+const boxSize = (length) => Math.ceil(length / 5) * 5;
+
+const closeAutoLists = (elmnt = document) => { 
+  for (let a of elmnt.getElementsByClassName("autocomplete-list")) {
+      removeChildren(a);
+      a.parentElement.removeChild(a);
+    }
+  };
+
+document.addEventListener("click", () => { closeAutoLists() }, false);
+
+const getRowId = (tableId, i) => [ tableId, i ].join("_");
+
+const getFieldId = (rowId, fieldName) => [ rowId, fieldName ].join("_");
+
 const shouldDisable = (editable, editMode, value) => {
   if (value) {
     if (editable === Editable.NEVER || editMode === EditMode.VIEW) {
@@ -25,103 +43,117 @@ const shouldDisable = (editable, editMode, value) => {
   }
 };
 
-const disable = (inp) => {
-  inp.disabled = true;
-  inp.readOnly = true;
-  inp.required = false;
-  inp.removeEventListener("changed", false);
+const valueAndUnits = (cssSize) => {
+  let dims = /^(\d+)([^\d]+)$/.exec(cssSize);
+  return { value: dims[1], units: dims[2] }
+}
+
+const setWidths = (element, width) => {
+  element.width = width;
+  element.style.width = width;
+  element.style.maxWidth = width;
+  element.style.minWidth = width;
 };
 
 class Column {
-  constructor(heading, fieldName, getter, setter, editable, required, length) {
+  constructor(heading, fieldName, fieldGetter, fieldSetter, editable = Editable.NEVER, required = false, length = heading.length) {
     this.heading = heading;
     this.fieldName = fieldName;
-    this.getter = getter;
-    this.setter = setter;
-    this.editable = editable ? editable : Editable.NEVER;
-    this.required = required ? required : false;
-    this.length = Math.max(length ? length : heading.length, heading.length + 1);
-    this.width = 0;
+    this.fieldGetter = fieldGetter;
+    this.fieldSetter = fieldSetter;
+    this.editable = editable;
+    this.required = required;
+    this.length = Math.max(length, heading.length + 1);
   }
 
-  setContext(grid, table) {
-    this.grid = grid;
-    this.table = table;
+  getHeading(grid, headerRow) {
+    let column = this;
+
+    let header = document.createElement("th");
+    header.className = "table-heading";
+    header.appendChild(document.createTextNode(translate(column.heading)));
+    headerRow.append(header);
+    return header;
   }
 
-  getHeading(isForm) {
-    let td = document.createElement(isForm ? "div" : "th");
-    td.className = isForm ? "flex-label" : "table-heading";
-    addText(td, this.heading);
-    return td;
+  getFormHeading(grid, headerRow) {
+    return undefined;
   }
 
-  entityValue(entity) {
-    return this.getter(entity, this.fieldName);
+  initialise(ctl) {
+    ctl.autocomplete = "off";
+    return ctl;
   }
 
-  getLength() {
-    return boxSize(this.length);
+  createControl(grid, row, className) {
+    let column = this;
+
+    let ctl = document.createElement("input");
+    ctl.id = getFieldId(row.id, column.fieldName);
+    ctl.className = className;
+    ctl = column.initialise(ctl);
+    ctl.readOnly = column.editable === Editable.NEVER || grid.editMode === EditMode.VIEW;
+    ctl.required = column.required;
+    ctl.disabled = true;
+    return ctl;
   }
 
-  getDisplayLength() {
-    return this.getLength() + "ch";
+  getTableCell(grid, row) {
+    let column = this;
+
+    let cell = document.createElement("td");
+    cell.className = "table-cell";
+    row.append(cell);
+
+    let ctl = column.createControl(grid, row, "table-cell");
+    cell.append(ctl);
+    return ctl;
   }
 
-  getHeaderLength() {
-    return boxSize(this.heading.length);
+  getFormField(grid, row, labelWidth) {
+    let column = this;
+
+    let cell = document.createElement("div");
+    cell.className = "flex-item";
+    row.append(cell);
+
+    let label = document.createElement("label");
+    label.className = "flex-label";
+    label.appendChild(document.createTextNode(translate(column.heading)));
+    setWidths(label, labelWidth);
+    cell.append(label);
+    
+    let ctl = createControl(grid, row, "flex-control");
+    setWidths(ctl, column.length+"ch");
+    label.for = ctl.id;
+    cell.append(ctl);
+    return ctl;
   }
 
-  getWidth() {
-    return this.width;
-  }
+  bind(row, entity, editMode) {
+    let column = this;
 
-  setWidth(width) {
-    this.width = width;
-    this.style.width = width;
-    this.style.maxWidth = width;
-    this.style.minWidth = width;
-  }
-  
-  createControl() {
-    let inp = document.createElement("input");
-    inp.autocomplete = "off";
-    return inp;
-  }
-
-  getControl(cell, entity, editMode) {
-    let inp = this.createControl();
-
-    let value;
-
-    if (entity) {
-      value = this.entityValue(entity);
-    }
-
-    if (value) {
-      inp.setAttribute("data-value", value);
-    }
-
-    this.setValue(inp, value);
-
-    if (value || entity) {
-      inp.disabled = shouldDisable(this.editable, editMode);
-    } else {
-      inp.disabled = !(editMode === EditMode.ADD && this.editable !== Editable.NEVER);
-    }
-
-    inp.readOnly = inp.disabled;
-    inp.required = this.required;
-
-    cell.appendChild(inp);
-
-    return inp;
-  }
-
-  getValue(cell) {
-    let ctl = cell.firstChild;
+    let ctl = document.getElementById(getFieldId(rowId, column.fieldName));
     if (ctl) {
-      return this.getControlValue(ctl);
+      let value = column.fieldGetter(entity, column.fieldName);
+      if (value) {
+        ctl.setAttribute("data-value", value);
+      } else {
+        ctl.clearAttribute("data-value");
+      }
+      column.setControlValue(ctl, value);
+      ctl.disabled = shouldDisable(column.editable, editMode, value);
+      ctl.visible = entity ? "visible" : "hidden";
+    }
+    return ctl;
+  }
+
+  getValue(row) {
+    let column = this;
+
+    let ctl = document.getElementById(getFieldId(rowId, column.fieldName));
+    if (ctl) {
+      return column.getControlValue(ctl);
     }
   }
 
@@ -129,24 +161,18 @@ class Column {
     return ctl.value ? ctl.value : undefined;
   }
 
-  setValue(ctl, value) {
-    if (value) {
-      ctl.value = value;
-    }
-  }
-
-  isButtons() {
-    return false;
+  setControlValue(ctl, value) {
+    ctl.value = value;
   }
 }
 
 class BoolColumn extends Column {
-  constructor(heading, fieldName, getter, setter, editable, required) {
-    super(heading, fieldName, getter, setter, editable, required, heading.length);
+  constructor(heading, fieldName, fieldGetter, fieldSetter, editable, required) {
+    super(heading, fieldName, fieldGetter, fieldSetter, editable, required, heading.length);
   }
 
-  createControl() {
-    let chk = super.createControl();
+  initialise(chk) {
+    chk = super.initialise(chk);
     chk.type = "checkbox";
     return chk;
   }
@@ -155,25 +181,27 @@ class BoolColumn extends Column {
     return chk.checked;
   }
 
-  setValue(chk, value) {
+  setControlValue(chk, value) {
     chk.checked = value;
   }
 }
 
 class NumberColumn extends Column {
-  constructor(heading, fieldName, getter, setter, editable, required, max = 255, min = 0, places = 0) {
-    super(heading, fieldName, getter, setter, editable, required, Math.max(max.toString().length, heading.length));
+  constructor(heading, fieldName, fieldGetter, fieldSetter, editable, required, max = 255, min = 0, places = 0) {
+    super(heading, fieldName, fieldGetter, fieldSetter, editable, required, Math.max(max.toString().length, heading.length));
     this.max = max;
     this.min = min;
     this.places = places;
   }
 
-  createControl() {
-    let num = super.createControl();
+  initialise(num) {
+    let column = this;
+
+    num = super.initialise(num);
     num.type = "number";
-    num.min = this.min;
-    num.max = this.max;
-    num.step = this.places > 0 ? 1 / this.places : 1;
+    num.min = column.min;
+    num.max = column.max;
+    num.step = column.places > 0 ? 1 / column.places : 1;
     return num;
   }
 
@@ -181,49 +209,50 @@ class NumberColumn extends Column {
     return num.value ? Number.parseFloat(num.value) : undefined;
   }
 
-  setValue(num, value) {
-    if (value) {
-      num.value = value.toLocaleString(getLanguage(), { minimumFractionDigits: this.places, maximumFractionDigits: this.places } );
-    }
+  setControlValue(num, value) {
+    let column = this;
+    num.value = value ? value.toLocaleString(getLanguage(), { minimumFractionDigits: column.places, maximumFractionDigits: column.places } ) : undefined;
   }
 }
 
 class PhoneColumn extends Column {
-  constructor(heading, fieldName, getter, setter, editable, required) {
-    super(heading, fieldName, getter, setter, editable, required, 10);
+  constructor(heading, fieldName, fieldGetter, fieldSetter, editable, required) {
+    super(heading, fieldName, fieldGetter, fieldSetter, editable, required, 10);
   }
 
-  createControl() {
-    let tel = super.createControl();
+  initialise(tel) {
+    tel = super.initialise(txt);
     tel.type = "tel";
     return tel;
   }
 }
 
 class TextColumn extends Column {
-  constructor(heading, fieldName, getter, setter, editable, required, length, pattern) {
-    super(heading, fieldName, getter, setter, editable, required, length);
+  constructor(heading, fieldName, fieldGetter, fieldSetter, editable, required, length, pattern) {
+    super(heading, fieldName, fieldGetter, fieldSetter, editable, required, length);
     this.pattern = pattern;
   }
 
-  createControl() {
-    let txt = super.createControl();
+  initialise(txt) {
+    let column = this;
+
+    txt = super.initialise(txt);
     txt.type = "text";
-    txt.maxLength = this.length;
-    txt.pattern = this.pattern;
+    txt.maxLength = column.length;
+    txt.pattern = column.pattern;
     return txt;
   }
 }
 
 const URL_PATTERN = "^(?:(http[s]?):\\/\\/)?(\\w+(?:\\.\\w+)*)(?::(\\d+))?(?:\\/(\\w+(?:\\/|\\.\\w+)?))?$";
 
-class URLColumn extends TextColumn {
-  constructor(heading, fieldName, getter, setter, editable, required) {
-    super(heading, fieldName, getter, setter, editable, required, 60, URL_PATTERN);
+class UrlColumn extends TextColumn {
+  constructor(heading, fieldName, fieldGetter, fieldSetter, editable, required) {
+    super(heading, fieldName, fieldGetter, fieldSetter, editable, required, 60, URL_PATTERN);
   }
 
-  createControl() {
-    let rul = super.createControl();
+  initialise(rul) {
+    rul = super.initialise(rul);
     rul.type = "url";
     rul.class = "table-url";
     rul.addEventListener("click", () => { if (rul.value) { window.open(rul.value, "_blank") } }, false);
@@ -233,190 +262,170 @@ class URLColumn extends TextColumn {
 
 const DATE_PATTERN = "^(18[2-9][0-9]|19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[0-1])$";
 
-const WEEKDAY_LABELS = [
-  translate("MO"), translate("TU"), translate("WE"),
-  translate("TH"), translate("FR"), translate("SA"),
-  translate("SU")
-  ];
-
-const MON_LABELS = [
-  translate("JAN"), translate("FEB"), translate("MAR"),
-  translate("APR"), translate("MAY"), translate("JUN"),
-  translate("JUL"), translate("AUG"), translate("SEP"),
-  translate("OCT"), translate("NOV"), translate("DEC")
-  ];
-
-const MONTH_LABELS = [
-  translate("JANUARY"), translate("FEBRUARY"), translate("MARCH"),
-  translate("APRIL"), translate("MAY"), translate("JUNE"),
-  translate("JULY"), translate("AUGUST"), translate("SEPTEMBER"),
-  translate("OCTOBER"), translate("NOVEMBER"), translate("DECEMBER")
-  ];
-
-const DATE_OPTIONS = {
-  minDate: new Date("1800-01-01"),
-  weekDayLabels: WEEKDAY_LABELS,
-  shortMonthLabels: MON_LABELS,
-  singleMonthLabels: MONTH_LABELS,
-  todayButton: false,
-  clearButton: false
+const dateOptions = () => {
+  return {
+    minDate: new Date("1800-01-01"),
+    weekDayLabels: [
+      translate("MO"), translate("TU"), translate("WE"),
+      translate("TH"), translate("FR"), translate("SA"),
+      translate("SU")
+    ],
+    shortMonthLabels: [
+      translate("JAN"), translate("FEB"), translate("MAR"),
+      translate("APR"), translate("MAY"), translate("JUN"),
+      translate("JUL"), translate("AUG"), translate("SEP"),
+      translate("OCT"), translate("NOV"), translate("DEC")
+    ],
+    singleMonthLabels: [
+      translate("JANUARY"), translate("FEBRUARY"), translate("MARCH"),
+      translate("APRIL"), translate("MAY"), translate("JUNE"),
+      translate("JULY"), translate("AUGUST"), translate("SEPTEMBER"),
+      translate("OCTOBER"), translate("NOVEMBER"), translate("DECEMBER")
+    ],
+    todayButton: false,
+    clearButton: false
+    }
   };
 
 class DateColumn extends TextColumn {
-  constructor(heading, fieldName, getter, setter, editable, required) {
-    super(heading, fieldName, getter, setter, editable, required, 12, DATE_PATTERN);
+  constructor(heading, fieldName, fieldGetter, fieldSetter, editable, required) {
+    super(heading, fieldName, fieldGetter, fieldSetter, editable, required, 12, DATE_PATTERN);
   }
 
-  getControl(cell, entity, editMode) {
-    let dte = super.getControl(cell, entity, editMode);
-
-    let value = dte.getAttribute("data-value");
-
-    if (!dte.disabled) {
-      dte.DatePickerX.init(DATE_OPTIONS);
-      dte.DatePickerX.setValue(value);
+  initialise(dte) {
+    dte = super.initialise(dte);
+    if (!dte.readOnly) {
+      dte.DatePickerX.init(dateOptions());
     }
-
     return dte;
   }
 
-  setValue(inp, value) {
-    if (value) {
-      inp.value = new Date(value).toLocaleDateString(getLanguage());
-    }
-  }
-
   getControlValue(dte) {
-    let value = dte.value;
-
-    if (dte.DatePickerX) {
-      value = dte.DatePickerX.getValue();
-    }
+    let value = dte.DatePickerX ? dte.DatePickerX.getValue() : dte.value;
 
     let iso = value ? new Date(value).toISOString().replace(/T.*/, "") : undefined;
 
-    if (iso) dte.setAttribute("data-value", iso);
+    if (iso) {
+      dte.setAttribute("data-value", iso);
+    } else {
+      dte.removeAttribute("data-value");
+    }
 
+    if (dte.DatePickerX) { 
+      dte.value = value;
+    }
     return iso;
+  }
+
+  setControlValue(dte, value) {
+    if (!dte.disabled) {
+      dte.DatePickerX.setValue(value);
+    }
+    dte.value = value ? new Date(value).toLocaleDateString(getLanguage()) : undefined;
   }
 }
 
-const readFile = (uploadUrl, fileData, grid, rowId) => {
-  let reader = new FileReader();
-  reader.onload = (e) => uploadFile(uploadUrl, e.target.result, grid.renderUpdate(jsonData, rowId), reportError(uploadUrl, error));
-  reader.onerror = (e) => {
-    reader.abort();
-    reportError("readFile", translate("BADFILE", [fileData, e]));
-  };
-  reader.readAsDataURL(fileData);
-};
-
-const removeFile = async (deleteUrl, grid, rowId) => deleteRest(deleteUrl, grid.renderUpdate(jsonData, rowId), reportError(deleteUrl, error));
-
-const getLink = (links, rel) => {
-  if (!links || !links[rel]) {
-    return undefined;
-  }
-  return links[rel][0].href;
-};
-
 class FileColumn extends Column {
-  constructor(heading, fieldName, getter, mask, editable, required) {
-    super(heading, fieldName, getter, undefined, editable, required, 20);
+  constructor(heading, fieldName, fieldGetter, mask, editable, required) {
+    super(heading, fieldName, fieldGetter, undefined, editable, required, 20);
     this.mask = mask;
   }
-  
-  getControl(cell, entity, editMode) {
-    let img = super.getControl(cell, entity, editMode);
+
+  createControl(grid, row, className) {
+    let column = this;
+
+    let img = document.createElement("img");
+    img.id = getFieldId(row.id, column.fieldName);
     img.className = "img-display";
-    img.id = cell.id + "_img";
+    img.addEventListener("click", (e) => column.showContent(e), false);
 
-    if (entity) {
-      img.addEventListener("click", (e) => {
-        let image = e.target;
-        let file = image.getAttribute("data-value");
-        if (file) { this.showContent(file) }
-      }, false);
-
+    if (column.editable !== Editable.NEVER) {
       let bar = document.createElement("div");
       bar.className = "img-button";
-      cell.append(bar);
+      img.append(bar);
 
-      let link = getLink(entity._links, this.fieldName);
-      let grid = this.grid;
-      let rowId = getCellRowId(cell);
+      let refresh = (ignored, jsonData) => grid.renderUpdate(row, jsonData);
 
-      if (link) {
-        let btn = createButton("add", "add", (e) => { this.select(e, grid, rowId, link) });
-        btn.className = "img-button";
-        btn.id = cell.id + "_add";
-        btn.firstChild.className = "img-button";
-        bar.appendChild(btn);
-      }
+      let add = createButton("add", "add", undefined, "img-button");
+      add.id = img.id + "_add";
+      add.disabled = true;
+      add.addEventListener("click", (e) => column.updateFile(e, link, refresh), false);
+      add.setAttribute("data-attribute", refresh);
+      bar.appendChild(add);
 
-      if (link) {
-        let btn = createButton("delete", "delete", (e) => { this.remove(e, grid, rowId, link) });
-        btn.className = "img-button";
-        btn.id = cell.id + "_delete";
-        btn.firstChild.className = "img-button";
-        btn.disabled = !img.getAttribute("data-value");
-        bar.appendChild(btn);
-      }
-
-      if (cell.firstChild) {
-        cell.removeChild(img);
-        cell.insertBefore(img, cell.firstChild);
-      }
+      let del = createButton("delete", "delete", undefined, "img-button");
+      del.id = img.id + "_delete";
+      del.disabled = true;
+      del.addEventListener("click", (e) => column.removeFile(e, img, link, refresh), false);
+      del.setAttribute("data-attribute", refresh);
+      bar.appendChild(del);
     }
 
     return img;
   }
 
-  createControl() {
-    return document.createElement("img");
+  bind(row, entity, editMode) {
+    let column = this;
+
+    let src = column.fieldGetter(entity, column.fieldName);
+    let link = actionLink(entity, column.fieldName);
+
+    let img = document.getElementById(getFieldId(row.id, column.fieldName));
+    if (img) {
+      img.src = src;
+
+      let add = document.getElementById(imgId + "_add");
+      if (add) {
+        add.disabled = shouldDisable(column.editable, editMode, img.src) || !link;
+        add.visible = link ? "visible" : "hidden";
+      }
+
+      let del = document.getElementById(imgId + "_del");
+      if (del) {
+        del.disabled = shouldDisable(column.editable, editMode, img.src) || !link || !img.src;
+        del.visible = link ? "visible" : "hidden";
+      }
+   }
+
+    return img;
   }
 
   getControlValue(img) {
-    return img.getAttribute("data-value") ? img.getAttribute("data-value") : undefined;
+    return img.src;
   }
 
-  getDisplayLength() {
-    return "auto";
-  }
+  updateFile(event, img, uploadUrl, refresh) {
+    let column = this;
+    let cell = img.parentElement;
 
-  select(event, grid, rowId, href) {
-    let btn = event.target;
-    if (btn.tagName === "IMG") {
-      btn = btn.parentElement;
-    }
-    let link = btn.value;
-    let bar = btn.parentElement;
-    let cell = bar.parentElement;
     let file = document.createElement("input");
     file.type = "file";
-    file.accept = this.mask;
-    file.multiple = false;
-    file.setAttribute("data-update", link);
-    cell.appendChild(file);
     file.style.display = "none";
+    file.accept = column.mask;
+    file.multiple = false;
+    cell.appendChild(file);
+
+    let update = (s) => {
+      s.target.parent.removeChild(s.target);
+      if (s.target.files[0]) {
+        let reader = new FileReader();
+        reader.onload = (r) => uploadFile(uploadUrl, r.target.result, refresh, reportError(uploadUrl, error));
+        reader.onerror = (r) => {
+          reader.abort();
+          reportError("readFile", translate("BADFILE", [s.target.files[0], r]));
+        };
+        reader.readAsDataURL(s.target.files[0]);
+      }
+    };
+
+    file.addEventListener("change", (e) => update(e), false);
+    file.addEventListener("blur", (e) => update(e), false);
     file.click();
-    file.addEventListener("change", (e) => { this.update(e, grid, rowId, href) }, false);
-    file.addEventListener("click", (e) => { this.update(e, grid, rowId, href) }, false);
-    file.addEventListener("blur", (e) => { this.update(e, grid, rowId, href) }, false);
+    file.addEventListener("click", (e) => update(e), false);
   }
 
-  remove(e, grid, rowId, href) {
-    removeFile(href, grid, rowId);
-  }
-
-  update(e, grid, rowId, href) {
-    let file = e.target;
-    let fileData = file.files[0];
-    let cell = file.parentElement;
-    cell.removeChild(file);
-    if (fileData) {
-      readFile(href, fileData, grid, rowId);
-    }
+  async removeFile(event, deleteUrl, refresh) {
+    await deleteRest(deleteUrl, refresh, reportError(deleteUrl, error));
   }
 
   showContent(arg) {
@@ -424,9 +433,9 @@ class FileColumn extends Column {
   }
 }
 
-class IMGColumn extends FileColumn {
-  constructor(heading, fieldName, getter, editable, required) {
-    super(heading, fieldName, getter, "image/*", editable, required);
+class ImageColumn extends FileColumn {
+  constructor(heading, fieldName, fieldGetter, editable, required) {
+    super(heading, fieldName, fieldGetter, "image/*", editable, required);
   }
 
   showContent(file) {
@@ -436,14 +445,14 @@ class IMGColumn extends FileColumn {
     showModal(img);
   }
 
-  setValue(img, value) {
+  setControlValue(img, value) {
     img.src = value ? value : imageSource("add-picture");
   }
 }
 
-class PDFColumn extends FileColumn {
-  constructor(heading, fieldName, getter, editable, required) {
-    super(heading, fieldName, getter, "application/pdf", editable, required);
+class PdfColumn extends FileColumn {
+  constructor(heading, fieldName, fieldGetter, editable, required) {
+    super(heading, fieldName, fieldGetter, "application/pdf", editable, required);
   }
 
   setValue(img, value) {
@@ -479,70 +488,61 @@ class PDFColumn extends FileColumn {
 }
 
 class SelectColumn extends Column {
-  constructor(heading, fieldName, getter, setter, dropDown, editable, required, length, dropSize = 5) {
-    super(heading, fieldName, getter, setter, editable, required, length);
+  constructor(heading, fieldName, fieldGetter, fieldSetter, dropDown, editable, required, dropSize = 5) {
+    super(heading, fieldName, fieldGetter, fieldSetter, editable, required, length);
     this.dropDown = dropDown;
     this.dropSize = dropSize;
   }
 
-  setValue(sel, value) {
+  initialise(sel) {
+    sel = super.initialise(sel);
+
+    if (sel.readOnly) {
+      sel.type = "text";
+    } else {
+      sel.type = "select";
+
+      let column = this;
+
+      if (!column.required) {
+        addOption(sel, undefined, translate("NICHT_BENOTIGT"));
+      }
+        
+      for (let opt of dropDown.options) {
+        addOption(sel, opt.value, opt.display, opt.tooltip, opt.abbildung);
+      }
+    }
+  }
+
+  setControlValue(sel, value) {
+    let column = this;
+
     if (value) {
-      this.dropDown.options.forEach((o) => {
-        if (o.value === value) {
-          sel.value = o.display;
+      let dropDown = column.dropDown;
+
+      for (let opt of dropDown.options) {
+        if (opt.value === value) {
+          sel.value = opt.display;
         }
-      });
+      }
     }
   }
-
-  getLength() {
-    return Math.max(this.dropDown.getLength(), this.getHeaderLength());
-  }
-
-  addOptions(select, dropDown) {
-    if (!this.required) {
-      addOption(select, undefined, translate("NICHT_BENOTIGT"));
-    }
-
-    dropDown.options.forEach(opt => {
-      addOption(select, opt.getValue(), opt.getDisplay());
-    });
-  }
-
-  options() {
-    // Filter only for AutoComplete...
-    return this.dropDown.options;
-  }
 }
-
-const closeAutoLists = (elmnt = document) => 
-  elmnt.getElementsByClassName("autocomplete-list")
-       .forEach((a) => {
-         removeChildren(a);
-         a.parentElement.removeChild(a);
-  });
-
-document.addEventListener("click", () => { closeAutoLists() }, false);
-
-const valueAndUnits = (cssSize) => {
-  let dims = /^(\d+)([^\d]+)$/.exec(cssSize);
-  return { value: dims[1], units: dims[2] }
-}
-
-const boxSize = (length) => Math.ceil(length / 5) * 5;
 
 class AutoCompleteColumn extends SelectColumn {
-  constructor(heading, fieldName, getter, setter, dropDown, editable, required, length, dropSize) {
-    super(heading, fieldName, getter, setter, dropDown, editable, required, length, dropSize);
+  constructor(heading, fieldName, fieldGetter, fieldSetter, dropDown, editable, required, length, dropSize) {
+    super(heading, fieldName, fieldGetter, fieldSetter, dropDown, editable, required, length, dropSize);
   }
 
-  getControl(cell, entity, editMode) {
-    let sel = super.getControl(cell, entity, editMode);
+  bind(row, entity, editMode) {
+    let sel = super.bind(row, entity, editMode);
 
     if (!sel.disabled) {
-      sel.addEventListener("click", (e) => { this.open(e) }, false);
-      sel.addEventListener("input", (e) => { this.open(e) }, false);
-      sel.addEventListener("keydown", (e) => { this.keydown(e) }, false);
+      let column = this;
+
+      sel.addEventListener("click", (e) => { column.open(e) }, false);
+      sel.addEventListener("input", (e) => { column.open(e) }, false);
+      sel.addEventListener("keydown", (e) => { column.keydown(e) }, false);
       sel.classList.add("autocomplete");
     }
 
@@ -553,27 +553,17 @@ class AutoCompleteColumn extends SelectColumn {
     return sel.getAttribute("data-value") ? sel.getAttribute("data-value") : undefined;
   }
 
-  options(txt) {
-    return this.dropDown
-               .getOptions()
-               .filter((o) => o.display.toLowerCase().includes(txt.toLowerCase()))
-               .slice(0, this.dropSize);
-  }
-
-  caption(txt, o) {
-    return o.display.replace(/inp.value/i, "<strong>" + inp.value + "</strong>");
-  }
-
   open(event) {
+    let column = this;
+
     let inp = event.target;
-    let sel = this;
     let div = inp.parentElement;
 
     if (!inp.value) {
       return false;
     }
 
-    e.stopPropagation();
+    event.stopPropagation();
     closeAutoLists();
 
     let rect = div.getBoundingClientRect();
@@ -581,27 +571,29 @@ class AutoCompleteColumn extends SelectColumn {
     let autoComp = document.createElement("div");
     autoComp.className = "autocomplete-list";
     autoComp.style.top = rect.y + rect.height;
-    div.appendChild(autoComp);
+    div.appendChild(autoComp); // turn into dialog?
+
     let dims = valueAndUnits(getComputedStyle(autoComp).lineHeight);
 
-    let i = 0;
-    sel.options(inp.value).forEach((o) => {
-      let autoItem = document.createElement("div");
-      autoItem.setAttribute("data-value", o.value);
-      autoItem.className = "autocomplete-items";
-      autoItem.style.top = (dims.value * i) + dims.units;
-      addText(autoItem, sel.caption(inp.value, o));
-      autoItem.addEventListener("click", (e) => { this.click(e) }, false);
-      autoComp.appendChild(autoItem);
-      i++;
-    });
+    column.dropDown
+          .options
+          .filter((o) => o.display.toLowerCase().includes(inp.value.toLowerCase()))
+          .slice(0, column.dropSize)
+          .forEach((o) => {
+            let autoItem = document.createElement("div");
+            autoItem.setAttribute("data-value", o.value);
+            autoItem.className = "autocomplete-items";
+            autoItem.style.top = (dims.value * i) + dims.units;
+            addText(autoItem, o.display.replace(/txt/i, "<strong>" + inp.value + "</strong>"));
+            autoItem.addEventListener("click", (e) => { column.click(e) }, false);
+            autoComp.appendChild(autoItem);
+          });
   }
 
   keydown(e) {
-    let ctl = this;
-    let div = e.target.parentElement;
+    let column = this;
 
-    let autoComps = div.getElementsByClassName("autocomplete-list");
+    let autoComps = e.target.parentElement.getElementsByClassName("autocomplete-list");
 
     if (!autoComps || !autoComps.length) {
       return;
@@ -610,12 +602,12 @@ class AutoCompleteColumn extends SelectColumn {
     let autoComp = autoComps[0];
 
     if (e.keyCode === 40) {
-      ctl.addActive(ctl, autoComp, true);
+      column.addActive(ctl, autoComp, true);
     } else if (e.keyCode === 38) {
-      ctl.addActive(ctl, autoComp, false);
+      column.addActive(ctl, autoComp, false);
     } else if (e.keyCode === 13) {
       e.preventDefault();
-      ctl.selectActive(autoComp);
+      column.selectActive(autoComp);
     }
   }
 
@@ -658,14 +650,16 @@ class AutoCompleteColumn extends SelectColumn {
 }
 
 class DropDownColumn extends SelectColumn {
-  constructor(heading, fieldName, getter, setter, dropDown, editable, required, length, dropSize) {
-    super(heading, fieldName, getter, setter, dropDown, editable, required, length + 3.5, dropSize);
+  constructor(heading, fieldName, fieldGetter, fieldSetter, dropDown, editable, required, length, dropSize) {
+    super(heading, fieldName, fieldGetter, fieldSetter, dropDown, editable, required, length + 3.5, dropSize);
   }
 
-  createControl() {
+  initialise(inp) {
+    let column = this;
+
     let sel = document.createElement("select");
     sel.size = 1;
-    this.addOptions(sel, this.dropDown);
+    column.addOptions(sel, column.dropDown);
     sel.selectedIndex = -1;
     return sel;
   }
@@ -674,118 +668,148 @@ class DropDownColumn extends SelectColumn {
     return select.selectedIndex >= 0 ? select.options[select.selectedIndex].value : undefined;
   }
 
-  getLength() {
-    return boxSize(Math.max(this.dropDown.getLength() + 3, this.getHeaderLength()));
-  }
-
-  setValue(sel, value) {
+  setControlValue(sel, value) {
     if (value) {
       sel.value = value;
-      sel.options
-         .filter((o) => o.value === value)
-         .forEach((o) => o.selected = true);
+      for (let opt of sel.options) {
+         if (opt.value === value) {
+           opt.selected = true;
+         }
+      }
     }
   }
 }
 
-class ButtonColumn {
-  constructor(headLinkage, btnLinkage) {
-    this.headLinkage = headLinkage;
-    this.btnLinkage = btnLinkage;
-    this.length = Math.max(headLinkage.length, btnLinkage.length) * 8;
-    this.width = 0;
+class ButtonColumn extends Column {
+  constructor(actions = []) {
+    super("", "", undefined, undefined, Editable.NEVER, false, actions.length);
+    this.actions = actions;
+    this.headingCount = actions.reduce((count, action) => action.heading ? count+1 : count, 0);
+    this.rowCount = actions.length - this.headingCount;
+    this.length = Math.max(this.headingCount, this.rowCount) * 8;
   }
 
-  setContext(grid, table) {
-    this.grid = grid;
-    this.table = table;
-  }
+  getHeading(grid, headerRow) {
+    let column = this;
 
-  getHeading(isForm) {
-    let grid = this.grid;
-    let td = document.createElement(isForm ? "div" : "th");
-    td.className = "table-heading-btn";
+    if (column.length) {
+      let header = document.createElement("th");
+      header.className = "table-heading-btn";
+      headerRow.append(header);
 
-    if (this.headLinkage) {
-      this.headLinkage.forEach(linkage => {
-        let btn = linkage(grid);
-        td.appendChild(btn);
-      });
-    } else {
-      addText(td, " ");
+      column.actions
+            .forEach((action) => {
+              if (action.heading) {
+                let btn = createButton(action.caption, action.image, action.action, "table-heading-btn");
+                btn.id = getFieldId(grid.table.id, action.caption);
+                header.appendChild(btn);
+              }
+            });
+
+      return header;
     }
-
-    return td;
   }
 
-  getLength() {
-    return boxSize(this.length);
+  getFormHeading(grid, headerRow) {
+    let column = this;
+
+    if (column.length) {
+      let header = document.createElement("div");
+      header.className = "form-heading-btn";
+      headerRow.append(header);
+
+      column.actions
+            .forEach((action) => {
+              let btn = createButton(action.caption, action.image, action.action, "form-heading-btn");
+              btn.id = getFieldId(action.form ? getRowId(grid.table.id, 0) : grid.table.id, action.caption);
+              header.appendChild(btn);  
+            });
+
+      return header;
+    }
   }
 
-  getHeaderLength() {
-    return this.length;
+  getTableCell(grid, row) {
+    let column = this;
+
+    if (column.length) {
+      let cell = document.createElement("td");
+      cell.className = "table-cell";
+      row.append(cell);
+
+      column.actions
+            .forEach((action) => {
+              if (!action.heading) {
+                let btn = createButton(action.caption, action.image, action.action, "table-cell-btn");
+                btn.id = getFieldId(row.id, action.caption);
+                btn.disabled = true;
+                btn.visible = "hidden";
+                cell.appendChild(btn);
+              }
+            });
+
+      return cell;
+    }
   }
 
-  getWidth() {
-    return this.width;
+  getFormField(grid, row, width) {
+   return undefined;
   }
 
-  setWidth(width) {
-    this.width = width;
-  }
+  bind(row, entity, editMode) {
+    let column = this;
 
-  getControl(cell, entity, editMode) {
-    let rowId = getCellRowId(cell);
-    let grid = this.grid;
-
-    let ctl = document.createElement("div");
-
-    if (editMode && this.btnLinkage) {
-      this.btnLinkage.forEach(linkage => {
-        if (entity) {
-          let btn = linkage(grid, rowId);
-          ctl.appendChild(btn);
+    let disabled = shouldDisable(Editable.UPDATE, editMode, entity);
+    if (column.rowActions) {
+      column.rowActions.forEach((action) => {
+        let btn = row.getElementById(getFieldId(rowId, action.caption));
+        if (btn) {
+          let url = action.action(editMode, entity);
+          btn.disabled = disabled.appendChild(btn);
         }
       });
-    } else {
-      addText(ctl, " ");
     }
-
-    cell.appendChild(ctl);
 
     return ctl;
   }
 
-  isButtons() {
-    return true;
+  getControlValue(ctl) {
+   return undefined;
   }
 }
 
 class ThumbColumn extends Column {
-  constructor(fieldName, getter) {
-    super("", fieldName, getter, undefined, Editable.NEVER, false, 0);
+  constructor(fieldName, fieldGetter) {
+    super(undefined, fieldName, fieldGetter, undefined, Editable.NEVER, false, 0);
   }
 
-  createControl(cell, editMode) {
-    return document.createElement("div");
+  getHeading(grid, headerRow) {
   }
-  
-  bind(cell, entity, editMode) {
-    let cellId = cell.id.substr(cell.id.indexOf("_"));
 
-    let div = document.getElementById(this.fieldName + cellId);
+  getFormHeading(grid, headerRow) {
+  }
 
-    if (div) {
-      div.className = "thumb-item";
-    }
+  initialise(ctl) {
+  }
 
-    let img = document.getElementById(this.fieldName + cellId + "_img");
+  createControl(grid, row, className) {
+  }
+
+  getTableCell(grid, row) {
+   return undefined;
+  }
+
+  getFormField(grid, row, width) {
+   return undefined;
+  }
+
+  bind(row, entity, editMode) {
+    let column = this;
+    let img = document.getElementById(column.fieldName + row.id + "_img");
 
     if (img) {
-      img.className = "thumb-display";
-
       if (entity) {
-        img.src = this.entityValue(entity);
+        img.src = column.fieldGetter(entity, column.fieldName);
       } else {
         img.src = undefined;
       }
@@ -794,12 +818,7 @@ class ThumbColumn extends Column {
     return img;
   }
 
-
-  getControlValue(img) {
-    return undefined;
-  }
-
-  getDisplayLength() {
-    return 0;
+  getControlValue(ctl) {
+   return undefined;
   }
 }

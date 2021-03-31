@@ -28,7 +28,7 @@
       ANMERKUNG(Editable.ADD, false),
       ABBILDUNG(Editable.NEVER),
       STATUS_SELECT(Editable.ADD, true),
-      new ButtonColumn([newRow], [editRow, deleteRow])
+      new ButtonColumn([newAction], [editAction, deleteAction])
     ];
 
     const artikelen = new ItemGrid(10, fetchUrl("artikel"), "artikelen", columns, Paged.PAGED, EditMode.UPDATE, undefined, "artikel.html");

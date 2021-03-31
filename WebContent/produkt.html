@@ -28,7 +28,7 @@
     const teilenColumns = [
       TEIL_SELECT(Editable.ADD, true),
       stuck,
-      new ButtonColumn([addRow], [ updateValue, deleteRow ])
+      new ButtonColumn([addChildAction("teilen")], [updateAction, deleteAction])
     ];
 
     const teilen = new ItemGrid(5, "teilen", "teilen", teilenColumns, Paged.EXPAND, EditMode.ADD, undefined);
@@ -59,7 +59,7 @@
       ANLEITUNGEN(Editable.NEVER),
       EXPLOSIONSZEICHNUNG(Editable.NEVER),
       ABBILDUNG(Editable.NEVER),
-      new ButtonColumn([], [updateRow])
+      new ButtonColumn([], [updateAction])
     ];
 
     const produkt = new ItemGrid(1, fetchUrl("produkt"), "produkt", columns, Paged.FORM, EditMode.UPDATE, [teilen]);

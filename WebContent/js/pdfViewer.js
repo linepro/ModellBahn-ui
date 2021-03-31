@@ -1,4 +1,4 @@
-// module "pdfViewer.js"
+// module "pdfViewer.js";
 "use strict";
 
 const pdfViewer = (canvas) => {

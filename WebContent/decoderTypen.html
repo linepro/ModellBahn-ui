@@ -20,7 +20,8 @@
       PROTOKOLL_SELECT(Editable.ADD, true),
       GERAUSCH(Editable.ADD, true),
       STECKER_SELECT(Editable.ADD, true),
-      new ButtonColumn([newRow], [editRow, deleteRow])];
+      new ButtonColumn([newAction], [editAction, deleteAction])
+    ];
 
     const decoderTypen = new ItemGrid(10, fetchUrl("decoderTyp"), "decoderTypen", columns, Paged.PAGED, EditMode.UPDATE, undefined, "decoderTyp.html");
 

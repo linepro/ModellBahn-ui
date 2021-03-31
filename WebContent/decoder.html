@@ -26,7 +26,7 @@
       INDEX(Editable.NEVER, false),
       ADRESS_TYP_SELECT(Editable.UPDATE, true),
       adress,
-      new ButtonColumn([], [ (grid, rowId) => { return createButton( 'update', 'save', () => { updateValue(grid, rowId, adress) } ) } ])
+      new ButtonColumn([], [ updateAction ])
     ];
 
     const adressen = new ItemGrid(2, undefined, "adressen", adressColumns, Paged.EXPAND, EditMode.UPDATE, undefined);
@@ -38,7 +38,7 @@
       BEZEICHNUNG(Editable.NEVER, false),
       WERKSEINSTELLUNG(Editable.NEVER, false),
       wert,
-      new ButtonColumn([], [ (grid, rowId) => { return createButton( 'update', 'save', () => { updateValue(grid, rowId, wert) } ) } ])
+      new ButtonColumn([], [ updateAction ])
     ];
 
     const cvs = new ItemGrid(10, undefined, "cvs", cvColumns, Paged.EXPAND, EditMode.UPDATE, undefined);
@@ -50,7 +50,7 @@
       funktion,
       BEZEICHNUNG(Editable.UPDATE, true),
       PROGRAMMABLE(Editable.NEVER, false),
-      new ButtonColumn([], [ (grid, rowId) => { return createButton( 'update', 'save', () => { updateValue(grid, rowId, funktion) } ) } ])
+      new ButtonColumn([], [ updateAction ])
     ];
 
     const funktionen = new ItemGrid(10, undefined, "funktionen", funktiononenColumns, Paged.EXPAND, EditMode.UPDATE, undefined);

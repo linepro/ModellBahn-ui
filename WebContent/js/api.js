@@ -1,9 +1,8 @@
 // module "api.js"
 "use strict";
 
-const setAuthorisation = (userName, password) => {
+const setAuthorisation = (userName, password) =>
   localStorage.setItem("authorisation", "Basic " + btoa(userName + ":" + password));
-};
 
 const checkResponse = async (response) => {
   let clone = response.clone();

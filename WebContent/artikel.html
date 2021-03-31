@@ -29,7 +29,7 @@
       ANDERUNGS_DATUM(Editable.UPDATE, true),
       BEZEICHNUNG(Editable.UPDATE, true),
       STUCK(Editable.UPDATE, true),
-      gridButtonColumn()
+      new ButtonColumn([addChildAction("anderungen")], [updateAction, deleteAction])
     ];
 
     const anderungen = new ItemGrid(5, "anderungen", "anderungen", anderungenColumns, Paged.EXPAND, EditMode.ADD, undefined);

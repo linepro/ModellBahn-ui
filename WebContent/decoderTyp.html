@@ -19,7 +19,7 @@
       ADRESS_TYP_SELECT(Editable.UPDATE, true),
       SPAN(Editable.UPDATE, true),
       WERKSEINSTELLUNG(Editable.UPDATE, true),
-      gridButtonColumn()
+      new ButtonColumn([addChildAction("adressen")], [updateAction, deleteAction])
     ];
 
     const adressen = new ItemGrid(2, "adressen", "adressen", adressColumns, Paged.EXPAND, EditMode.ADD, undefined);
@@ -30,7 +30,7 @@
       MAXIMAL(Editable.UPDATE, false),
       MINIMAL(Editable.UPDATE, false),
       WERKSEINSTELLUNG(Editable.UPDATE, false),
-      gridButtonColumn()
+      new ButtonColumn([addChildAction("cvs")], [updateAction, deleteAction])
     ];
 
     const cvs = new ItemGrid(10, "cvs", "cvs", cvColumns, Paged.EXPAND, EditMode.ADD, undefined);
@@ -40,7 +40,7 @@
       FUNKTION(Editable.ADD, true),
       WERKSEINSTELLUNG(Editable.UPDATE, true),
       PROGRAMMABLE(Editable.UPDATE, true),
-      gridButtonColumn()
+      new ButtonColumn([addChildAction("funktionen")], [updateAction, deleteAction])
     ];
 
     const funktionen = new ItemGrid(10, "funktionen", "funktionen", funktionenColumns, Paged.EXPAND, EditMode.ADD, undefined);

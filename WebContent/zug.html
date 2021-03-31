@@ -25,7 +25,7 @@
       BEZEICHNUNG(Editable.NEVER, false),
       LANGE(Editable.NEVER, false),
       THUMBNAIL(),
-      new ButtonColumn([addRow], [ updateValue, deleteRow ])
+      new ButtonColumn([addChildAction("consist")], [updateAction, deleteAction])
     ];
 
     const fahrzeugen = new ItemGrid(2, "fahrzeugen", "fahrzeugen", fahrzeugColumns, Paged.EXPAND, EditMode.ADD, undefined);
@@ -35,7 +35,7 @@
       ZUG_TYP_SELECT(Editable.UPDATE, true),
       BEZEICHNUNG(Editable.UPDATE, true),
       LANGE(Editable.NEVER),
-      new ButtonColumn([], [updateRow])
+      new ButtonColumn([], [updateAction])
     ];
 
     const zug = new ItemGrid(1, fetchUrl("zug"), "zug", columns, Paged.FORM, EditMode.UPDATE, [fahrzeugen]);

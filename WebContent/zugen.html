@@ -17,7 +17,7 @@
       ZUG_TYP_SELECT(Editable.ADD),
       BEZEICHNUNG(Editable.ADD),
       LANGE(Editable.NEVER),
-      new ButtonColumn([newRow], [editRow, deleteRow])
+      new ButtonColumn([newAction], [editAction, deleteAction])
     ];
 
     const zugen = new ItemGrid(10, fetchUrl("zug"), "zugen", columns, Paged.PAGED, EditMode.UPDATE, undefined, "zug.html");

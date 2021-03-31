@@ -317,10 +317,21 @@ caption {
   text-align: left;
 }
 
-div.fhead,
+div.fhead {
+  background-color: LightSkyBlue;
+  color: white;
+  display: flex;
+  font-weight: bold;
+  height: 3rem;
+  padding: 0;
+  text-align: left;
+  width: 100%;
+}
+
 thead {
   background-color: LightSkyBlue;
   color: white;
+  display: table-header-group;
   font-weight: bold;
   height: 3rem;
   padding: 0;
@@ -363,7 +374,7 @@ div.title {
 }
 
 tbody {
-  display: block;
+  display: table-row-group;
   height: 31.8rem;
   max-height: 31.8rem;
   overflow-x: hidden;
@@ -386,7 +397,7 @@ tr {
 }
 
 tr.table-row {
-  display: flex;
+  display: table-row;
   height: 3.1rem;
 }
 

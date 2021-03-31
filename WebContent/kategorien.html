@@ -17,7 +17,7 @@
     const columns = [
       NAMEN(Editable.ADD, true),
       BEZEICHNUNG(Editable.ADD, true),
-      new ButtonColumn([newRow], [editRow, deleteRow])
+      new ButtonColumn([newAction], [editAction, deleteAction])
     ];
 
     const kategorien = new ItemGrid(10, fetchUrl("kategorie"), "kategorien", columns, Paged.PAGED, EditMode.UPDATE, undefined, "unterKategorien.html");
