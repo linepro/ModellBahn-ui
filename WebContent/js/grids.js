@@ -1,15 +1,6 @@
 // module "grids.js";
 "use strict";
 
-const blankControl = (cell) => {
-  let ctl = document.createElement("input");
-  ctl.type = "text";
-  ctl.disabled = "true";
-  ctl.readOnly = "true";
-  ctl.required = false;
-  cell.appendChild(ctl);
-};
-
 const defaultRowSetter = (row, columns) => {
   let entity = {};
 
@@ -112,28 +103,37 @@ const initializeFormHeader = (grid) => {
   headRow.id = form.id + "Head";
   header.append(headRow);
 
-  grid.columns.forEach((column) => column.getFormHeading(grid, row));
-}
+  grid.columns.forEach((column) => column.getFormHeading(row));
+};
+
+const createRow = (grid, rowNum, type, className) => {
+  return {
+    id: getRowId(grid.id, rowNum),
+    element: document.createElement(type),
+    editMode: grid.editMode,
+    columns: grid.columns,
+    controls: [],
+    save: undefined,
+    delete: undefined,
+    refresh: grid.loadData(),
+    entity: undefined,
+    bind: undefined,
+    grid: grid
+  };
+};
 
 const initializeFormRow = (grid, rowNum, maxLabel) => {
   let form = grid.table
   let body = document.getElementById(form.id + "_tbody");
 
-  let row = {
-    grid: grid,
-    row: document.createElement("div"),
-    controls: [],
-    save: null,
-    delete: null
-  };
-  row.row.className = "flex-container";
-  row.row.id = getRowId(table.id, rowNum);
+  let row = createRow(grid, rowNum, "div", "flex-container");
+  row.bind = row.controls.forEach((control) => control.bind(row, entity, grid.editMode));
   body.append(row.row);
 
-  grid.rows.push(row);
-
   grid.columns.forEach((column) => row.controls.push(column.getFormField(row.row, maxLabel)));
-}
+
+  return row;
+};
 
 const initializeFormBody = (grid, maxLabel) => {
   let form = grid.table
@@ -143,8 +143,10 @@ const initializeFormBody = (grid, maxLabel) => {
   body.className = "flex-container";
   form.append(body);
 
-  initializeFormRow(grid, 0, maxLabel);
-}
+  grid.rows = [];
+  let row = initializeFormRow(grid, 0, maxLabel);
+  grid.rows.push(row);
+};
 
 const initializeFormFooter = (grid) => {
   let form = grid.table;
@@ -163,7 +165,7 @@ const initializeFormFooter = (grid) => {
   footer.className = "form-footer";
   addText(footer, " ");
   navRow.append(footer);
-}
+};
 
 const initializeForm = (grid) => {
   let form = grid.table;
@@ -181,7 +183,7 @@ const initializeForm = (grid) => {
   initializeFormBody(grid, maxLabel);
 
   initializeFormFooter(grid);
-}
+};
 
 const initializeTableHeader = (grid) => {
   let table = grid.table;
@@ -197,7 +199,7 @@ const initializeTableHeader = (grid) => {
   header.append(headRow);
 
   grid.columns.forEach((column) => column.getHeading(grid, headRow));
-}
+};
 
 const appendTableRow = (grid) => {
   let table = grid.table;
@@ -212,7 +214,7 @@ const appendTableRow = (grid) => {
   grid.columns.forEach((column) => column.getTableCell(grid, row));
 
   return row;
-}
+};
 
 const initializeTableBody = (grid) => {
   let table = grid.table;
@@ -222,10 +224,12 @@ const initializeTableBody = (grid) => {
   body.className = "tbody";
   table.append(body);
 
+  grid.rows = [];
   for (let rowNum = 0; rowNum < grid.pageSize; rowNum++) {
-    appendTableRow(grid);
+    let row = appendTableRow(grid);
+    grid.rows.push(row);
   }
-}
+};
 
 const initializeTableFooter = (grid) => {
   let table = grid.table;
@@ -247,7 +251,7 @@ const initializeTableFooter = (grid) => {
     prev.className = "table-prev";
     prev.id = table.id + "Prev";
     prev.disabled = true;
-    prev.addEventListener("click", () => grid.getData---(prevLnk), false);
+    prev.addEventListener("click", () => grid.getData(prevLnk), false);
     prevCell.appendChild(prev);
     grid.prev = prev;
   }
@@ -265,10 +269,11 @@ const initializeTableFooter = (grid) => {
     next.className = "table-next";
     next.id = table.id + "Next";
     next.disabled = true;
+    next.addEventListener("click", () => grid.getData(nextLnk), false);
     nextCell.appendChild(next);
     grid.next = next;
   }
-}
+};
 
 const initializeTable = (grid) => {
   let table = grid.table;
@@ -303,7 +308,7 @@ const initializeTable = (grid) => {
   initializeTableBody(grid);
 
   initializeTableFooter(grid);
-}
+};
 
 class ItemGrid {
   constructor(pageSize, apiUrl, tableId, columns, paged, editMode = EditMode.VIEW, children = undefined, editForm = undefined, rowSetter = defaultRowSetter, updater = null) {
@@ -353,7 +358,7 @@ class ItemGrid {
 
     let grid = this;
     if (this.children) {
-      this.children.forEach(child => { child.setParent(grid) });
+      this.children.forEach((child) => child.setParent(grid));
     }
   }
 
@@ -399,9 +404,6 @@ class ItemGrid {
     let grid = this;
     if (grid.parent) {
       grid.parent.loadData();
-    } else if (grid.editMode === EditMode.ADD) {
-      grid.initGrid();
-      grid.addRow(saveUrl);
     } else {
       grid.getData(grid.current);
     }
@@ -471,17 +473,12 @@ class ItemGrid {
 
     if (grid.prev) {
       let prevLnk = actionLink(jsonData, "prev");
-      prev.disabled = prevLnk;
+      grid.prev.disabled = prevLnk;
     }
 
     if (grid.next) {
       let nextLnk = actionLink(jsonData, "next");
-      next.disabled = nextLnk;
-      if (!next.disabled) {
-        next.addEventListener("click", () => grid.getData(nextLnk), false);
-      } else {
-        next.removeEventListener("click", false);
-      }
+      grid.next.disabled = nextLnk;
     }
   }
 
@@ -501,9 +498,28 @@ class ItemGrid {
     grid.current = restUrl;
   }
 
+  addNewPage(saveUrl) {
+    let grid = this;
+
+    let entity = {};
+    for (let row of grid.rows) {
+      grid.renderRow(row, entity, EditMode.ADD);
+      entity = undefined;
+      if (grid.prev) {
+        grid.prev.disabled = false;
+      }
+      if (grid.next) {
+         grid.next.disabled = true;
+      }
+    }
+  }
+
   async getData(restUrl) {
     let grid = this;
-    await getRest(restUrl, (jsonData) => grid.renderJson(jsonData, restUrl), (error) => reportError(restUrl, error));
+    if (grid.editMode == EditMode.ADD) {
+    } else {
+      await getRest(restUrl, (jsonData) => grid.renderJson(jsonData, restUrl), (error) => reportError(restUrl, error));
+    }
   }
 
   rowData(row) {
@@ -528,15 +544,12 @@ class ItemGrid {
       // Add a row at end;
       return appendTableRow(grid);
     } else if (paged === Paged.PAGED) {
-      // the page is full, new page and add at start
-      for (let row = 1; row < rows.length; row++) {
+      // the page is full, simulate page and add at start
+      for (let row of grid.rows) {
         grid.renderRow(row, undefined, EditMode.NEVER);
       }
 
-      grid.prev.addEventListener("click", () => grid.getData(grid.current), false);
       grid.prev.disabled = false;
-
-      grid.next.removeEventListener("click", false);
       grid.next.disabled = true;
     }
 
@@ -548,9 +561,8 @@ class ItemGrid {
     let grid = this;
     let row = grid.getFreeRow();
 
-    grid.renderRow(row, undefined, EditMode.NEVER);
-    let ctl = document.getElementsByTagName("INPUT");
-    ctl[0].focus();
+    grid.renderRow(row, {}, EditMode.ADD);
+    row.getElementsByTagName("INPUT")[0].focus();
 
     row.save.addEventListener("click", () => grid.saveRow(row, saveUrl), false);
     row.del.addEventListener("click", () => grid.removeRow(row), false);
@@ -597,7 +609,7 @@ class ItemGrid {
       await putRest(updateUrl, data, (jsonData) => grid.renderUpdate(row, jsonData), (error) => reportError("updateRow", error));
     }
   }
-}
+};
 
 class ListEditGrid extends ItemGrid {
   constructor(pageSize, dataType, elementName, columns) {
@@ -614,11 +626,11 @@ class ListEditGrid extends ItemGrid {
       h1.text = this.dataType;
     }
   }
-}
+};
 
 class NamedItemGrid extends ListEditGrid {
   constructor(dataType, elementName) {
     super(10, dataType, elementName, [NAMEN(), BEZEICHNUNG()]);
   }
-}
+};
 

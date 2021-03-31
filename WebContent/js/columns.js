@@ -133,13 +133,13 @@ class Column {
   bind(row, entity, editMode) {
     let column = this;
 
-    let ctl = document.getElementById(getFieldId(rowId, column.fieldName));
+    let ctl = document.getElementById(getFieldId(row.id, column.fieldName));
     if (ctl) {
       let value = column.fieldGetter(entity, column.fieldName);
       if (value) {
         ctl.setAttribute("data-value", value);
       } else {
-        ctl.clearAttribute("data-value");
+        ctl.removeAttribute("data-value");
       }
       column.setControlValue(ctl, value);
       ctl.disabled = shouldDisable(column.editable, editMode, value);
@@ -151,7 +151,7 @@ class Column {
   getValue(row) {
     let column = this;
 
-    let ctl = document.getElementById(getFieldId(rowId, column.fieldName));
+    let ctl = document.getElementById(getFieldId(row.id, column.fieldName));
     if (ctl) {
       return column.getControlValue(ctl);
     }
@@ -162,7 +162,7 @@ class Column {
   }
 
   setControlValue(ctl, value) {
-    ctl.value = value;
+    ctl.value = value ? value : "";
   }
 }
 
@@ -211,7 +211,7 @@ class NumberColumn extends Column {
 
   setControlValue(num, value) {
     let column = this;
-    num.value = value ? value.toLocaleString(getLanguage(), { minimumFractionDigits: column.places, maximumFractionDigits: column.places } ) : undefined;
+    num.value = value ? value.toLocaleString(getLanguage(), { minimumFractionDigits: column.places, maximumFractionDigits: column.places } ) : "";
   }
 }
 
@@ -312,7 +312,7 @@ class DateColumn extends TextColumn {
     }
 
     if (dte.DatePickerX) { 
-      dte.value = value;
+      dte.value = value ? value : "";
     }
     return iso;
   }
@@ -349,7 +349,7 @@ class FileColumn extends Column {
       let add = createButton("add", "add", undefined, "img-button");
       add.id = img.id + "_add";
       add.disabled = true;
-      add.addEventListener("click", (e) => column.updateFile(e, link, refresh), false);
+      add.addEventListener("click", (e) => column.updateFile(e, link, row.refresh), false);
       add.setAttribute("data-attribute", refresh);
       bar.appendChild(add);
 
@@ -762,7 +762,7 @@ class ButtonColumn extends Column {
     let disabled = shouldDisable(Editable.UPDATE, editMode, entity);
     if (column.rowActions) {
       column.rowActions.forEach((action) => {
-        let btn = row.getElementById(getFieldId(rowId, action.caption));
+        let btn = row.getElementById(getFieldId(row.id, action.caption));
         if (btn) {
           let url = action.action(editMode, entity);
           btn.disabled = disabled.appendChild(btn);
@@ -808,11 +808,7 @@ class ThumbColumn extends Column {
     let img = document.getElementById(column.fieldName + row.id + "_img");
 
     if (img) {
-      if (entity) {
-        img.src = column.fieldGetter(entity, column.fieldName);
-      } else {
-        img.src = undefined;
-      }
+      img.src = column.fieldGetter(entity, column.fieldName);
     }
 
     return img;

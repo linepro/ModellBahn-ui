@@ -88,32 +88,32 @@ const VORBILD_DROP = dropDown(apiUrl("vorbild"), optionExtractor, vorbildOption)
 const WAHRUNG_DROP = dropDown(apiUrl("enums/wahrung"), optionExtractor, bezeichnungOption);
 const ZUG_TYP_DROP = dropDown(apiUrl("zugTyp"), optionExtractor, bezeichnungOption);
 
-const artikelIdGetter = (entity) => entity.artikelId;
+const artikelIdGetter = (entity) => entity ? entity.artikelId : undefined;
 const artikelIdSetter = (entity, value) => entity.artikelId = value;
-const decoderIdGetter = (entity) => entity.decoderId;
+const decoderIdGetter = (entity) => entity ? entity.decoderId : undefined;
 const decoderIdSetter = (entity, decoderId) => entity.decoderId = decoderId;
-const produktGetter = (entity) => entity.hersteller + "/" + entity.bestellNr;
+const produktGetter = (entity) => entity ? entity.hersteller + "/" + entity.bestellNr : undefined;
 const produktSetter = (entity, value) => {
   let parts = value.split("/");
   entity.hersteller = parts[0];
   entity.bestellNr = parts[1];
 };
-const produktTeilGetter = (entity) => entity.teilHersteller + "/" + entity.teilBestellNr;
+const produktTeilGetter = (entity) => entity ? entity.teilHersteller + "/" + entity.teilBestellNr : undefined;
 const produktTeilSetter = (entity, value) => {
   let parts = value.split("/");
   entity.teilHersteller = parts[0];
   entity.teilBestellNrbestellNr = parts[1];
 };
-const unterKategorieGetter = (entity) => entity.kategorie + "/" + entity.unterKategorie;
+const unterKategorieGetter = (entity) => entity ? entity.kategorie + "/" + entity.unterKategorie : undefined;
 const unterKategorieSetter = (entity, value) => {
   let parts = value.split("/");
   entity.kategorie = parts[0];
   entity.unterKategorie = parts[1];
 };
-const vorbildGetter = (entity) => entity.gattung;
+const vorbildGetter = (entity) => entity ? entity.gattung : undefined;
 const vorbildSetter = (entity, value) => entity.gattung = value;
 
-const fieldGetter = (entity, fieldName) => entity[fieldName];
+const fieldGetter = (entity, fieldName) => entity ? entity[fieldName] : undefined;
 const fieldSetter = (entity, value, fieldName) => entity[fieldName] = value;
 const noOpSetter = () => {};
 

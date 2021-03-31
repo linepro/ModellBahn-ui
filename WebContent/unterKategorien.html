@@ -17,7 +17,7 @@
     const unterKategorieColumns = [
       NAMEN(Editable.ADD),
       BEZEICHNUNG(Editable.UPDATE),
-      gridButtonColumn()
+      new ButtonColumn([addChildAction("unterKategorien")], [updateAction, deleteAction])
     ];
 
     const unterKategorien = new ItemGrid(10, "unterKategorien", "unterKategorien", unterKategorieColumns, Paged.EXPAND, EditMode.ADD, undefined);
