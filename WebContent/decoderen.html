@@ -12,14 +12,20 @@
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
-    const columns = [
+    const decoderenColumns = [
       DECODER(Editable.NEVER, true),
       DECODER_TYP_SELECT(Editable.NEVER, true),
       BEZEICHNUNG(Editable.ADD, false),
-      PROTOKOLL_SELECT(Editable.ADD, true),
-      new ButtonColumn([newAction], [editAction, deleteAction])
+      PROTOKOLL_SELECT(Editable.ADD, true)
     ];
-    const decoderen = new ItemGrid(10, fetchUrl("decoder"), "decoderen", columns, Paged.PAGED, EditMode.UPDATE, undefined, "decoder.html");
+    
+    const decoderenActions = [
+      newAction("decoder.html"), 
+      editAction("decoder.html"),
+      deleteAction()
+    ];
+
+    const decoderen = new PagedTable(10, "decoder", "decoderen", decoderenColumns, decoderenActions, EditMode.UPDATE);
 
     async function init() {
       await layout(NavMenu.INVENTORY)

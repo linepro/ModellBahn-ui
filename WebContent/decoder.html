@@ -25,11 +25,14 @@
     const adressColumns = [
       INDEX(Editable.NEVER, false),
       ADRESS_TYP_SELECT(Editable.UPDATE, true),
-      adress,
-      new ButtonColumn([], [ updateAction ])
+      adress
+    ];
+    
+    const adressActions = [
+      saveAction()
     ];
 
-    const adressen = new ItemGrid(2, undefined, "adressen", adressColumns, Paged.EXPAND, EditMode.UPDATE, undefined);
+    const adressen = new ExpandingTable(2, undefined, "adressen", adressColumns, adressActions, EditMode.UPDATE);
 
     const wert = WERT(Editable.UPDATE, false);
 
@@ -37,11 +40,14 @@
       CV(Editable.NEVER, false),
       BEZEICHNUNG(Editable.NEVER, false),
       WERKSEINSTELLUNG(Editable.NEVER, false),
-      wert,
-      new ButtonColumn([], [ updateAction ])
+      wert
+    ];
+    
+    const cvActions = [
+      saveAction()
     ];
 
-    const cvs = new ItemGrid(10, undefined, "cvs", cvColumns, Paged.EXPAND, EditMode.UPDATE, undefined);
+    const cvs = new ExpandingTable(10, undefined, "cvs", cvColumns, cvActions, EditMode.UPDATE);
 
     const funktion = FUNKTION(Editable.NEVER, false);
 
@@ -49,11 +55,14 @@
       REIHE(Editable.NEVER, false),
       funktion,
       BEZEICHNUNG(Editable.UPDATE, true),
-      PROGRAMMABLE(Editable.NEVER, false),
-      new ButtonColumn([], [ updateAction ])
+      PROGRAMMABLE(Editable.NEVER, false)
+    ];
+    
+    const funktionenActions = [
+      saveAction()
     ];
 
-    const funktionen = new ItemGrid(10, undefined, "funktionen", funktiononenColumns, Paged.EXPAND, EditMode.UPDATE, undefined);
+    const funktionen = new ExpandingTable(10, undefined, "funktionen", funktiononenColumns, funktionenActions, EditMode.UPDATE);
 
     const decoderColumns = [
       DECODER(Editable.NEVER, true),
@@ -70,13 +79,20 @@
       PREIS(Editable.UPDATE, true),
       ANMERKUNG(Editable.UPDATE, true),
       DECODER_STATUS_SELECT(Editable.UPDATE, true),
-      ANLEITUNGEN(Editable.NEVER),
-      new ButtonColumn([], [updateRow])
+      ANLEITUNGEN(Editable.NEVER)
+    ];
+    
+    const decoderActions = [
+      updateRow
     ];
 
-    const children = [adressen, cvs, funktionen];
+    const decoderChildren = [
+      adressen, 
+      cvs, 
+      funktionen
+    ];
 
-    const decoder = new ItemGrid(1, fetchUrl("decoder"), "decoder", decoderColumns, Paged.FORM,  EditMode.UPDATE, children);
+    const decoder = new Form(fetchUrl("decoder"), "decoder", decoderColumns, decoderActions, EditMode.UPDATE, decoderChildren);
 
     async function init() {
       await layout(NavMenu.BACK)

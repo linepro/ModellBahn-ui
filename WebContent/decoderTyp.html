@@ -18,34 +18,49 @@
       INDEX(Editable.ADD, true),
       ADRESS_TYP_SELECT(Editable.UPDATE, true),
       SPAN(Editable.UPDATE, true),
-      WERKSEINSTELLUNG(Editable.UPDATE, true),
-      new ButtonColumn([addChildAction("adressen")], [updateAction, deleteAction])
+      WERKSEINSTELLUNG(Editable.UPDATE, true)
+    ];
+    
+    const adressActions = [
+      addAction("adressen"), 
+      saveAction(), 
+      deleteAction()
     ];
 
-    const adressen = new ItemGrid(2, "adressen", "adressen", adressColumns, Paged.EXPAND, EditMode.ADD, undefined);
+    const adressen = new ExpandingTable(2, "adressen", "adressen", adressColumns, adressActions, EditMode.ADD);
 
     const cvColumns = [
       CV(Editable.ADD, true),
       BEZEICHNUNG(Editable.UPDATE, true),
       MAXIMAL(Editable.UPDATE, false),
       MINIMAL(Editable.UPDATE, false),
-      WERKSEINSTELLUNG(Editable.UPDATE, false),
-      new ButtonColumn([addChildAction("cvs")], [updateAction, deleteAction])
+      WERKSEINSTELLUNG(Editable.UPDATE, false)
+    ];
+    
+    const cvActions = [
+      addAction("cvs"), 
+      saveAction(), 
+      deleteAction()
     ];
 
-    const cvs = new ItemGrid(10, "cvs", "cvs", cvColumns, Paged.EXPAND, EditMode.ADD, undefined);
+    const cvs = new ExpandingTable(10, "cvs", "cvs", cvColumns, cvActions, EditMode.ADD);
 
     const funktionenColumns = [
       REIHE(Editable.ADD, true),
       FUNKTION(Editable.ADD, true),
       WERKSEINSTELLUNG(Editable.UPDATE, true),
-      PROGRAMMABLE(Editable.UPDATE, true),
-      new ButtonColumn([addChildAction("funktionen")], [updateAction, deleteAction])
+      PROGRAMMABLE(Editable.UPDATE, true)
+    ];
+    
+    const funktionenActions = [
+      addAction("funktionen"), 
+      saveAction(), 
+      deleteAction()
     ];
 
-    const funktionen = new ItemGrid(10, "funktionen", "funktionen", funktionenColumns, Paged.EXPAND, EditMode.ADD, undefined);
+    const funktionen = new PagedTable(10, "funktionen", "funktionen", funktionenColumns, EditMode.ADD);
 
-    const columns = [
+    const decoderTypColumns = [
       HERSTELLER_SELECT(Editable.ADD, true),
       BESTELL_NR(Editable.ADD, true),
       BEZEICHNUNG(Editable.UPDATE, true),
@@ -54,12 +69,20 @@
       GERAUSCH(Editable.UPDATE, true),
       I_MAX(Editable.UPDATE, true),
       KONFIGURATION_SELECT(Editable.UPDATE, true),
-      STECKER_SELECT(Editable.UPDATE, true),
-      new ButtonColumn([], [updateRow])];
+      STECKER_SELECT(Editable.UPDATE, true)
+    ];
+    
+    const decoderTypActions = [
+      saveAction()
+    ];
 
-    const children = [adressen, cvs, funktionen];
+    const decoderTypChildren = [
+      adressen, 
+      cvs, 
+      funktionen
+    ];
 
-    const decoderTyp = new ItemGrid(1, fetchUrl("decoderTyp"), "decoderTyp", columns, Paged.FORM, EditMode.UPDATE, children);
+    const decoderTyp = new Form(fetchUrl("decoderTyp"), "decoderTyp", decoderTypColumns, decoderTypActions, EditMode.UPDATE, decoderTypChildren);
 
     async function init() {
       await layout(NavMenu.BACK)

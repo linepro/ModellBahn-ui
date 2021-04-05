@@ -20,7 +20,7 @@
       ABBILDUNG(Editable.NEVER)
     ];
 
-    const lichten = new ListEditGrid(10, "licht", "lichten", columns, Paged.PAGED, EditMode.UPDATE);
+    const lichten = new ListEditTable(10, "licht", "lichten", columns, EditMode.UPDATE);
 
     async function init() {
       await layout(NavMenu.REF_DATA)

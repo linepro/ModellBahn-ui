@@ -28,13 +28,18 @@
       ANDERUNGS_TYP_SELECT(Editable.UPDATE, true),
       ANDERUNGS_DATUM(Editable.UPDATE, true),
       BEZEICHNUNG(Editable.UPDATE, true),
-      STUCK(Editable.UPDATE, true),
-      new ButtonColumn([addChildAction("anderungen")], [updateAction, deleteAction])
+      STUCK(Editable.UPDATE, true)
     ];
 
-    const anderungen = new ItemGrid(5, "anderungen", "anderungen", anderungenColumns, Paged.EXPAND, EditMode.ADD, undefined);
+    const anderungActions = [
+      addAction("anderungen"), 
+      saveAction(), 
+      deleteAction()
+    ];
 
-    const columns = [
+    const anderungen = new ExpandingTable(5, "anderungen", "anderungen", anderungenColumns, anderungActions, EditMode.ADD);
+
+    const artikelColumns = [
       ARTIKEL(Editable.NEVER, true),
       PRODUKT_SELECT(Editable.ADD, true),
       BEZEICHNUNG(Editable.UPDATE, true),
@@ -51,10 +56,18 @@
       ANMERKUNG(Editable.UPDATE, false),
       BELADUNG(Editable.UPDATE, false),
       ABBILDUNG(Editable.UPDATE, false),
-      STATUS_SELECT(Editable.UPDATE, true),
-      new ButtonColumn([], [updateRow])];
+      STATUS_SELECT(Editable.UPDATE, true)
+      ];
+    
+    const artikelActions = [
+      updateRow
+    ];
 
-    const artikel = new ItemGrid(1, fetchUrl("artikel"), "artikel", columns, Paged.FORM, EditMode.UPDATE, [anderungen]);
+    const artikelChildren = [
+      anderungen
+    ];
+
+    const artikel = new Form(1, fetchUrl("artikel"), "artikel", artikelColumns, artikelActions, EditMode.UPDATE, artikelChildren);
 
     async function init() {
       await layout(NavMenu.BACK)

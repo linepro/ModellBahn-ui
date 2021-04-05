@@ -45,7 +45,7 @@
     const WASSERVORRAT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("WASSERVORRAT", "wasservorrat", getter, setter, editable, required, 3000, 0, 2) }
     const ZYLINDER = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("ZYLINDER", "zylinder", getter, setter, editable, required, 100, 1) }
 
-    const columns = [
+    const vorbildColumns = [
       GATTUNG_SELECT(Editable.ADD, true),
       UNTER_KATEGORIE_SELECT(Editable.UPDATE),
       BAHNVERWALTUNG_SELECT(Editable.UPDATE),
@@ -86,11 +86,14 @@
       TRIEBKOPF(Editable.UPDATE),
       MITTELWAGEN(Editable.UPDATE),
       DREHGESTELLBAUART(Editable.UPDATE),
-      ABBILDUNG(Editable.NEVER),
-      new ButtonColumn([], [updateRow])
+      ABBILDUNG(Editable.NEVER)
     ];
 
-    const vorbild = new ItemGrid(1, fetchUrl("vorbild"), "vorbild", columns, Paged.FORM, EditMode.UPDATE, undefined);
+    const vorbildActions = [
+      updateRow
+    ];
+
+    const vorbild = new Form(fetchUrl("vorbild"), "vorbild", vorbildColumns, vorbildActions, EditMode.UPDATE);
 
     async function init() {
       await layout(NavMenu.BACK)

@@ -82,7 +82,7 @@ const addModal = () => {
 
 const createButton = (caption, image, action, className = "nav-button") => {
   let btn = document.createElement("button");
-  btn.value = translate(caption.toUpperCase());
+  btn.value = translate(caption);
   if (action) {
     btn.addEventListener("click", action);
   }

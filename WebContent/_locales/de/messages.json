@@ -52,6 +52,7 @@
   "DM TREIBRAD": { "message": "DM Treibrad", "description": "" },
   "DM ZYLINDER": { "message": "DM Zylinder", "description": "" },
   "DREHGESTELLBAUART": { "message": "Drehgestell", "description": "" },
+  "EDIT": { "message": "Bearbeiten", "description": "" },
   "EPOCH": { "message": "Epoch", "description": "" },
   "EPOCHEN": { "message": "Epochen", "description": "" },
   "ERROR": { "message": "Skriptfehler: Weitere Informationen finden Sie unter Browserkonsole", "description": "" },

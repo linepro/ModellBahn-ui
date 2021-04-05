@@ -27,13 +27,18 @@
 
     const teilenColumns = [
       TEIL_SELECT(Editable.ADD, true),
-      stuck,
-      new ButtonColumn([addChildAction("teilen")], [updateAction, deleteAction])
+      stuck
+    ];
+    
+    const teilenActions = [
+      addAction("teilen"), 
+      saveAction(), 
+      deleteAction()
     ];
 
-    const teilen = new ItemGrid(5, "teilen", "teilen", teilenColumns, Paged.EXPAND, EditMode.ADD, undefined);
+    const teilen = new ExpandingTable(5, "teilen", "teilen", teilenColumns, teilenActions, EditMode.ADD);
 
-    const columns = [
+    const produktColumns = [
       HERSTELLER_SELECT(Editable.ADD, true),
       BESTELL_NR(Editable.ADD, true),
       UNTER_KATEGORIE_SELECT(Editable.UPDATE, true),
@@ -58,11 +63,18 @@
       LANGE(Editable.UPDATE, false),
       ANLEITUNGEN(Editable.NEVER),
       EXPLOSIONSZEICHNUNG(Editable.NEVER),
-      ABBILDUNG(Editable.NEVER),
-      new ButtonColumn([], [updateAction])
+      ABBILDUNG(Editable.NEVER)
+    ];
+    
+    const produktActions = [
+      saveAction()
     ];
 
-    const produkt = new ItemGrid(1, fetchUrl("produkt"), "produkt", columns, Paged.FORM, EditMode.UPDATE, [teilen]);
+    produktChildren = [
+      teilen
+    ];
+
+    const produkt = new Form(fetchUrl("produkt"), "produkt", produktColumns, produktActions, EditMode.UPDATE, produktChildren);
 
     async function init() {
       await layout(NavMenu.BACK)

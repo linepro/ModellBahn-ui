@@ -20,7 +20,7 @@
       ABBILDUNG(Editable.NEVER)
     ];
 
-    const kupplungen = new ListEditGrid(10, "kupplung", "kupplungen", columns, Paged.PAGED, EditMode.UPDATE);
+    const kupplungen = new ListEditTable(10, "kupplung", "kupplungen", columns, EditMode.UPDATE);
 
     async function init() {
       await layout(NavMenu.REF_DATA)

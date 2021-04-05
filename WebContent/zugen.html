@@ -12,15 +12,20 @@
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
-    const columns = [
+    const zugenColumns = [
       NAMEN(Editable.ADD),
       ZUG_TYP_SELECT(Editable.ADD),
       BEZEICHNUNG(Editable.ADD),
-      LANGE(Editable.NEVER),
-      new ButtonColumn([newAction], [editAction, deleteAction])
+      LANGE(Editable.NEVER)
+    ];
+    
+    const zugenActions = [
+      newAction("zug.html"),
+      editAction("zug.html"), 
+      deleteAction()
     ];
 
-    const zugen = new ItemGrid(10, fetchUrl("zug"), "zugen", columns, Paged.PAGED, EditMode.UPDATE, undefined, "zug.html");
+    const zugen = new PagedTable(10, "zug", "zugen", zugenColumns, zugenActions, EditMode.UPDATE);
 
     async function init() {
       await layout(NavMenu.INVENTORY)

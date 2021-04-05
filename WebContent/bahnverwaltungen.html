@@ -20,7 +20,7 @@
       LAND_SELECT(Editable.UPDATE, true)
     ];
 
-    const bahnverwaltungen = new ListEditGrid(10, "bahnverwaltung", "bahnverwaltungen", columns, Paged.PAGED, EditMode.UPDATE);
+    const bahnverwaltungen = new ListEditTable(10, "bahnverwaltung", "bahnverwaltungen", columns, EditMode.UPDATE);
 
     async function init() {
       await layout(NavMenu.REF_DATA)

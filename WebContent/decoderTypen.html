@@ -19,11 +19,16 @@
       BESTELL_NR(Editable.ADD),
       PROTOKOLL_SELECT(Editable.ADD, true),
       GERAUSCH(Editable.ADD, true),
-      STECKER_SELECT(Editable.ADD, true),
-      new ButtonColumn([newAction], [editAction, deleteAction])
+      STECKER_SELECT(Editable.ADD, true)
+    ];
+    
+    const actions = [
+      newAction("decoderTyp.html"),
+      editAction("decoderTyp.html"),
+      deleteAction()
     ];
 
-    const decoderTypen = new ItemGrid(10, fetchUrl("decoderTyp"), "decoderTypen", columns, Paged.PAGED, EditMode.UPDATE, undefined, "decoderTyp.html");
+    const decoderTypen = new PagedTable(10, "decoderTyp", "decoderTypen", columns, actions, EditMode.UPDATE);
 
     async function init() {
       await layout(NavMenu.REF_DATA)

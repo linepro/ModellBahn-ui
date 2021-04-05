@@ -53,6 +53,7 @@
   "DM TREIBRAD": { "message": "Drive Wheel Dia", "description": "" },
   "DM ZYLINDER": { "message": "Bore", "description": "" },
   "DREHGESTELLBAUART": { "message": "Bogies", "description": "" },
+  "EDIT": { "message": "Edit", "description": "" },
   "EPOCH": { "message": "Era", "description": "" },
   "EPOCHEN": { "message": "Eras", "description": "" },
   "ERROR": { "message": "Script Error: See Browser Console for Detail", "description": "" },

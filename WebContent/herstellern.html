@@ -24,7 +24,7 @@
       URL(Editable.UPDATE, true)
     ];
 
-    const herstellern = new ListEditGrid(10, "hersteller", "herstellern", columns, Paged.PAGED, EditMode.UPDATE);
+    const herstellern = new ListEditTable(10, "hersteller", "herstellern", columns, EditMode.UPDATE);
 
     async function init() {
       await layout(NavMenu.REF_DATA)

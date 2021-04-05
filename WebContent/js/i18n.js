@@ -57,10 +57,10 @@ const translate = (messageKey, substitutions) => {
           message = message.replace(token, substitutions[substitute]);
         });
       }
+      return message;
     } else {
       console.log("No translation for: %s", messageKey);
     }
-    return message;
   } catch (error) {
     console.log("Error translating: %s %o", messageKey, error);
   }

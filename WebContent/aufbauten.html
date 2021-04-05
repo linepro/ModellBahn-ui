@@ -20,7 +20,7 @@
       ABBILDUNG(Editable.NEVER)
     ];
 
-    const aufbauten = new ListEditGrid(10, "aufbau", "aufbauten", columns, Paged.PAGED, EditMode.UPDATE);
+    const aufbauten = new ListEditTable(10, "aufbau", "aufbauten", columns, EditMode.UPDATE);
 
     async function init() {
       await layout(NavMenu.REF_DATA)

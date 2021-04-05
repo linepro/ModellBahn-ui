@@ -19,7 +19,7 @@
       return entity.produkt ? unterKategorieGetter(entity.produkt) : undefined
     };
 
-    const columns = [
+    const artikelenColumns = [
       ARTIKEL(Editable.ADD, true),
       PRODUKT_SELECT(Editable.ADD, false),
       UNTER_KATEGORIE_SELECT(Editable.ADD, false),
@@ -27,11 +27,16 @@
       DECODER_SELECT(Editable.ADD, false),
       ANMERKUNG(Editable.ADD, false),
       ABBILDUNG(Editable.NEVER),
-      STATUS_SELECT(Editable.ADD, true),
-      new ButtonColumn([newAction], [editAction, deleteAction])
+      STATUS_SELECT(Editable.ADD, true)
     ];
 
-    const artikelen = new ItemGrid(10, fetchUrl("artikel"), "artikelen", columns, Paged.PAGED, EditMode.UPDATE, undefined, "artikel.html");
+    const artikelenActions = [
+      newAction("artikel.html"), 
+      editAction("artikel.html"),
+      deleteAction()
+    ];
+
+    const artikelen = new PagedTable(10, "artikel", "artikelen", artikelenColumns, artikelenActions, EditMode.UPDATE);
 
     async function init() {
       await layout(NavMenu.INVENTORY)

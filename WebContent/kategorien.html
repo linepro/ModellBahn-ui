@@ -14,13 +14,18 @@
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
-    const columns = [
+    const kategorienColumns = [
       NAMEN(Editable.ADD, true),
-      BEZEICHNUNG(Editable.ADD, true),
-      new ButtonColumn([newAction], [editAction, deleteAction])
+      BEZEICHNUNG(Editable.ADD, true)
+    ];
+    
+    const kategorienActions = [
+      newAction("unterKategorien.html"),
+      editAction("unterKategorien.html"),
+      deleteAction()
     ];
 
-    const kategorien = new ItemGrid(10, fetchUrl("kategorie"), "kategorien", columns, Paged.PAGED, EditMode.UPDATE, undefined, "unterKategorien.html");
+    const kategorien = new PagedTable(10, "kategorie", "kategorien", kategorienColumns, kategorienActions, EditMode.UPDATE);
 
     async function init() {
       await layout(NavMenu.REF_DATA)
