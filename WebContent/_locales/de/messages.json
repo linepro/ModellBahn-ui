@@ -117,6 +117,7 @@
   "REICHWEITE": { "message": "Reichweite", "description": "" },
   "REIHE": { "message": "Reihe", "description": "" },
   "ROSTFLACHE": { "message": "Rostfläche", "description": "" },
+  "SAVE": { "message": "Speichern", "description": "" },
   "SITZPLATZE_KL1": { "message": "Sitzplatze KL1", "description": "" },
   "SITZPLATZE_KL2": { "message": "Sitzplatze KL2", "description": "" },
   "SITZPLATZE_KL3": { "message": "Sitzplatze KL3", "description": "" },

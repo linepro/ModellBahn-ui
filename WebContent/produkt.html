@@ -74,7 +74,7 @@
       teilen
     ];
 
-    const produkt = new Form(fetchUrl("produkt"), "produkt", produktColumns, produktActions, EditMode.UPDATE, produktChildren);
+    const produkt = new Form("produkt", "produkt", produktColumns, produktActions, EditMode.UPDATE, produktChildren);
 
     async function init() {
       await layout(NavMenu.BACK)

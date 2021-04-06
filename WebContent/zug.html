@@ -50,7 +50,7 @@
       fahrzeugen
     ];
 
-    const zug = new Form(fetchUrl("zug"), "zug", zugCcolumns, zugActions, EditMode.UPDATE, zugChildren);
+    const zug = new Form("zug", "zug", zugCcolumns, zugActions, EditMode.UPDATE, zugChildren);
 
     async function init() {
       await layout(NavMenu.BACK)

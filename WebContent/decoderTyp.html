@@ -82,7 +82,7 @@
       funktionen
     ];
 
-    const decoderTyp = new Form(fetchUrl("decoderTyp"), "decoderTyp", decoderTypColumns, decoderTypActions, EditMode.UPDATE, decoderTypChildren);
+    const decoderTyp = new Form("decoderTyp", "decoderTyp", decoderTypColumns, decoderTypActions, EditMode.UPDATE, decoderTypChildren);
 
     async function init() {
       await layout(NavMenu.BACK)

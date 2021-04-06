@@ -16,28 +16,50 @@ class ActionButton {
     this.className = className;
   }
 
-  addButton(cell) {
-    let btn = createButton(
-      this.caption,
-      this.image,
-      this.execute,
-      this.className
-    );
-    this.element = btn;
-    cell.append(btn);
-    btn.disabled = !this.form;
-    btn.style.visibility = this.form ? "visible" : "hidden";
-    return btn;
+  execute(event, row) {
+    let action = this;
+
+    let entity = row.entity;
+
+    action.action(row, entity);
   }
 
-  execute(event) {
-    this.execution(event);
+  addButton(row, cell) {
+    let action = this;
+
+    let btn = createButton(
+      action.caption,
+      action.image,
+      (event) => action.execute(event, row),
+      action.className
+    );
+    btn.id = getFieldId(row.id, action.caption);
+    cell.append(btn);
+    return btn;
+  }
+  
+  addHeaderButton(row, cell) {
+    let action = this;
+
+    let btn = action.addButton(row, cell);
+    btn.disabled = false;
+    btn.style.visibility = "visible";
+  }
+
+  addRowButton(row, cell) {
+    let action = this;
+
+    let btn = action.addButton(row, cell);
+    btn.disabled = true;
+    btn.style.visibility = "hidden";
   }
 
   bind(row, entity, editMode) {
-    this.execution = this.action(row, entity);
-    this.element.disabled = shouldDisable(column.editable, editMode, value);
-    this.element.style.visibility = entity ? "visible" : "hidden";
+    let btn = document.getElementById(getFieldId(row.id, this.caption));
+    if (btn) {
+      btn.disabled = shouldDisable(editMode, editMode, entity);
+      btn.style.visibility = entity ? "visible" : "hidden";
+    }
   }
 }
 
@@ -118,12 +140,13 @@ class ButtonColumn extends VirtualColumn {
   constructor(actions = []) {
     super();
     this.actions = actions;
-    this.headingCount = this.actions.reduce(
-      (count, action) => (action.form ? count + 1 : count),
-      0
-    );
+    this.headingCount = this.actions
+      .reduce(
+        (count, action) => (action.form ? count + 1 : count),
+        0
+      );
     this.rowCount = this.actions.length - this.headingCount;
-    this.length = Math.max(this.headingCount, this.rowCount) * 8;
+    this.length = Math.max(this.headingCount, this.rowCount) * 1.6;
   }
 
   addHeading(headerRow) {
@@ -136,9 +159,7 @@ class ButtonColumn extends VirtualColumn {
     if (column.length) {
       column.actions
         .filter((action) => action.form)
-        .forEach((action) => action.addButton(header));
-
-      return header;
+        .forEach((action) => action.addHeaderButton(headerRow, header));
     }
   }
 
@@ -151,7 +172,7 @@ class ButtonColumn extends VirtualColumn {
 
     if (column.length) {
       column.actions
-        .forEach((action) => action.addButton(header));
+        .forEach((action) => action.addHeaderButton(headerRow, header));
 
       return header;
     }
@@ -162,13 +183,13 @@ class ButtonColumn extends VirtualColumn {
 
     let cell = document.createElement("td");
     cell.id = row.id + "_buttons";
-    cell.className = "table-cell";
+    cell.className = ".table-cell-btn";
     row.append(cell);
 
     if (column.length) {
       column.actions
         .filter((action) => !action.form)
-        .forEach((action) => action.addButton(cell));
+        .forEach((action) => action.addRowButton(row, cell));
 
       return {
         id: cell.id,
@@ -238,7 +259,7 @@ class ChildColumn extends VirtualColumn {
   bind(row, entity, editMode) {
     let column = this;
     column.child.bind(entity, editMode);
-    child.refresh = row.refresh;
+    column.child.refresh = row.refresh;
   }
 }
 
@@ -288,6 +309,10 @@ class ItemGrid {
       }
 
       grid.draw(place);
+
+      if (grid.children) {
+        grid.children.forEach((child) => child.initialize());
+      }
     }
 
     grid.initialized = true;
@@ -323,11 +348,11 @@ class ItemGrid {
 }
 
 class Form extends ItemGrid {
-  constructor(apiUrl, tableId, columns, actions, editMode, children) {
+  constructor(dataType, tableId, columns, actions, editMode, children) {
     super(
       location.search.includes("self=")
         ? new URLSearchParams(location.search).get("self")
-        : apiUrl,
+        : fetchUrl(dataType),
       tableId,
       columns,
       actions,
@@ -339,10 +364,11 @@ class Form extends ItemGrid {
   draw(place) {
     let grid = this;
 
-    let maxLabel = grid.columns.reduce(
-      (length, column) => Math.max(boxSize(column.headerLength), length),
-      10
-    );
+    let maxLabel = grid.columns
+      .reduce(
+        (length, column) => Math.max(boxSize(column.headerLength), length),
+        10
+      ) + 3;
 
     let form = document.createElement("div");
     form.id = grid.tableId;
@@ -352,28 +378,28 @@ class Form extends ItemGrid {
     grid.table = form;
 
     let header = document.createElement("div");
-    header.id = form.id + "_thead";
+    header.id = grid.tableId + "_thead";
     header.className = "fhead";
     form.append(header);
 
     let headRow = document.createElement("div");
     headRow.className = "form-head";
-    headRow.id = form.id + "Head";
+    headRow.id = grid.tableId + "Head";
     header.append(headRow);
 
-    grid.columns.forEach((column) => column.addFormHeading(row));
+    grid.columns.forEach((column) => column.addFormHeading(headRow));
 
     let body = document.createElement("div");
-    body.id = form.id + "_tbody";
+    body.id = grid.tableId + "_tbody";
     body.className = "flex-container";
     form.append(body);
 
     let row = document.createElement("div");
-    row.id = getRowId(form.id, 0);
+    row.id = getRowId(grid.tableId, 0);
     row.className = "flex-container";
     body.append(row);
 
-    let columns = form.columns
+    let columns = grid.columns
       .map((column) => column.addFormField(row, maxLabel))
       .filter((column) => column);
 
@@ -389,13 +415,13 @@ class Form extends ItemGrid {
     };
 
     let foot = document.createElement("div");
-    foot.id = form.id + "_tfoot";
+    foot.id = grid.tableId + "_tfoot";
     foot.className = "ffoot";
     form.append(foot);
 
     let navRow = document.createElement("div");
     navRow.className = "form-foot";
-    navRow.id = form.id + "Foot";
+    navRow.id = grid.tableId + "Foot";
     foot.append(navRow);
 
     let footer = document.createElement("div");
@@ -416,6 +442,12 @@ class Form extends ItemGrid {
     //history.replaceState({}, null, window.location.href.replace("new=true", "self="+self));
 
     grid.row.bind(entity, grid.editMode);
+  }
+
+  async fetch(fetchUrl) {
+    let grid = this;
+
+    super.fetch(grid.editMode === EditMode.ADD ? undefined : fetchUrl);
   }
 }
 
@@ -507,10 +539,11 @@ class Table extends ItemGrid {
     navRow.className = "table-foot";
     footer.append(navRow);
 
-    let tf = document.createElement("td");
-    tf.className = "table-footer";
-    addText(tf, " ");
-    navRow.append(tf);
+    grid.columns.forEach((column) => {
+      let tf = document.createElement("td");
+      tf.className = "table-footer";
+      navRow.append(tf)
+    });
   }
 
   draw(place) {
@@ -526,10 +559,11 @@ class Table extends ItemGrid {
     let group = document.createElement("colgroup");
     setWidths(group, "100%");
 
-    let totalLength = grid.columns.reduce(
-      (length, column) => Math.max(boxSize(column.length), length),
-      0
-    );
+    let totalLength = grid.columns
+      .reduce(
+        (length, column) => length + boxSize(column.length),
+        0
+      );
 
     grid.columns.forEach((column) => {
       let col = document.createElement("col");
@@ -729,10 +763,11 @@ class PagedTable extends Table {
 
     grid.prev = grid.addPrev(navRow);
 
-    let tf = document.createElement("td");
-    tf.className = "table-footer";
-    addText(tf, " ");
-    navRow.append(tf);
+    for (let i = 0 ; i < grid.columns.length -2; i++) {
+      let tf = document.createElement("td");
+      tf.className = "table-footer";
+      navRow.append(tf)
+    }
 
     grid.next = grid.addNext(navRow);
   }

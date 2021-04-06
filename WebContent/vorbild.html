@@ -93,7 +93,7 @@
       updateRow
     ];
 
-    const vorbild = new Form(fetchUrl("vorbild"), "vorbild", vorbildColumns, vorbildActions, EditMode.UPDATE);
+    const vorbild = new Form("vorbild", "vorbild", vorbildColumns, vorbildActions, EditMode.UPDATE);
 
     async function init() {
       await layout(NavMenu.BACK)

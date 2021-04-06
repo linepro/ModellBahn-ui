@@ -67,7 +67,7 @@
       anderungen
     ];
 
-    const artikel = new Form(1, fetchUrl("artikel"), "artikel", artikelColumns, artikelActions, EditMode.UPDATE, artikelChildren);
+    const artikel = new Form("artikel", "artikel", artikelColumns, artikelActions, EditMode.UPDATE, artikelChildren);
 
     async function init() {
       await layout(NavMenu.BACK)
