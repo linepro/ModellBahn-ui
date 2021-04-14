@@ -103,12 +103,12 @@ const download = async (endPoint, success, failure) => {
   .catch(error => failure(error));
 };
 
-const upload = async (endPoint, data, success, failure) => {
+const upload = async (endPoint, fieldName, fileData, fileName, success, failure) => {
   let formData = new FormData();
-  formData.append("file", data);
+  formData.append(fieldName, fileData, fileName);
   await fetch(endPoint, {
     method: "PUT",
-    headers: headers("multipart/form-data", "*/*"),
+    headers: headers(undefined, "*/*"),
     body: formData
   })
   .then(response => checkResponse(response))

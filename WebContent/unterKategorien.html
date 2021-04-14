@@ -16,24 +16,35 @@
   <script type="text/javascript">
     const unterKategorieColumns = [
       NAMEN(Editable.ADD),
-      BEZEICHNUNG(Editable.UPDATE),
-      new ButtonColumn([addChildAction("unterKategorien")], [updateAction, deleteAction])
+      BEZEICHNUNG(Editable.UPDATE)
     ];
 
-    const unterKategorien = new ItemGrid(10, "unterKategorien", "unterKategorien", unterKategorieColumns, Paged.EXPAND, EditMode.ADD, undefined);
+    const unterKategorieActions = [
+      addAction("unterKategorien"),
+      saveAction(),
+      deleteAction()
+    ];
 
-    const columns = [
+    const unterKategorien = new ExpandingTable(10, "unterKategorien", "unterKategorien", unterKategorieColumns, unterKategorieActions, EditMode.ADD);
+
+    const kategorieColumns = [
       NAMEN(Editable.ADD, true),
-      BEZEICHNUNG(Editable.UPDATE, true),
-      new ButtonColumn([], [updateRow])
+      BEZEICHNUNG(Editable.UPDATE, true)
     ];
 
-    const kategorie = new ItemGrid(1, fetchUrl("kategorie"), "kategorie", columns, Paged.FORM, EditMode.UPDATE, [unterKategorien]);
+    const kategorieActions = [
+      saveAction()
+    ];
+
+    const kategorieChildren = [
+      unterKategorien
+    ];
+
+    const kategorie = new Form("kategorie", "kategorie", kategorieColumns, kategorieActions, EditMode.UPDATE, kategorieChildren);
 
     async function init() {
       await layout(NavMenu.BACK)
       .then(() => kategorie.init())
-      .then(() => unterKategorien.init())
       .catch(error => reportError("load", error));
     }
   </script>

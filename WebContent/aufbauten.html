@@ -17,7 +17,7 @@
     const columns = [
       NAMEN(Editable.ADD, true),
       BEZEICHNUNG(Editable.UPDATE, true),
-      ABBILDUNG(Editable.NEVER)
+      ABBILDUNG(Editable.UPDATE, false)
     ];
 
     const aufbauten = new ListEditTable(10, "aufbau", "aufbauten", columns, EditMode.UPDATE);

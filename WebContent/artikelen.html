@@ -12,7 +12,7 @@
   <script type="text/javascript" src="js/dropdown.js"></script>
   <script type="text/javascript" src="js/columns.js"></script>
   <script type="text/javascript" src="js/fields.js"></script>
-  <script src="js/lib/DatePickerX-1.0.4.min.js"></script>
+  <script src="js/lib/DatePickerX.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
     const artikelUnterKategorieGetter = (entity) => {
@@ -26,12 +26,12 @@
       BEZEICHNUNG(Editable.ADD),
       DECODER_SELECT(Editable.ADD, false),
       ANMERKUNG(Editable.ADD, false),
-      ABBILDUNG(Editable.NEVER),
+      ABBILDUNG(Editable.UPDATE, false),
       STATUS_SELECT(Editable.ADD, true)
     ];
 
     const artikelenActions = [
-      newAction("artikel.html"), 
+      newAction("artikel.html"),
       editAction("artikel.html"),
       deleteAction()
     ];

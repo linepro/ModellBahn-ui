@@ -5,13 +5,13 @@ const optionExtractor = (jsonData) => jsonData._embedded.data;
 
 const bezeichnungOption = (entity) =>
   dropOption(
-    entity.name, 
-    entity.bezeichnung, 
-    entity.tooltip, 
+    entity.name,
+    entity.bezeichnung,
+    entity.tooltip,
     entity.abbildung
   );
 
-const artikelOption = (entity) => 
+const artikelOption = (entity) =>
   dropOption(
     entity.artikelId,
     [ entity.hersteller, entity.bestellNr, entity.gattung, entity.betreibsnummer, entity.bahnverwaltung ].filter(x => x).join(" ") + " (" + entity.artikelId + ")",
@@ -20,24 +20,27 @@ const artikelOption = (entity) =>
     translate(entity.kategorie)
   );
 
-const decoderOption = (entity) => 
+const decoderOption = (entity) =>
   dropOption(
     entity.decoderId,
-    [ entity.hersteller, entity.bestellNr, entity.bezeichnung ].filter(x => x).join(" ") + " (" + entity.decoderId + ")"
+    [ entity.hersteller, entity.bestellNr, entity.bezeichnung ].filter(x => x).join(" ") + " (" + entity.decoderId + ")",
+    entity.bezeichnung,
+    undefined,
+    entity.hersteller
   );
 
 const kategorieOption = (entity) =>
   dropOption(
     entity.kategorie + "/" + entity.name,
-    entity.bezeichnung,
+    translate(entity.bezeichnung),
     entity.bezeichnung,
     undefined,
-    entity.kategorie
+    translate(entity.kategorie)
   );
 
 const produktOption = (entity) =>
   dropOption(
-    entity.hersteller + "/" + entity.bestellNr, 
+    entity.hersteller + "/" + entity.bestellNr,
     entity.hersteller + " - " + entity.bestellNr,
     entity.bezeichnung,
     entity.abbildung,
@@ -46,14 +49,14 @@ const produktOption = (entity) =>
 
 const vorbildOption = (entity) =>
   dropOption(
-    entity.gattung, 
+    entity.gattung,
     entity.bezeichnung,
     entity.bezeichnung,
     entity.abbildung,
     entity.kategorie
   );
 
-const unterKategorieExtractor = (jsonData) => 
+const unterKategorieExtractor = (jsonData) =>
   optionExtractor(jsonData).flatMap(k => k.unterKategorien);
 
 const ACHSFOLG_DROP = dropDown(apiUrl("achsfolg"), optionExtractor, bezeichnungOption);
@@ -117,101 +120,71 @@ const fieldGetter = (entity, fieldName) => entity ? entity[fieldName] : undefine
 const fieldSetter = (entity, value, fieldName) => entity[fieldName] = value;
 const noOpSetter = () => {};
 
-const ACHSFOLG_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => 
-  new DropDownColumn("ACHSFOLG", "achsfolg", getter, setter, ACHSFOLG_DROP, editable, required, 30, 5);
+const ACHSFOLG_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
+  new DropDownColumn("ACHSFOLG", "achsfolg", getter, setter, ACHSFOLG_DROP, editable, required);
 
-const ADRESS_TYP_SELECT = (
-  editable = Editable.UPDATE,
-  required = false,
-  getter = fieldGetter,
-  setter = fieldSetter
-) => 
-  new DropDownColumn("ADRESS_TYP", "adressTyp", getter, setter, ADRESS_TYP_DROP, editable, required, 5);
+const ADRESS_TYP_SELECT = (editable = Editable.UPDATE, required = true, getter = fieldGetter, setter = fieldSetter) =>
+  new DropDownColumn("ADRESS_TYP", "adressTyp", getter, setter, ADRESS_TYP_DROP, editable, required);
 
-const BAHNVERWALTUNG_SELECT = (
-  editable = Editable.UPDATE,
-  required = false,
-  getter = fieldGetter,
-  setter = fieldSetter
-) => 
-  new DropDownColumn(
-    "BAHNVERWALTUNG",
-    "bahnverwaltung",
-    getter,
-    setter,
-    BAHNVERWALTUNG_DROP,
-    editable,
-    required,
-    30,
-    5
-  );
+const BAHNVERWALTUNG_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
+  new DropDownColumn("BAHNVERWALTUNG", "bahnverwaltung", getter, setter, BAHNVERWALTUNG_DROP, editable, required);
 
-const DECODER_SELECT = (editable, required, getter = decoderIdGetter, setter = decoderIdSetter) => 
-  new DropDownColumn("DECODER", "decoder", getter, setter, DECODER_DROP, editable, required, 30, 5);
+const DECODER_SELECT = (editable = Editable.UPDATE, required = false, getter = decoderIdGetter, setter = decoderIdSetter) =>
+  new DropDownColumn("DECODER", "decoder", getter, setter, DECODER_DROP, editable, required);
 
-const DECODER_TYP_SELECT = (editable, required, getter = produktGetter, setter = produktSetter) =>
-  new DropDownColumn("DECODER_TYP", "decoderTyp", getter, setter, DECODER_TYP_DROP, editable, required, 50, 5);
+const DECODER_TYP_SELECT = (editable = Editable.UPDATE, required = true, getter = produktGetter, setter = produktSetter) =>
+  new DropDownColumn("DECODER_TYP", "decoderTyp", getter, setter, DECODER_TYP_DROP, editable, required);
 
-const GATTUNG_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new DropDownColumn("GATTUNG", "gattung", getter, setter, GATTUNG_DROP, editable, required, 30, 5);
+const GATTUNG_SELECT = (editable = Editable.UPDATE, required = true, getter = fieldGetter, setter = fieldSetter) =>
+  new DropDownColumn("GATTUNG", "gattung", getter, setter, GATTUNG_DROP, editable, required);
 
-const HERSTELLER_SELECT = (
-  editable = Editable.UPDATE,
-  required = false,
-  getter = fieldGetter,
-  setter = fieldSetter
-) =>
+const HERSTELLER_SELECT = (editable = Editable.UPDATE, required = true, getter = fieldGetter, setter = fieldSetter) =>
   new DropDownColumn("HERSTELLER", "hersteller", getter, setter, HERSTELLER_DROP, editable, required);
 
-const KONFIGURATION_SELECT = (editable, required = true, getter = fieldGetter, setter = fieldSetter) =>
+const KONFIGURATION_SELECT = (editable = Editable.UPDATE, required = true, getter = fieldGetter, setter = fieldSetter) =>
   new DropDownColumn("KONFIGURATION", "konfiguration", getter, setter, KONFIGURATION_DROP, editable, required);
 
 const KUPPLUNG_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new DropDownColumn("KUPPLUNG", "kupplung", getter, setter, KUPPLUNG_DROP, editable, required, 30, 5);
+  new DropDownColumn("KUPPLUNG", "kupplung", getter, setter, KUPPLUNG_DROP, editable, required);
 
 const LAND_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new DropDownColumn("LAND", "land", getter, setter, LAND_DROP, editable, required, 5);
+  new DropDownColumn("LAND", "land", getter, setter, LAND_DROP, editable, required);
 
 const LICHT_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new DropDownColumn("LICHT", "licht", getter, setter, LICHT_DROP, editable, required, 30, 5);
+  new DropDownColumn("LICHT", "licht", getter, setter, LICHT_DROP, editable, required);
 
-const MASSSTAB_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new DropDownColumn("MASSSTAB", "massstab", getter, setter, MASSSTAB_DROP, editable, required, 30, 5);
+const MASSSTAB_SELECT = (editable = Editable.UPDATE, required = true, getter = fieldGetter, setter = fieldSetter) =>
+  new DropDownColumn("MASSSTAB", "massstab", getter, setter, MASSSTAB_DROP, editable, required);
 
 const MOTOR_TYP_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new DropDownColumn("MOTOR_TYP", "motorTyp", getter, setter, MOTOR_TYP_DROP, editable, required, 30, 5);
+  new DropDownColumn("MOTOR_TYP", "motorTyp", getter, setter, MOTOR_TYP_DROP, editable, required);
 
-const PRODUKT_SELECT = (editable, required, getter = produktGetter, setter = produktSetter) =>
-  new DropDownColumn("PRODUKT", "produkt", getter, setter, PRODUKT_DROP, editable, required, 50, 5);
+const PRODUKT_SELECT = (editable = Editable.UPDATE, required = true, getter = produktGetter, setter = produktSetter) =>
+  new DropDownColumn("PRODUKT", "produkt", getter, setter, PRODUKT_DROP, editable, required);
 
 const PROTOKOLL_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
   new DropDownColumn("PROTOKOLL", "protokoll", getter, setter, PROTOKOLL_DROP, editable, required);
 
-const SPURWEITE_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new DropDownColumn("SPURWEITE", "spurweite", getter, setter, SPURWEITE_DROP, editable, required, 30, 5);
+const SPURWEITE_SELECT = (editable = Editable.UPDATE, required = true, getter = fieldGetter, setter = fieldSetter) =>
+  new DropDownColumn("SPURWEITE", "spurweite", getter, setter, SPURWEITE_DROP, editable, required);
 
-const STATUS_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new DropDownColumn("STATUS", "status", getter, setter, STATUS_DROP, editable, required, 30, 5);
+const STATUS_SELECT = (editable = Editable.UPDATE, required = true, getter = fieldGetter, setter = fieldSetter) =>
+  new DropDownColumn("STATUS", "status", getter, setter, STATUS_DROP, editable, required);
 
 const STECKER_SELECT = (editable = Editable.UPDATE, required = true, getter = fieldGetter, setter = fieldSetter) =>
-  new DropDownColumn("STECKER", "stecker", getter, setter, STECKER_DROP, editable, required, 30, 5);
+  new DropDownColumn("STECKER", "stecker", getter, setter, STECKER_DROP, editable, required);
 
 const STEUERUNG_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new DropDownColumn("STEUERUNG", "steuerung", getter, setter, STEUERUNG_DROP, editable, required, 30, 5);
+  new DropDownColumn("STEUERUNG", "steuerung", getter, setter, STEUERUNG_DROP, editable, required);
 
-const UNTER_KATEGORIE_SELECT = (
-  editable = Editable.UPDATE,
-  required = false,
-  getter = unterKategorieGetter,
-  setter = unterKategorieSetter
-) =>
+const UNTER_KATEGORIE_SELECT = (editable = Editable.UPDATE, required = true, getter = unterKategorieGetter, setter = unterKategorieSetter) =>
   new DropDownColumn("KATEGORIE", "unterKategorie", getter, setter, UNTER_KATEGORIE_DROP, editable, required);
 
 const WAHRUNG_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new DropDownColumn("WAHRUNG", "wahrung", getter, setter, WAHRUNG_DROP, editable, required, 30, 5);
+  new DropDownColumn("WAHRUNG", "wahrung", getter, setter, WAHRUNG_DROP, editable, required);
 
-const ZUG_TYP_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new DropDownColumn("ZUG_TYP", "zugTyp", getter, setter, ZUG_TYP_DROP, editable, required, 30, 5);
+const ZUG_TYP_SELECT = (editable = Editable.UPDATE, required = true, getter = fieldGetter, setter = fieldSetter) =>
+  new DropDownColumn("ZUG_TYP", "zugTyp", getter, setter, ZUG_TYP_DROP, editable, required);
 
 const ABBILDUNG = (editable = Editable.UPDATE, required = false, getter = fieldGetter) =>
   new ImageColumn("ABBILDUNG", "abbildung", getter, editable, required);
@@ -221,9 +194,6 @@ const ADRESS = (editable = Editable.UPDATE, required = false, getter = fieldGett
 
 const ANLEITUNGEN = (editable = Editable.UPDATE, required = false, getter = fieldGetter) =>
   new PdfColumn("ANLEITUNGEN", "anleitungen", getter, editable, required);
-
-const ANZAHL = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new NumberColumn("ANZAHL", "anzahl", getter, setter, editable, required, 300000, 1);
 
 const ANMERKUNG = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
   new TextColumn("ANMERKUNG", "anmerkung", getter, setter, editable, required, 30);
@@ -294,6 +264,9 @@ const LANGE = (editable = Editable.UPDATE, required = false, getter = fieldGette
 const MAXIMAL = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
   new NumberColumn("MAXIMAL", "maximal", getter, setter, editable, required, 30);
 
+const MENGE = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
+  new NumberColumn("MENGE", "menge", getter, setter, editable, required, 100000, 1);
+
 const MINIMAL = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
   new NumberColumn("MINIMAL", "minimal", getter, setter, editable, required, 30);
 
@@ -314,9 +287,6 @@ const REIHE = (editable = Editable.ADD, required = true, getter = fieldGetter, s
 
 const SPAN = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
   new NumberColumn("SPAN", "span", getter, setter, editable, required, 16, 1);
-
-const STUCK = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new NumberColumn("STUCK", "stuck", getter, setter, editable, required, 300, 0);
 
 const URL = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
   new UrlColumn("URL", "url", getter, setter, editable, required);

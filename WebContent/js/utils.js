@@ -16,6 +16,8 @@ const fetchUrl = dataType => {
   return apiUrl(dataType);
 };
 
+const isoDate = (value, alt = "") => value ? new Date(Date.parse(value)).toISOString().substring(0, 10) : alt;
+
 const imageSource = (imageName, extension) => {
   return fileUrl("img/" + imageName + (extension ? extension : ".png"));
 };
@@ -23,11 +25,6 @@ const imageSource = (imageName, extension) => {
 const addToEnd = element => {
   let docBody = document.getElementsByTagName("BODY")[0];
   docBody.appendChild(element);
-};
-
-const addToStart = element => {
-  let docBody = document.getElementsByTagName("BODY")[0];
-  docBody.insertBefore(element, docBody.firstChild);
 };
 
 const createImage = action => {
@@ -109,11 +106,17 @@ const removeChildren = node => {
   }
 };
 
-const addOption = (select, value, text, tooltip, abbildung) => {
+const createOptGroup = (text) => {
+  let grp = document.createElement("optgroup");
+  grp.label = text;
+  return grp;
+};
+
+const createOption = (value, text, tooltip, abbildung) => {
   let opt = document.createElement("option");
   opt.value = value;
   opt.text = text;
-  select.add(opt);
+  return opt;
 };
 
 const reportError = (description, error) => {
@@ -205,12 +208,15 @@ const showAbout = async licenseUrl => {
 };
 
 const setActiveTab = (event, tabName) => {
+  let activeLink = tabName.replace("Tab", "Link");
   let tabContents = document.getElementsByClassName("tabContent");
-  tabContents.forEach((t) => t.style.display = t.id === tabName ? "block" : "none");
-
-  let tabLinks = document.getElementsByClassName("tabLinks");
-  let linkName = tabName.replace("Tab", "Link");
-  tabLinks.forEach((l) => l.className = l.id === linkName ? "tabLinks active" : "tabLinks");
+  for (let tab of tabContents) {
+    tab.style.display = (tab.id === tabName) ? "block" : "none";
+    let link = document.getElementById(tab.id.replace("Tab", "Link"));
+    if (link) {
+      link.className = (link.id === activeLink) ? "tabLinks active" : "tabLinks"
+    }
+  }
 };
 
 const navLink = (title, href, action, id) => {
@@ -261,7 +267,6 @@ const addLogo = (element) => {
   logo.className = "logo";
   element.appendChild(logo);
   logo.addEventListener("click", () => showAbout(fileUrl(translate("LIZENZ"))));
-  addLingo(element);
   return logo;
 };
 
@@ -292,7 +297,7 @@ const inventory = () => [
   navLink("VORBILDER", fileUrl("vorbilder.html")),
   navLink("ZUGEN", fileUrl("zugen.html"))
   ];
-  
+ 
 const addNavBar = (menuStyle) => {
   let header = document.getElementsByTagName("HEADER")[0];
   removeChildren(header);
@@ -301,58 +306,71 @@ const addNavBar = (menuStyle) => {
   header.appendChild(nav);
 
   if (menuStyle === NavMenu.HOME) {
-    let div = document.createElement("div");
-    div.className = "home";
-    nav.appendChild(div);
-    let heading = addHeading(div, "H1", "MODELLBAHN");
+    let home = document.createElement("div");
+    home.className = "home";
+    nav.appendChild(home);
+
+    let heading = addHeading(home, "H1", "MODELLBAHN");
     heading.className = "title";
-    addLogo(div);
-    addRule(nav);
-  }
 
-  if (menuStyle !== NavMenu.INVENTORY) {
-    let ul = document.createElement("ul");
-    ul.className = "nav";
+    let bar = document.createElement("div");
+    bar.style.display = "flex";
+    bar.style.float = "right";
+    home.appendChild(bar);
 
-    if (menuStyle === NavMenu.HOME) {
-      addHeading(nav, "H3", "REF_DATA");
-    } else {
-      addHomeBack(ul);
-    }
+    addLingo(bar);
+    addLogo(bar);
 
-    if (menuStyle !== NavMenu.BACK) {
-      refData().filter((li) => document.location.href !== li.firstChild.href)
-               .sort((a, b) => a.innerText.localeCompare(b.innerText))
-               .forEach((li) => ul.appendChild(li));
-    }
+    addHeading(nav, "H3", "REF_DATA");
 
-    nav.appendChild(ul);
-    if (menuStyle !== NavMenu.HOME) {
-      addLogo(nav);
-    }
-    addRule(nav);
-  }
+    let ref = document.createElement("ul");
+    ref.className = "nav";
+    nav.appendChild(ref);
 
-  if (menuStyle === NavMenu.INVENTORY || menuStyle === NavMenu.HOME) {
-    let ul = document.createElement("ul");
-    ul.className = "nav";
+    refData().filter((li) => document.location.href !== li.firstChild.href)
+             .sort((a, b) => a.innerText.localeCompare(b.innerText))
+             .forEach((li) => ref.appendChild(li));
 
-    if (menuStyle === NavMenu.HOME) {
-      addHeading(nav, "H3", "INVENTORY");
-    } else {
-      addHomeBack(ul);
-    }
+    addHeading(nav, "H3", "INVENTORY");
+
+    let inv = document.createElement("ul");
+    inv.className = "nav";
+    nav.appendChild(inv);
 
     inventory().filter((li) => document.location.href !== li.firstChild.href)
                .sort((a, b) => a.innerText.localeCompare(b.innerText))
-               .forEach((li) => ul.appendChild(li));
+               .forEach((li) => inv.appendChild(li));
+  } else {
+    let div = document.createElement("div");
+    div.style.display = "flex";
+    nav.appendChild(div);
 
-    nav.appendChild(ul);
-    if (menuStyle !== NavMenu.HOME) {
-      addLogo(nav);
+    let opts = document.createElement("ul");
+    opts.className = "nav";
+    div.appendChild(opts);
+
+    addHomeBack(opts);
+
+    if (menuStyle === NavMenu.INVENTORY) {
+      inventory().filter((li) => document.location.href !== li.firstChild.href)
+                 .sort((a, b) => a.innerText.localeCompare(b.innerText))
+                 .forEach((li) => opts.appendChild(li));
+    } else if (menuStyle === NavMenu.REF_DATA) {
+      refData().filter((li) => document.location.href !== li.firstChild.href)
+               .sort((a, b) => a.innerText.localeCompare(b.innerText))
+               .forEach((li) => opts.appendChild(li));
     }
-    addRule(nav);
+
+    let bar = document.createElement("div");
+    bar.style.display = "flex";
+    bar.style.float = "right";
+    div.appendChild(bar);
+
+    addLingo(bar);
+    addLogo(bar);
   }
+
+  addRule(nav);
 
   let section = document.getElementsByTagName("SECTION")[0];
   section.style.top = nav.getBoundingClientRect().height + "px";

@@ -4,11 +4,11 @@
 const utf8decoder = new TextDecoder();
 const utf8encoder = new TextEncoder();
 
-const dropOption = (value, display, image, group) => {
+const dropOption = (value, display, tooltip, image, group) => {
   return {
     display: utf8decoder.decode(utf8encoder.encode(display)),
     value: value,
-    tooltip: utf8decoder.decode(utf8encoder.encode(display)),
+    tooltip: utf8decoder.decode(utf8encoder.encode(tooltip)),
     image: image,
     group: group
   };
@@ -20,6 +20,7 @@ const dropDown = (apiQuery, valuesExtractor, rowExtractor) => {
     valuesExtractor: valuesExtractor,
     rowExtractor: rowExtractor,
     length: 10,
+    grouped: [],
     options: []
   };
 };
@@ -29,11 +30,22 @@ const initDropDown = async (drop, force) => {
     await getRest(
       drop.apiQuery,
       (jsonData) => drop.valuesExtractor(jsonData)
-          .forEach(o => {
-            let opt = drop.rowExtractor(o);
-            drop.options.push(opt);
-            drop.length = Math.max(drop.length, opt.display.length);
-          }),
+        .forEach(o => {
+          let opt = drop.rowExtractor(o);
+          if (opt.group) {
+            let group = drop.grouped.find(g => g.name === opt.group);
+            if (!group) {
+              group = {
+                name: opt.group,
+                options: []
+              };
+              drop.grouped.push(group);
+            }
+            group.options.push(opt);
+          }
+          drop.options.push(opt);
+          drop.length = Math.max(drop.length, opt.display.length);
+        }),
       (error) => reportError("init " + dropDown.apiQuery, error)
     );
   }

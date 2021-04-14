@@ -10,13 +10,13 @@
   <script type="text/javascript" src="js/i18n.js"></script>
   <script type="text/javascript" src="js/utils.js"></script>
   <script type="text/javascript" src="js/dropdown.js"></script>
+  <script type="text/javascript" src="js/lib/DatePickerX.js"></script>
   <script type="text/javascript" src="js/columns.js"></script>
   <script type="text/javascript" src="js/fields.js"></script>
-  <script type="text/javascript" src="js/lib/DatePickerX-1.0.4.min.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
     const ANFAHRZUGKRAFT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("ANFAHRZUGKRAFT", "anfahrzugkraft", getter, setter, editable, required, 300000, 1) }
-    const ANTRIEB_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new DropDownColumn("ANTRIEB", "antrieb", getter, setter, ANTRIEB_DROP, editable, required, 30, 5) }
+    const ANTRIEB_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new DropDownColumn("ANTRIEB", "antrieb", getter, setter, ANTRIEB_DROP, editable, required) }
     const DIENSTGEWICHT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("DIENSTGEWICHT", "dienstgewicht", getter, setter, editable, required, 999, 1) }
     const DMLAUFRADHINTEN = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("DM_LAUFRAD_HINTEN", "dmLaufradHinten", getter, setter, editable, required, 3000, 1) }
     const DMLAUFRADVORN = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("DM_LAUFRAD_VORN", "dmLaufradVorn", getter, setter, editable, required, 3000, 1) }
@@ -30,7 +30,7 @@
     const KLASSE = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("KLASSE", "klasse", getter, setter, editable, required, 4, 0) }
     const KOLBENHUB = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("KOLBENHUB", "kolbenhub", getter, setter, editable, required, 3000, 1, 2) }
     const LEISTUNG = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("LEISTUNG", "leistung", getter, setter, editable, required, 10000, 0, 2) }
-    const LEISTUNGSUBERTRAGUNG_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new DropDownColumn("LEISTUNGSUBERTRAGUNG", "leistungsubertragung", getter, setter, LEISTUNGSUBERTRAGUNG_DROP, editable, required, 30, 5) }
+    const LEISTUNGSUBERTRAGUNG_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new DropDownColumn("LEISTUNGSUBERTRAGUNG", "leistungsubertragung", getter, setter, LEISTUNGSUBERTRAGUNG_DROP, editable, required) }
     const MITTELWAGEN = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("MITTELWAGEN", "mittelwagen", getter, setter, editable, required, 30, 0) }
     const MOTORBAUART = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new TextColumn("MOTORBAUART", "motorbauart", getter, setter, editable, required, 30) }
     const REICHWEITE = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("REICHWEITE", "reichweite", getter, setter, editable, required, 3000, 0) }
@@ -51,7 +51,7 @@
       BAHNVERWALTUNG_SELECT(Editable.UPDATE),
       HERSTELLER(Editable.UPDATE),
       BAUZEIT(Editable.UPDATE),
-      ANZAHL(Editable.UPDATE),
+      MENGE(Editable.UPDATE),
       BETREIBSNUMMER(Editable.UPDATE),
       ANTRIEB_SELECT(Editable.UPDATE),
       ACHSFOLG_SELECT(Editable.UPDATE),

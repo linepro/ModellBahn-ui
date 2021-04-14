@@ -14,9 +14,9 @@
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
-    const ARTIKEL_SELECT = (editable, required, getter = artikelIdGetter, setter = artikelIdSetter) => { return new DropDownColumn("ARTIKEL", "artikel", getter, setter, ARTIKEL_DROP, editable, required, 50, 5) }
+    const ARTIKEL_SELECT = (editable, required, getter = artikelIdGetter, setter = artikelIdSetter) => { return new DropDownColumn("ARTIKEL", "artikel", getter, setter, ARTIKEL_DROP, editable, required) }
 
-    const THUMBNAIL = (getter = fieldGetter) => { return new ThumbColumn("abbildung", getter); };
+    const THUMBNAIL = (getter = fieldGetter) => { return new ThumbColumn("abbildung", "abbildung", getter); };
 
     const fahrzeugColumns = [
       POSITION(Editable.NEVER),
@@ -26,14 +26,14 @@
       LANGE(Editable.NEVER, false),
       THUMBNAIL()
     ];
-    
+   
     const fahrzeugActions = [
-      addAction("consist"), 
-      saveAction(), 
+      addAction("consist"),
+      saveAction(),
       deleteAction()
     ];
 
-    const fahrzeugen = new ExpandingTable(2, "fahrzeugen", "fahrzeugen", fahrzeugColumns, fahrzeugActions, EditMode.ADD);
+    const fahrzeugen = new ExpandingTable(2, "fahrzeugen", "fahrzeugen", fahrzeugColumns, fahrzeugActions, EditMode.UPDATE);
 
     const zugColumns = [
       NAMEN(Editable.ADD, true),
@@ -41,7 +41,7 @@
       BEZEICHNUNG(Editable.UPDATE, true),
       LANGE(Editable.NEVER)
     ];
-    
+   
     const zugActions = [
       saveAction()
     ];
@@ -50,7 +50,7 @@
       fahrzeugen
     ];
 
-    const zug = new Form("zug", "zug", zugCcolumns, zugActions, EditMode.UPDATE, zugChildren);
+    const zug = new Form("zug", "zug", zugColumns, zugActions, EditMode.UPDATE, zugChildren);
 
     async function init() {
       await layout(NavMenu.BACK)
@@ -61,7 +61,7 @@
       .catch(error => reportError("load", error));
     }
   </script>
-  <title>Zugen</title>
+  <title>Zug</title>
 </head>
 <body onLoad="init()">
 <header>

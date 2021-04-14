@@ -10,14 +10,14 @@
   <script type="text/javascript" src="js/i18n.js"></script>
   <script type="text/javascript" src="js/utils.js"></script>
   <script type="text/javascript" src="js/dropdown.js"></script>
+  <script type="text/javascript" src="js/lib/DatePickerX.js"></script>
+  <script type="text/javascript" src="js/lib/pdf.js"></script>
+  <script type="text/javascript" src="js/pdfViewer.js"></script>
   <script type="text/javascript" src="js/columns.js"></script>
   <script type="text/javascript" src="js/fields.js"></script>
-  <script type="text/javascript" src="js/lib/DatePickerX-1.0.4.min.js"></script>
-  <script type="text/javascript" src="js/pdfViewer.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
-  <script type="text/javascript" src="js/lib/pdf.min-2.0.943.js"></script>
   <script type="text/javascript">
-    const DECODER_STATUS_SELECT = (editable, required, getter = decoderIdGetter, setter = decoderIdSetter) => { return new DropDownColumn("DECODER_STATUS", "decoder", getter, setter, DECODER_STATUS_DROP, editable, required, 30, 5) }
+    const DECODER_STATUS_SELECT = (editable, required, getter = decoderIdGetter, setter = decoderIdSetter) => { return new DropDownColumn("DECODER_STATUS", "decoder", getter, setter, DECODER_STATUS_DROP, editable, required) }
     const WERT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("WERT", "wert", getter, setter, editable, required, 65535, 1) }
 
     const adress = ADRESS(Editable.UPDATE, true);
@@ -27,22 +27,20 @@
       ADRESS_TYP_SELECT(Editable.UPDATE, true),
       adress
     ];
-    
+   
     const adressActions = [
       saveAction()
     ];
 
     const adressen = new ExpandingTable(2, undefined, "adressen", adressColumns, adressActions, EditMode.UPDATE);
 
-    const wert = WERT(Editable.UPDATE, false);
-
     const cvColumns = [
       CV(Editable.NEVER, false),
       BEZEICHNUNG(Editable.NEVER, false),
       WERKSEINSTELLUNG(Editable.NEVER, false),
-      wert
+      WERT(Editable.UPDATE, false)
     ];
-    
+   
     const cvActions = [
       saveAction()
     ];
@@ -57,7 +55,7 @@
       BEZEICHNUNG(Editable.UPDATE, true),
       PROGRAMMABLE(Editable.NEVER, false)
     ];
-    
+   
     const funktionenActions = [
       saveAction()
     ];
@@ -81,14 +79,14 @@
       DECODER_STATUS_SELECT(Editable.UPDATE, true),
       ANLEITUNGEN(Editable.NEVER)
     ];
-    
+   
     const decoderActions = [
-      updateRow
+      saveAction()
     ];
 
     const decoderChildren = [
-      adressen, 
-      cvs, 
+      adressen,
+      cvs,
       funktionen
     ];
 

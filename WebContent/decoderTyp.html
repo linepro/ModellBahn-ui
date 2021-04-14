@@ -10,24 +10,27 @@
   <script type="text/javascript" src="js/i18n.js"></script>
   <script type="text/javascript" src="js/utils.js"></script>
   <script type="text/javascript" src="js/dropdown.js"></script>
+  <script type="text/javascript" src="js/lib/pdf.js"></script>
+  <script type="text/javascript" src="js/pdfViewer.js"></script>
   <script type="text/javascript" src="js/columns.js"></script>
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
     const adressColumns = [
       INDEX(Editable.ADD, true),
+      BEZEICHNUNG(Editable.UPDATE, true),
       ADRESS_TYP_SELECT(Editable.UPDATE, true),
       SPAN(Editable.UPDATE, true),
       WERKSEINSTELLUNG(Editable.UPDATE, true)
     ];
-    
+   
     const adressActions = [
-      addAction("adressen"), 
-      saveAction(), 
+      addAction("adressen"),
+      saveAction(),
       deleteAction()
     ];
 
-    const adressen = new ExpandingTable(2, "adressen", "adressen", adressColumns, adressActions, EditMode.ADD);
+    const adressen = new ExpandingTable(2, "adressen", "adressen", adressColumns, adressActions, EditMode.UPDATE);
 
     const cvColumns = [
       CV(Editable.ADD, true),
@@ -36,14 +39,14 @@
       MINIMAL(Editable.UPDATE, false),
       WERKSEINSTELLUNG(Editable.UPDATE, false)
     ];
-    
+   
     const cvActions = [
-      addAction("cvs"), 
-      saveAction(), 
+      addAction("cvs"),
+      saveAction(),
       deleteAction()
     ];
 
-    const cvs = new ExpandingTable(10, "cvs", "cvs", cvColumns, cvActions, EditMode.ADD);
+    const cvs = new ExpandingTable(10, "cvs", "cvs", cvColumns, cvActions, EditMode.UPDATE);
 
     const funktionenColumns = [
       REIHE(Editable.ADD, true),
@@ -51,14 +54,14 @@
       WERKSEINSTELLUNG(Editable.UPDATE, true),
       PROGRAMMABLE(Editable.UPDATE, true)
     ];
-    
+   
     const funktionenActions = [
-      addAction("funktionen"), 
-      saveAction(), 
+      addAction("funktionen"),
+      saveAction(),
       deleteAction()
     ];
 
-    const funktionen = new PagedTable(10, "funktionen", "funktionen", funktionenColumns, EditMode.ADD);
+    const funktionen = new ExpandingTable(10, "funktionen", "funktionen", funktionenColumns, funktionenActions, EditMode.UPDATE);
 
     const decoderTypColumns = [
       HERSTELLER_SELECT(Editable.ADD, true),
@@ -69,16 +72,17 @@
       GERAUSCH(Editable.UPDATE, true),
       I_MAX(Editable.UPDATE, true),
       KONFIGURATION_SELECT(Editable.UPDATE, true),
-      STECKER_SELECT(Editable.UPDATE, true)
+      STECKER_SELECT(Editable.UPDATE, true),
+      ANLEITUNGEN(Editable.UPDATE, false)
     ];
-    
+   
     const decoderTypActions = [
       saveAction()
     ];
 
     const decoderTypChildren = [
-      adressen, 
-      cvs, 
+      adressen,
+      cvs,
       funktionen
     ];
 

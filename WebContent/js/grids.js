@@ -8,57 +8,59 @@ const Paged = {
 };
 
 class ActionButton {
-  constructor(form, caption, image, action, className = "nav-button") {
+  constructor(form, caption, image, execute, className = "nav-button") {
     this.form = form;
     this.caption = caption;
     this.image = image;
-    this.action = action;
+    this.execute = execute;
     this.className = className;
   }
 
-  execute(event, row) {
-    let action = this;
-
-    let entity = row.entity;
-
-    action.action(row, entity);
-  }
-
-  addButton(row, cell) {
+  addButton(grid, row, cell) {
     let action = this;
 
     let btn = createButton(
       action.caption,
       action.image,
-      (event) => action.execute(event, row),
+      (event) => action.execute(event, grid, row),
       action.className
     );
-    btn.id = getFieldId(row.id, action.caption);
     cell.append(btn);
     return btn;
   }
-  
-  addHeaderButton(row, cell) {
+ 
+  addHeading(grid, headerRow) {
     let action = this;
 
-    let btn = action.addButton(row, cell);
+    let btn = action.addButton(grid, undefined, headerRow);
+    btn.id = getFieldId(grid.tableId, action.caption);
     btn.disabled = false;
     btn.style.visibility = "visible";
   }
 
-  addRowButton(row, cell) {
+  addFormHeading(grid, row, headerRow) {
     let action = this;
 
-    let btn = action.addButton(row, cell);
+    let btn = action.addButton(grid, row, headerRow);
+    btn.id = getFieldId(row.id, action.caption);
+    btn.disabled = false;
+    btn.style.visibility = "visible";
+  }
+
+  addRowButton(grid, row, cell) {
+    let action = this;
+
+    let btn = action.addButton(grid, row, cell);
+    btn.id = getFieldId(row.id, action.caption);
     btn.disabled = true;
     btn.style.visibility = "hidden";
   }
 
-  bind(row, entity, editMode) {
+  bind(row) {
     let btn = document.getElementById(getFieldId(row.id, this.caption));
     if (btn) {
-      btn.disabled = shouldDisable(editMode, editMode, entity);
-      btn.style.visibility = entity ? "visible" : "hidden";
+      btn.disabled = shouldDisable(row.editMode, row.editMode, row.entity);
+      btn.style.visibility = row.entity ? "visible" : "hidden";
     }
   }
 }
@@ -68,7 +70,7 @@ const newAction = (editForm) =>
     true,
     "add",
     "add",
-    (row, entity) => (window.location.href = editForm)
+    (event, grid, row) => window.location.href = editForm
   );
 
 const editAction = (editForm) =>
@@ -76,30 +78,29 @@ const editAction = (editForm) =>
     false,
     "edit",
     "edit",
-    (row, entity) =>
-      (window.location.href = editForm + "?self=" + actionLink(entity, "self"))
+    (event, grid, row) => window.location.href = editForm + "?self=" + actionLink(row.entity, "self")
   );
 
-const addAction = (grid, rel = "add") =>
+const addAction = (rel = "add") =>
   new ActionButton(
-    true, 
-    "add", 
-    "add", 
-    (row, entity) => (grid.addRow(actionLink(entity, rel)))
+    true,
+    "add",
+    "add",
+    (event, grid, row) => grid.addRow()
   );
 
 const deleteAction = (rel = "delete") =>
   new ActionButton(
-    false, 
-    "delete", 
-    "delete", 
-    async (row, entity) => {
-      if (entity) {
-        let deleteUrl = actionLink(entity, rel);
+    false,
+    "delete",
+    "delete",
+    async (event, grid, row) => {
+      if (row.entity) {
+        let deleteUrl = actionLink(row.entity, rel);
         if (deleteUrl) {
           await deleteRest(
             deleteUrl,
-            () => row.refresh(),
+            () => grid.removeRow(),
             (error) => reportError("deleteRow", error)
           );
         } else {
@@ -109,25 +110,25 @@ const deleteAction = (rel = "delete") =>
     }
   );
 
-const saveAction = (addUrl, rel = "add") =>
+const saveAction = (rel = "update") =>
   new ActionButton(
-    false, 
-    "save", 
-    "save", 
-    async (row, entity) => {
-      if (entity) {
-        let updateUrl = actionLink(entity, rel);
+    false,
+    "save",
+    "save",
+    async (event, grid, row) => {
+      if (row.entity) {
+        let updateUrl = actionLink(row.entity, rel);
         if (updateUrl) {
           await putRest(
             updateUrl,
-            entity,
+            row.entity,
             (jsonData) => row.bind(jsonData, row.editMode),
             (error) => reportError("updateRow", error)
           );
         } else {
           await postRest(
-            addUrl,
-            entity,
+            grid.currentUrl.split("?")[0],
+            row.entity,
             (jsonData) => row.bind(jsonData, EditMode.UPDATE),
             (error) => reportError("saveRow", error)
           );
@@ -146,33 +147,38 @@ class ButtonColumn extends VirtualColumn {
         0
       );
     this.rowCount = this.actions.length - this.headingCount;
-    this.length = Math.max(this.headingCount, this.rowCount) * 1.6;
+    this.length = Math.max(this.headingCount, this.rowCount) * 2.75;
+    this.grid = undefined;
   }
 
-  addHeading(headerRow) {
+  addHeading(grid, headerRow) {
     let column = this;
 
-    let header = document.createElement("th");
-    header.className = "table-heading-btn";
-    headerRow.append(header);
+    column.grid = grid;
 
-    if (column.length) {
+    let bar = document.createElement("th");
+    bar.className = "table-heading-btn";
+    headerRow.append(bar);
+
+    if (column.displayLength()) {
       column.actions
         .filter((action) => action.form)
-        .forEach((action) => action.addHeaderButton(headerRow, header));
+        .forEach((action) => action.addHeading(grid, bar));
     }
   }
 
-  addFormHeading(headerRow) {
+  addFormHeading(grid, row, headerRow) {
     let column = this;
+
+    column.grid = grid;
 
     let header = document.createElement("div");
     header.className = "form-heading-btn";
     headerRow.append(header);
 
-    if (column.length) {
+    if (column.displayLength()) {
       column.actions
-        .forEach((action) => action.addHeaderButton(headerRow, header));
+        .forEach((action) => action.addFormHeading(grid, row, header));
 
       return header;
     }
@@ -183,13 +189,13 @@ class ButtonColumn extends VirtualColumn {
 
     let cell = document.createElement("td");
     cell.id = row.id + "_buttons";
-    cell.className = ".table-cell-btn";
-    row.append(cell);
+    cell.className = "table-cell-btn";
+    row.element.append(cell);
 
-    if (column.length) {
+    if (column.displayLength()) {
       column.actions
         .filter((action) => !action.form)
-        .forEach((action) => action.addRowButton(row, cell));
+        .forEach((action) => action.addRowButton(column.grid, row, cell));
 
       return {
         id: cell.id,
@@ -209,13 +215,13 @@ class ButtonColumn extends VirtualColumn {
     };
   }
 
-  bind(row, entity, editMode) {
+  bind(row) {
     let column = this;
 
-    if (column.length) {
+    if (column.displayLength()) {
       column.actions
         .filter((action) => !action.form)
-        .forEach((action) =>  action.bind(row, entity, editMode))
+        .forEach((action) =>  action.bind(row))
     }
   }
 }
@@ -227,14 +233,15 @@ class ChildColumn extends VirtualColumn {
     this.child = child;
   }
 
-  addHeading(headingRow) {
+  addHeading(grid, headingRow) {
     this.child.initialize();
+    this.child.refresh = grid.refresh;
   }
 
-  addFormHeading(headingRow) {
+  addFormHeading(grid, row, headingRow) {
     this.child.initialize();
+    this.child.refresh = grid.refresh;
   }
-
 
   addTableCell(row) {
     let column = this;
@@ -256,10 +263,28 @@ class ChildColumn extends VirtualColumn {
     };
   }
 
-  bind(row, entity, editMode) {
+  bind(row) {
     let column = this;
-    column.child.bind(entity, editMode);
-    column.child.refresh = row.refresh;
+    column.child.bind(row.entity, actionLink(row.entity, column.child.tableId));
+  }
+}
+
+class RowEntry {
+  constructor(row, editMode, refresh, remove = undefined) {
+   this.id = row.id;
+   this.element = row;
+   this.columns =  undefined;
+   this.editMode = editMode;
+   this.entity = undefined;
+   this.refresh = refresh;
+   this.remove = remove;
+  }
+
+  bind(entity, edtMode) {
+    this.entity = entity;
+    this.editMode = edtMode;
+    this.columns
+        .forEach((column) => column.column.bind(this));
   }
 }
 
@@ -279,7 +304,6 @@ class ItemGrid {
       .concat(children ? children.map((child) => new ChildColumn(child)) : []);
     this.actions = actions;
     this.editMode = editMode;
-    this.refresh = this.fetch;
     this.initialized = false;
   }
 
@@ -366,9 +390,9 @@ class Form extends ItemGrid {
 
     let maxLabel = grid.columns
       .reduce(
-        (length, column) => Math.max(boxSize(column.headerLength), length),
+        (length, column) => Math.max(boxSize(column.headingLength), length),
         10
-      ) + 3;
+      );
 
     let form = document.createElement("div");
     form.id = grid.tableId;
@@ -387,32 +411,25 @@ class Form extends ItemGrid {
     headRow.id = grid.tableId + "Head";
     header.append(headRow);
 
-    grid.columns.forEach((column) => column.addFormHeading(headRow));
-
     let body = document.createElement("div");
     body.id = grid.tableId + "_tbody";
-    body.className = "flex-container";
+    body.className = "form-body";
     form.append(body);
 
     let row = document.createElement("div");
     row.id = getRowId(grid.tableId, 0);
-    row.className = "flex-container";
+    row.className = "form-row";
     body.append(row);
 
-    let columns = grid.columns
-      .map((column) => column.addFormField(row, maxLabel))
+    let rowEntry = new RowEntry(row, grid.editMode, grid.fetch);
+
+    rowEntry.columns = grid.columns
+      .map((column) => column.addFormField(rowEntry, maxLabel))
       .filter((column) => column);
 
-    grid.row = {
-      id: row.id,
-      element: row,
-      columns: columns,
-      editMode: grid.editMode,
-      bind: (entity, edtMode) => {
-        columns.forEach((column) => column.column.bind(row, entity, edtMode));
-      },
-      refresh: grid.refresh,
-    };
+    grid.row = rowEntry;
+
+    grid.columns.forEach((column) => column.addFormHeading(grid, grid.row, header));
 
     let foot = document.createElement("div");
     foot.id = grid.tableId + "_tfoot";
@@ -435,7 +452,7 @@ class Form extends ItemGrid {
 
     super.bind(jsonData, fetchUrl);
 
-    let entity = jsonData ? jsonData : {}; 
+    let entity = jsonData ? jsonData : {};
     let self = actionLink(entity, "self");
 
     grid.editMode = self ? EditMode.UPDATE : EditMode.ADD;
@@ -447,6 +464,7 @@ class Form extends ItemGrid {
   async fetch(fetchUrl) {
     let grid = this;
 
+    fetchUrl = fetchUrl ? fetchUrl : grid.currentUrl;
     super.fetch(grid.editMode === EditMode.ADD ? undefined : fetchUrl);
   }
 }
@@ -476,21 +494,11 @@ class Table extends ItemGrid {
     row.className = "table-row";
     body.append(row);
 
-    let columns = grid.columns
-      .map((column) => column.addTableCell(row))
-      .filter((column) => column);
+    let rowEntry = new RowEntry(row, grid.editMode, grid.fetch, grid.removeRow);
 
-    let rowEntry = {
-      id: row.id,
-      element: row,
-      columns: columns,
-      editMode: grid.editMode,
-      bind: (entity, edtMode) => {
-        columns.forEach((column) => column.column.bind(row, entity, edtMode));
-      },
-      remove: grid.remove,
-      refresh: grid.refresh,
-    };
+    rowEntry.columns = grid.columns
+      .map((column) => column.addTableCell(rowEntry))
+      .filter((column) => column);
 
     grid.rows.push(rowEntry);
 
@@ -505,20 +513,20 @@ class Table extends ItemGrid {
     header.className = "thead";
     table.append(header);
 
-    let headRow = document.createElement("tr");
-    headRow.id = grid.tableId + "Head";
-    headRow.className = "table-head";
-    header.append(headRow);
+    let headings = document.createElement("tr");
+    headings.id = grid.tableId + "Head";
+    headings.className = "table-head";
+    header.append(headings);
 
-    grid.columns.forEach((column) => column.addHeading(headRow));
+    grid.columns.forEach((column) => column.addHeading(grid, headings));
   }
 
-  addBody(table) {
+  addBody(table, className = "tbody") {
     let grid = this;
 
     let body = document.createElement("tbody");
     body.id = grid.tableId + "_tbody";
-    body.className = "tbody";
+    body.className = className;
     table.append(body);
 
     for (let rowNum = 0; rowNum < grid.pageSize; rowNum++) {
@@ -526,7 +534,7 @@ class Table extends ItemGrid {
     }
   }
 
-  addFooter(table) {
+  addFooter(table, className = "table-footer") {
     let grid = this;
 
     let footer = document.createElement("tfoot");
@@ -541,7 +549,7 @@ class Table extends ItemGrid {
 
     grid.columns.forEach((column) => {
       let tf = document.createElement("td");
-      tf.className = "table-footer";
+      tf.className = className;
       navRow.append(tf)
     });
   }
@@ -561,16 +569,15 @@ class Table extends ItemGrid {
 
     let totalLength = grid.columns
       .reduce(
-        (length, column) => length + boxSize(column.length),
+        (length, column) => length + boxSize(column.displayLength()),
         0
       );
 
     grid.columns.forEach((column) => {
       let col = document.createElement("col");
-      setWidths(
-        col,
-        Math.floor((boxSize(column.length) * 100) / totalLength) + "%"
-      );
+      let width = Math.floor((boxSize(column.displayLength()) * 100) / totalLength) + "%";
+      console.log({ total: totalLength, column: column.fieldName, length: column.displayLength(), width: width });
+      setWidths(col, width);
       group.append(col);
     });
 
@@ -586,16 +593,21 @@ class Table extends ItemGrid {
   freeRow() {
     let grid = this;
 
-    return grid.appendTableRow();
+    let free = grid.rows.filter(
+      (row) => !row.entity || row.editMode === EditMode.ADD
+    );
+
+    return free.length ? free[0] : grid.appendTableRow();
   }
 
-  addRow(saveUrl) {
+  addRow() {
     let grid = this;
 
     let row = grid.freeRow();
 
-    row.bind({}, EditMode.ADD);
-    row.getElementsByTagName("INPUT")[0].focus();
+    let entity = {};
+    row.bind(entity, EditMode.ADD);
+    row.element.getElementsByTagName("INPUT")[0].focus();
   }
 
   async removeRow(row) {
@@ -640,6 +652,10 @@ class ExpandingTable extends Table {
       editMode,
       children
     );
+  }
+
+  addFooter(tableName) {
+    super.addFooter(tableName, "table-footer-thin");
   }
 
   removeRow(row) {
@@ -805,6 +821,7 @@ class PagedTable extends Table {
     let free = grid.rows.filter(
       (row) => !row.entity || row.editMode === EditMode.ADD
     );
+
     return free.length ? free[0] : super.freeRow();
   }
 }
@@ -817,8 +834,8 @@ class ListEditTable extends PagedTable {
       elementName,
       columns,
       [
-        addAction(), 
-        saveAction(), 
+        addAction(),
+        saveAction(),
         deleteAction()
       ],
       EditMode.UPDATE
@@ -829,15 +846,15 @@ class ListEditTable extends PagedTable {
 
 class NamedItemTable extends ListEditTable {
   constructor(
-    dataType, 
+    dataType,
     elementName
   ) {
     super(
-      10, 
-      dataType, 
-      elementName, 
+      10,
+      dataType,
+      elementName,
       [
-        NAMEN(), 
+        NAMEN(),
         BEZEICHNUNG()
       ]
     );
