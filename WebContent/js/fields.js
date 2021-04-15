@@ -32,10 +32,10 @@ const decoderOption = (entity) =>
 const kategorieOption = (entity) =>
   dropOption(
     entity.kategorie + "/" + entity.name,
-    translate(entity.bezeichnung),
-    entity.bezeichnung,
+    entity.kategorieBezeichnung + " - " + entity.bezeichnung,
+    entity.kategorieBezeichnung + " - " + entity.bezeichnung,
     undefined,
-    translate(entity.kategorie)
+    translate(entity.kategorieBezeichnung)
   );
 
 const produktOption = (entity) =>

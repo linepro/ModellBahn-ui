@@ -414,76 +414,7 @@ class UrlColumn extends TextColumn {
   }
 }
 
-const dayFormat = () => {
-  let marker = new Date(2112, 10, 19);
-  return new Intl.DateTimeFormat(getLanguage(), {
-    year: "numeric",
-    month: "numeric",
-    day: "numeric",
-    timeZone: "UTC"
-  }).format(marker)
-    .replace("2112","yyyy")
-    .replace("19","dd")
-    .replace("11","mm");
-};
-
-const datePattern = () => {
-  return "^(" +
-    dayFormat()
-      .replace("yyyy", "1[89]|2[01])[0123456789]{2}")
-      .replace("mm", "(0[0123456789]|1[012])")
-      .replace("dd", "([012][0123456789]|3[01]") +
-    ")$";
-};
-
-const dateOptions = () => {
-  return {
-    mondayFirst: true,
-    minDate: new Date(Date.UTC(1800, 1, 1)),
-    maxDate: new Date(Date.UTC(2100, 11, 31)),
-    weekDayLabels: [
-      translate("MO"),
-      translate("TU"),
-      translate("WE"),
-      translate("TH"),
-      translate("FR"),
-      translate("SA"),
-      translate("SU"),
-    ],
-    shortMonthLabels: [
-      translate("JAN"),
-      translate("FEB"),
-      translate("MAR"),
-      translate("APR"),
-      translate("MAY"),
-      translate("JUN"),
-      translate("JUL"),
-      translate("AUG"),
-      translate("SEP"),
-      translate("OCT"),
-      translate("NOV"),
-      translate("DEC"),
-    ],
-    singleMonthLabels: [
-      translate("JANUARY"),
-      translate("FEBRUARY"),
-      translate("MARCH"),
-      translate("APRIL"),
-      translate("MAY"),
-      translate("JUNE"),
-      translate("JULY"),
-      translate("AUGUST"),
-      translate("SEPTEMBER"),
-      translate("OCTOBER"),
-      translate("NOVEMBER"),
-      translate("DECEMBER"),
-    ],
-    todayButton: true,
-    todayButtonLabel : translate("TODAY"),
-    clearButton: true,
-    clearButtonLabel: translate("CLEAR")
-  };
-};
+const dateFormatter = () => new Intl.DateTimeFormat(getLanguage(), { year: "numeric", month: "numeric", day: "numeric", timeZone: "UTC" });
 
 class DateColumn extends TextColumn {
   constructor(
@@ -505,19 +436,119 @@ class DateColumn extends TextColumn {
     );
   }
 
-  addFormField(row, labelWidth) {
-    let dte = super.addFormField(row, labelWidth);
-    //if (!dte.element.readOnly) {
-    //  dte.element.DatePickerX.init(dateOptions());
-    //}
-    return dte;
+  datePicker(row, dte) {
+    if (!dte.disabled) {
+      let column = this;
+
+      let startDate = column.getControlValue(dte);
+      let dayFormat = dateFormatter().format(new Date(2021, 4, 15))
+        .replace("2021","Y")
+        .replace("15","d")
+        .replace("4","m");
+
+      let datepicker = new TheDatepicker.Datepicker(dte);
+
+      if (startDate) {
+        datepicker.options.setInitialDate(isoDate(startDate));
+      }
+
+      datepicker.options.setAllowEmpty(true);
+      datepicker.options.setAnimateMonthChange(true);
+      datepicker.options.setChangeMonthOnSwipe(true);
+      datepicker.options.setDaysOutOfMonthVisible(true);
+      datepicker.options.setDropdownItemsLimit(200);
+      datepicker.options.setFirstDayOfWeek(TheDatepicker.DayOfWeek.Monday);
+      datepicker.options.setFixedRowsCount(false);
+      datepicker.options.setHideDropdownWithOneItem(true);
+      datepicker.options.setHideOnBlur(true);
+      datepicker.options.setHideOnSelect(true);
+      datepicker.options.setInitialDatePriority(true);
+      datepicker.options.setInputFormat(dayFormat);
+      datepicker.options.setMaxDate("2100-12-31");
+      datepicker.options.setMinDate("1800-01-01");
+      datepicker.options.setMonthAndYearSeparated(true);
+      datepicker.options.setMonthAsDropdown(true);
+      datepicker.options.setMonthShort(false);
+      datepicker.options.setPositionFixing(true);
+      datepicker.options.setShowCloseButton(true);
+      datepicker.options.setShowDeselectButton(true);
+      datepicker.options.setShowResetButton(true);
+      datepicker.options.setTitle(translate(column.heading));
+      datepicker.options.setToggleSelection(false);
+      datepicker.options.setYearAsDropdown(true);
+
+      datepicker.options.setCloseHtml("&times;");
+      datepicker.options.translator.setTitleTranslation(TheDatepicker.TitleName.Close, translate("CLOSE"));
+      datepicker.options.setDeselectHtml("&times;");
+      datepicker.options.setGoBackHtml("&lt;");
+      datepicker.options.translator.setTitleTranslation(TheDatepicker.TitleName.GoBack, translate("PREVIOUS"));
+      datepicker.options.setGoForwardHtml("&gt;");
+      datepicker.options.translator.setTitleTranslation(TheDatepicker.TitleName.GoForward, translate("NEXT"));
+      datepicker.options.setResetHtml("&olarr;");
+      datepicker.options.translator.setTitleTranslation(TheDatepicker.TitleName.Reset, translate("CLEAR"));
+
+      datepicker.options.translator.setDayOfWeekTranslation(TheDatepicker.DayOfWeek.Monday, translate("MO"));
+      datepicker.options.translator.setDayOfWeekTranslation(TheDatepicker.DayOfWeek.Tuesday, translate("TU"));
+      datepicker.options.translator.setDayOfWeekTranslation(TheDatepicker.DayOfWeek.Wednesday, translate("WE"));
+      datepicker.options.translator.setDayOfWeekTranslation(TheDatepicker.DayOfWeek.Thursday, translate("TH"));
+      datepicker.options.translator.setDayOfWeekTranslation(TheDatepicker.DayOfWeek.Friday, translate("FR"));
+      datepicker.options.translator.setDayOfWeekTranslation(TheDatepicker.DayOfWeek.Saturday, translate("SA"));
+      datepicker.options.translator.setDayOfWeekTranslation(TheDatepicker.DayOfWeek.Sunday, translate("SU"));
+
+      datepicker.options.translator.setDayOfWeekFullTranslation(TheDatepicker.DayOfWeek.Monday, translate("MONDAY"));
+      datepicker.options.translator.setDayOfWeekFullTranslation(TheDatepicker.DayOfWeek.Tuesday, translate("TUESDAY"));
+      datepicker.options.translator.setDayOfWeekFullTranslation(TheDatepicker.DayOfWeek.Wednesday, translate("WEDNESDAY"));
+      datepicker.options.translator.setDayOfWeekFullTranslation(TheDatepicker.DayOfWeek.Thursday, translate("THURSDAY"));
+      datepicker.options.translator.setDayOfWeekFullTranslation(TheDatepicker.DayOfWeek.Friday, translate("FRIDAY"));
+      datepicker.options.translator.setDayOfWeekFullTranslation(TheDatepicker.DayOfWeek.Saturday, translate("SATURDAY"));
+      datepicker.options.translator.setDayOfWeekFullTranslation(TheDatepicker.DayOfWeek.Sunday, translate("SUNDAY"));
+
+      datepicker.options.translator.setMonthTranslation(TheDatepicker.Month.January, translate("JANUARY"));
+      datepicker.options.translator.setMonthTranslation(TheDatepicker.Month.February, translate("FEBRUARY"));
+      datepicker.options.translator.setMonthTranslation(TheDatepicker.Month.March, translate("MARCH"));
+      datepicker.options.translator.setMonthTranslation(TheDatepicker.Month.April, translate("APRIL"));
+      datepicker.options.translator.setMonthTranslation(TheDatepicker.Month.May, translate("MAY"));
+      datepicker.options.translator.setMonthTranslation(TheDatepicker.Month.June, translate("JUNE"));
+      datepicker.options.translator.setMonthTranslation(TheDatepicker.Month.July, translate("JULY"));
+      datepicker.options.translator.setMonthTranslation(TheDatepicker.Month.August, translate("AUGUST"));
+      datepicker.options.translator.setMonthTranslation(TheDatepicker.Month.September, translate("SEPTEMBER"));
+      datepicker.options.translator.setMonthTranslation(TheDatepicker.Month.October, translate("OCTOBER"));
+      datepicker.options.translator.setMonthTranslation(TheDatepicker.Month.November, translate("NOVEMBER"));
+      datepicker.options.translator.setMonthTranslation(TheDatepicker.Month.December, translate("DECEMBER"));
+
+      datepicker.options.translator.setMonthShortTranslation(TheDatepicker.Month.January, translate("JAN"));
+      datepicker.options.translator.setMonthShortTranslation(TheDatepicker.Month.February, translate("FEB"));
+      datepicker.options.translator.setMonthShortTranslation(TheDatepicker.Month.March, translate("MAR"));
+      datepicker.options.translator.setMonthShortTranslation(TheDatepicker.Month.April, translate("APR"));
+      datepicker.options.translator.setMonthShortTranslation(TheDatepicker.Month.May, translate("MAY"));
+      datepicker.options.translator.setMonthShortTranslation(TheDatepicker.Month.June, translate("JUN"));
+      datepicker.options.translator.setMonthShortTranslation(TheDatepicker.Month.July, translate("JUL"));
+      datepicker.options.translator.setMonthShortTranslation(TheDatepicker.Month.August, translate("AUG"));
+      datepicker.options.translator.setMonthShortTranslation(TheDatepicker.Month.September, translate("SEP"));
+      datepicker.options.translator.setMonthShortTranslation(TheDatepicker.Month.October, translate("OCT"));
+      datepicker.options.translator.setMonthShortTranslation(TheDatepicker.Month.November, translate("NOV"));
+      datepicker.options.translator.setMonthShortTranslation(TheDatepicker.Month.December, translate("DEC"));
+
+      datepicker.options.onOpenAndClose((event, isOpening) => {
+        if (!isOpening) {
+          column.setControlValue(dte, datepicker.getSelectedDate());
+          column.updateEntity(event, row);
+          datepicker.destroy();
+        }
+      });
+
+      datepicker.selectDate(isoDate(startDate));
+
+      datepicker.render();
+    }
   }
 
-  addTableCell(row) {
-    let dte = super.addTableCell(row);
-    //if (!dte.element.readOnly) {
-    //  dte.element.DatePickerX.init(dateOptions());
-    //}
+  createControl(row, className) {
+    let column = this;
+
+    let dte = super.createControl(row, className);
+    dte.readOnly = true;
+    dte.addEventListener("click", (event) => column.datePicker(row, dte));
     return dte;
   }
 
@@ -526,7 +557,7 @@ class DateColumn extends TextColumn {
   }
 
   setControlValue(dte, value) {
-    dte.value = isoDate(value, "");
+    dte.value = value ? dateFormatter().format(Date.parse(value)) : value;
   }
 
   bind(row) {

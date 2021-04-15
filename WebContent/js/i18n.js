@@ -2,7 +2,7 @@
 "use strict";
 
 const DEFAULT_LANGUAGE = "de-DE";
-const ALTERNATE_LANGUAGE = "en-US";
+const ALTERNATE_LANGUAGE = "en-GB";
 
 const _TRANSLATIONS = {};
 
