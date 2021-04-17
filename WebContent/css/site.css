@@ -1,4 +1,6 @@
+@import url("fonts.css");
 @import url("DatePickerX.css");
+@import url("select.css");
 
 /* Add Animation */
 @-webkit-keyframes animatetop {
@@ -451,13 +453,14 @@ img.nav-button {
 
 img.table-cell {
   order: 2;
+  max-height: 3rem;
   vertical-align: bottom;
 }
 
 img.thumb-display {
   border: 0;
-  height: 3.1rem;
   margin: 0.1rem 0 0.1rem 0;
+  max-height: 3rem;
   padding: 0;
   vertical-align: bottom;
   width: 100%;
@@ -523,27 +526,9 @@ input[type="date"] {
   padding: 0;
 }
 
-input[type="date"]::-webkit-calendar-picker-indicator {
-  background: orange;
-}
-
-input[type="date"]::-webkit-datetime-edit,
-input[type="date"]::-webkit-datetime-edit-fields-wrapper,
-input[type="date"]::-webkit-datetime-edit-text,
-input[type="date"]::-webkit-datetime-edit-month-field,
-input[type="date"]::-webkit-datetime-edit-day-field,
-input[type="date"]::-webkit-datetime-edit-year-field {
+.form-control-picker[readonly]:enabled {
   border: 0;
-  margin: 0;
-  padding: 0;
-}
-
-input[type="date"]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  display: none;
-  border: 0;
-  margin: 0;
-  padding: 0;
+  background-color: Ivory;
 }
 
 input[type="number"]::-webkit-inner-spin-button,
@@ -1018,13 +1003,19 @@ ul.nav > li {
   border-top-right-radius: 0.3rem;
 }
 
+.the-datepicker__header {
+  max-height: 4rem;
+}
+
 .the-datepicker__main {
   background-color: Ivory;
   border: 1px solid Grey;
   border-radius: 0.3rem;
-  padding: 0.4rem;
   font-family: Arial, Helvetica, sans-serif;
   line-height: 1rem;
+  padding: 0.4rem;
+  position: relative;
+  top: -7rem;
 }
 
 .the-datepicker__main .the-datepicker__body {
@@ -1032,12 +1023,12 @@ ul.nav > li {
 }
 
 .the-datepicker__main th.the-datepicker__week-day {
-  width: 2.1rem;
-  min-width: 2.1rem;
-  max-width: 2.1rem;
-  padding: 0.5rem 0;
   color: White;
   font-size: 0.85rem;
+  max-width: 2.1rem;
+  min-width: 2.1rem;
+  padding: 0.4rem 0;
+  width: 2.1rem;
 }
 
 .the-datepicker__main .the-datepicker__day--weekend,
@@ -1051,20 +1042,20 @@ ul.nav > li {
 }
 
 .the-datepicker__main a.the-datepicker__button {
-  width: 2.1rem;
-  min-width: 2.1rem;
-  max-width: 2.1rem;
-  padding: 0.6rem 0;
-  color: #007eff;
   border-radius: 0.3rem;
+  color: DodgerBlue;
+  max-width: 2.1rem;
+  min-width: 2.1rem;
+  padding: 0.4rem 0;
+  width: 2.1rem;
 }
 
 .the-datepicker__main a.the-datepicker__button:hover {
-  background-color: #d1e8ff;
+  background-color: LightBlue;
 }
 
 .the-datepicker__main .the-datepicker__title-content {
-  padding: 0.5rem;
+  padding: 0.4rem;
 }
 
 .the-datepicker__main .the-datepicker__navigation {
@@ -1080,7 +1071,7 @@ ul.nav > li {
 }
 
 .the-datepicker__main td.the-datepicker__cell a.the-datepicker__button .the-datepicker__day-content {
-  padding: 0.6rem 0;
+  padding: 0.4rem 0;
 }
 
 .the-datepicker__main td.the-datepicker__day a.the-datepicker__button .the-datepicker__day-content {
@@ -1088,19 +1079,19 @@ ul.nav > li {
 }
 
 .the-datepicker__main td.the-datepicker__day a.the-datepicker__button:hover .the-datepicker__day-content {
-  background-color: #d1e8ff;
+  background-color: LightBlue;
 }
 
 .the-datepicker__main td.the-datepicker__day--highlighted a.the-datepicker__button .the-datepicker__day-content {
-  background-color: #d1e8ff;
+  background-color: LightBlue;
 }
 
 .the-datepicker__main td.the-datepicker__day--outside a.the-datepicker__button {
-  color: #8ac4ff;
+  color: LightSkyBlue;
 }
 
 .the-datepicker__main td.the-datepicker__day--unavailable a.the-datepicker__button {
-  color: #aaa;
+  color: DarkGrey;
 }
 
 .the-datepicker__main td.the-datepicker__day--selected a.the-datepicker__button,
@@ -1110,16 +1101,16 @@ ul.nav > li {
 
 .the-datepicker__main td.the-datepicker__day--selected a.the-datepicker__button .the-datepicker__day-content,
 .the-datepicker__main td.the-datepicker__day--selected.the-datepicker__day--highlighted a.the-datepicker__button .the-datepicker__day-content {
-  background-color: #007eff;
+  background-color: DodgerBlue;
 }
 
 .the-datepicker__main td.the-datepicker__day--selected a.the-datepicker__button:hover .the-datepicker__day-content,
 .the-datepicker__main td.the-datepicker__day--selected.the-datepicker__day--highlighted a.the-datepicker__button:hover .the-datepicker__day-content {
-  background-color: #007eff;
+  background-color: DodgerBlue;
 }
 
 .the-datepicker__deselect-button {
-  color: #007eff;
+  color: DodgerBlue;
 }
 
 #anderungen_tbody {

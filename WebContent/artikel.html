@@ -13,12 +13,13 @@
   <script type="text/javascript" src="js/lib/DatePickerX.js"></script>
   <script type="text/javascript" src="js/lib/pdf.js"></script>
   <script type="text/javascript" src="js/pdfViewer.js"></script>
+  <script type="text/javascript" src="js/select.js"></script>
   <script type="text/javascript" src="js/columns.js"></script>
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
     const ANDERUNGS_TYP_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new DropDownColumn("ANDERUNGS_TYP", "anderungsTyp", getter, setter, ANDERUNGS_TYP_DROP, editable, required) }
-    const ANDERUNGS_DATUM = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new DateColumn("DATUM", "anderungsDatum", getter, setter, editable, required, 5) }
+    const ANDERUNGS_DATUM = (editable = Editable.UPDATE, required = false, getter = dateGetter, setter = dateSetter) => { return new DateColumn("DATUM", "anderungsDatum", getter, setter, editable, required, 5) }
     const ANDERUNGS_ID = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("ANDERUNG", "anderungId", getter, setter, editable, required, 30, 0) }
     const BELADUNG = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new TextColumn("BELADUNG", "beladung", getter, setter, editable, required, 30) }
     const VERBLEIBENDE = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("VERBLEIBENDE", "verbleibende", getter, setter, editable, required, 300, 0) }
@@ -60,7 +61,7 @@
       ];
    
     const artikelActions = [
-      updateRow
+      saveAction()
     ];
 
     const artikelChildren = [

@@ -10,6 +10,18 @@ const getLanguage = () => {
   return localStorage.getItem("language") ? localStorage.getItem("language") : DEFAULT_LANGUAGE;
 };
 
+const _DATE_FORMATTER = new Intl.DateTimeFormat(getLanguage(), { year: "numeric", month: "numeric", day: "numeric", timeZone: "UTC" });
+
+let _TEMPLATE_DATE = _DATE_FORMATTER.format(new Date(Date.parse("2021-04-15")));
+
+const _LOCAL_TO_DATE_EXPRESSION = new RegExp(_TEMPLATE_DATE.replace("2021","(?<year>[0-9]{4})")
+    .replace("15","(?<day>[0-9]{2})")
+    .replace("04","(?<month>[0-9]{2})"));
+
+const _LOCAL_DATE_FORMAT = _TEMPLATE_DATE.replace("2021","Y")
+    .replace("15","d")
+    .replace("04","m");
+
 const setLanguage = (language) => {
   localStorage.setItem("language", language);
   console.log("language: %s", language);
@@ -17,6 +29,14 @@ const setLanguage = (language) => {
 
 const primaryLanguage = (language) => {
   return language.split("-")[0];
+};
+
+const dateToLocalString = (date) => date ? _DATE_FORMATTER.format(date) : "";
+
+const localStringToDate = (value) => {
+  if (!value) return value;
+  let match = _LOCAL_TO_DATE_EXPRESSION.exec(value);
+  return match ? new Date(Date.UTC(parseInt(match.groups.year), parseInt(match.groups.month), parseInt(match.groups.day))) : value;
 };
 
 const loadTranslations = async (language) => {

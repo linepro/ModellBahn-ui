@@ -192,5 +192,9 @@
   "CLEAR":{ "message": "Lösch" },
   "LOKOMOTIV": { "message": "Lokomotiv" },
   "WAGEN": { "message": "Wagen" },
-  "X": { "message":  "X" }
+  "X": { "message":  "X" },
+  "SEARCH": { "message":  "search" },
+  "NOT_FOUND": { "message":  "no result" },
+  "SINGLE_SELECT": { "message":  "select an option" },
+  "MULTI_SELECT": { "message":  "select one or more options" }
 }

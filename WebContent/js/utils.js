@@ -16,8 +16,6 @@ const fetchUrl = dataType => {
   return apiUrl(dataType);
 };
 
-const isoDate = (value, alt = "") => value ? new Date(Date.parse(value)).toISOString().substring(0, 10) : alt;
-
 const imageSource = (imageName, extension) => {
   return fileUrl("img/" + imageName + (extension ? extension : ".png"));
 };
@@ -116,6 +114,8 @@ const createOption = (value, text, tooltip, abbildung) => {
   let opt = document.createElement("option");
   opt.value = value;
   opt.text = text;
+  opt.setAttribute("data-img", abbildung);
+  opt.setAttribute("data-desc", tooltip);
   return opt;
 };
 

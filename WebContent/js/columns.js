@@ -414,8 +414,6 @@ class UrlColumn extends TextColumn {
   }
 }
 
-const dateFormatter = () => new Intl.DateTimeFormat(getLanguage(), { year: "numeric", month: "numeric", day: "numeric", timeZone: "UTC" });
-
 class DateColumn extends TextColumn {
   constructor(
     heading,
@@ -440,18 +438,7 @@ class DateColumn extends TextColumn {
     if (!dte.disabled) {
       let column = this;
 
-      let startDate = column.getControlValue(dte);
-      let dayFormat = dateFormatter().format(new Date(2021, 4, 15))
-        .replace("2021","Y")
-        .replace("15","d")
-        .replace("4","m");
-
       let datepicker = new TheDatepicker.Datepicker(dte);
-
-      if (startDate) {
-        datepicker.options.setInitialDate(isoDate(startDate));
-      }
-
       datepicker.options.setAllowEmpty(true);
       datepicker.options.setAnimateMonthChange(true);
       datepicker.options.setChangeMonthOnSwipe(true);
@@ -463,7 +450,7 @@ class DateColumn extends TextColumn {
       datepicker.options.setHideOnBlur(true);
       datepicker.options.setHideOnSelect(true);
       datepicker.options.setInitialDatePriority(true);
-      datepicker.options.setInputFormat(dayFormat);
+      datepicker.options.setInputFormat(_LOCAL_DATE_FORMAT);
       datepicker.options.setMaxDate("2100-12-31");
       datepicker.options.setMinDate("1800-01-01");
       datepicker.options.setMonthAndYearSeparated(true);
@@ -471,7 +458,7 @@ class DateColumn extends TextColumn {
       datepicker.options.setMonthShort(false);
       datepicker.options.setPositionFixing(true);
       datepicker.options.setShowCloseButton(true);
-      datepicker.options.setShowDeselectButton(true);
+      datepicker.options.setShowDeselectButton(false);
       datepicker.options.setShowResetButton(true);
       datepicker.options.setTitle(translate(column.heading));
       datepicker.options.setToggleSelection(false);
@@ -537,7 +524,12 @@ class DateColumn extends TextColumn {
         }
       });
 
-      datepicker.selectDate(isoDate(startDate));
+      let startDate = column.getControlValue(dte);
+      if (startDate) {
+        let initialDate = startDate.toISOString().substring(0, 10); 
+        datepicker.options.setInitialDate(initialDate);
+        datepicker.selectDate(initialDate);
+      }
 
       datepicker.render();
     }
@@ -546,18 +538,23 @@ class DateColumn extends TextColumn {
   createControl(row, className) {
     let column = this;
 
-    let dte = super.createControl(row, className);
+    let dte = super.createControl(row, className+"-picker");
     dte.readOnly = true;
     dte.addEventListener("click", (event) => column.datePicker(row, dte));
-    return dte;
+
+    let wrapper = document.createElement("div");
+    wrapper.className = className;
+    wrapper.style.order = 2;
+    wrapper.appendChild(dte);
+    return wrapper;
   }
 
   getControlValue(dte) {
-    return isoDate(dte.value);
+    return localStringToDate(dte.value);
   }
 
   setControlValue(dte, value) {
-    dte.value = value ? dateFormatter().format(Date.parse(value)) : value;
+    dte.value = dateToLocalString(value);
   }
 
   bind(row) {
@@ -566,7 +563,7 @@ class DateColumn extends TextColumn {
     let dte = super.bind(row);
     if (dte) {
       let value = column.fieldGetter(row.entity, column.fieldName);
-      dte.defaultValue = isoDate(value);
+      dte.defaultValue = dateToLocalString(value);
     }
   }
 }
@@ -896,6 +893,11 @@ class SelectColumn extends Column {
     let sel = document.createElement("select");
     sel.id = inp.id;
     sel.className = inp.className;
+    sel.setAttribute("data-replace", "jselect");
+    sel.setAttribute("data-locale", getLanguage());
+    sel.setAttribute("data-search", "true");
+    sel.setAttribute("data-multiple","false");
+    sel.setAttribute("data-placeholder","Choose");
     sel.multiple = false;
     sel.size = 1;
 

@@ -35,7 +35,7 @@ const kategorieOption = (entity) =>
     entity.kategorieBezeichnung + " - " + entity.bezeichnung,
     entity.kategorieBezeichnung + " - " + entity.bezeichnung,
     undefined,
-    translate(entity.kategorieBezeichnung)
+    entity.kategorieBezeichnung
   );
 
 const produktOption = (entity) =>
@@ -105,7 +105,7 @@ const produktTeilGetter = (entity) => entity ? entity.teilHersteller + "/" + ent
 const produktTeilSetter = (entity, value) => {
   let parts = value.split("/");
   entity.teilHersteller = parts[0];
-  entity.teilBestellNrbestellNr = parts[1];
+  entity.teilBestellNr = parts[1];
 };
 const unterKategorieGetter = (entity) => entity ? entity.kategorie + "/" + entity.unterKategorie : undefined;
 const unterKategorieSetter = (entity, value) => {
@@ -118,6 +118,8 @@ const vorbildSetter = (entity, value) => entity.gattung = value;
 
 const fieldGetter = (entity, fieldName) => entity ? entity[fieldName] : undefined;
 const fieldSetter = (entity, value, fieldName) => entity[fieldName] = value;
+const dateGetter = (entity, fieldName) => entity ? new Date(Date.parse(entity[fieldName])) : undefined;
+const dateSetter = (entity, value, fieldName) => entity[fieldName] = value;
 const noOpSetter = () => {};
 
 const ACHSFOLG_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
@@ -204,10 +206,10 @@ const ARTIKEL = (editable = Editable.UPDATE, required = false, getter = fieldGet
 const AUFBAU = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
   new TextColumn("AUFBAU", "aufbau", getter, setter, editable, required, 5);
 
-const AUSSERDIENST = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
+const AUSSERDIENST = (editable = Editable.UPDATE, required = false, getter = dateGetter, setter = dateSetter) =>
   new DateColumn("AUSSERDIENST", "ausserdienst", getter, setter, editable, required);
 
-const BAUZEIT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
+const BAUZEIT = (editable = Editable.UPDATE, required = false, getter = dateGetter, setter = dateSetter) =>
   new DateColumn("BAUZEIT", "bauzeit", getter, setter, editable, required);
 
 const BESTELL_NR = (editable = Editable.ADD, required = true, getter = fieldGetter, setter = fieldSetter) =>
@@ -255,7 +257,7 @@ const INDEX = (editable = Editable.ADD, required = true, getter = fieldGetter, s
 const I_MAX = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
   new NumberColumn("I_MAX", "iMax", getter, setter, editable, required, 1000, 1);
 
-const KAUFDATUM = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
+const KAUFDATUM = (editable = Editable.UPDATE, required = false, getter = dateGetter, setter = dateSetter) =>
   new DateColumn("KAUFDATUM", "kaufdatum", getter, setter, editable, required);
 
 const LANGE = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>

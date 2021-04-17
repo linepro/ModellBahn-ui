@@ -100,11 +100,11 @@ const deleteAction = (rel = "delete") =>
         if (deleteUrl) {
           await deleteRest(
             deleteUrl,
-            () => grid.removeRow(),
+            () => grid.removeRow(row),
             (error) => reportError("deleteRow", error)
           );
         } else {
-          row.remove();
+          grid.removeRow(row);
         }
       }
     }
@@ -127,7 +127,7 @@ const saveAction = (rel = "update") =>
           );
         } else {
           await postRest(
-            grid.currentUrl.split("?")[0],
+            grid.addUrl,
             row.entity,
             (jsonData) => row.bind(jsonData, EditMode.UPDATE),
             (error) => reportError("saveRow", error)
@@ -231,6 +231,8 @@ class ChildColumn extends VirtualColumn {
     super();
 
     this.child = child;
+    // requirement: div.id for location === entity fieldName
+    this.fieldName = child.tableId;
   }
 
   addHeading(grid, headingRow) {
@@ -243,48 +245,57 @@ class ChildColumn extends VirtualColumn {
     this.child.refresh = grid.refresh;
   }
 
+  createControl(row) {
+    let column = this;
+
+    let fieldId = getFieldId(row.id, column.fieldName);
+    let childTable = document.getElementById(fieldId);
+
+    return {
+      id: fieldId,
+      column: column,
+      element: childTable
+    };
+  }
+
   addTableCell(row) {
     let column = this;
 
-    return {
-      id: column.child.tableId,
-      column: column,
-      element: undefined
-    };
+    return column.createControl(row);
   }
 
   addFormField(row, width) {
     let column = this;
 
-    return {
-      id: column.child.tableId,
-      column: column,
-      element: undefined
-    };
+    return column.createControl(row);
   }
 
   bind(row) {
     let column = this;
-    column.child.bind(row.entity, actionLink(row.entity, column.child.tableId));
+
+    let parentUrl = actionLink(row.entity, "self");
+    let addUrl = actionLink(row.entity, column.fieldName);
+    column.child.bind(row.entity, parentUrl);
+    column.child.addUrl = addUrl;
+    column.child.refresh = row.refresh;
   }
 }
 
 class RowEntry {
-  constructor(row, editMode, refresh, remove = undefined) {
+  constructor(row, editMode, refresh) {
    this.id = row.id;
    this.element = row;
    this.columns =  undefined;
    this.editMode = editMode;
    this.entity = undefined;
    this.refresh = refresh;
-   this.remove = remove;
   }
 
   bind(entity, edtMode) {
     this.entity = entity;
     this.editMode = edtMode;
     this.columns
-        .forEach((column) => column.column.bind(this));
+      .forEach((column) => column.column.bind(this));
   }
 }
 
@@ -298,6 +309,8 @@ class ItemGrid {
     children = undefined
   ) {
     this.currentUrl = fetchUrl;
+    this.refresh = async () => this.fetch(this.currentUrl);
+    this.addUrl = fetchUrl.split("?")[0]; // true for parents
     this.tableId = tableId;
     this.columns = columns
       .concat(actions ? [new ButtonColumn(actions)] : [])
@@ -342,6 +355,13 @@ class ItemGrid {
     grid.initialized = true;
   }
 
+  bind(jsonData, fetchUrl) {
+    let grid = this;
+
+    grid.currentUrl = fetchUrl ? fetchUrl : grid.currentUrl;
+    grid.refresh = async () => grid.fetch(grid.currentUrl);
+  }
+
   async fetch(fetchUrl) {
     let grid = this;
 
@@ -362,12 +382,6 @@ class ItemGrid {
     grid.initialize();
 
     await grid.fetch(grid.currentUrl);
-  }
-
-  bind(jsonData, fetchUrl) {
-    let grid = this;
-
-    grid.currentUrl = fetchUrl ? fetchUrl : grid.currentUrl;
   }
 }
 
@@ -421,7 +435,7 @@ class Form extends ItemGrid {
     row.className = "form-row";
     body.append(row);
 
-    let rowEntry = new RowEntry(row, grid.editMode, grid.fetch);
+    let rowEntry = new RowEntry(row, grid.editMode, grid.refresh);
 
     rowEntry.columns = grid.columns
       .map((column) => column.addFormField(rowEntry, maxLabel))
@@ -456,7 +470,6 @@ class Form extends ItemGrid {
     let self = actionLink(entity, "self");
 
     grid.editMode = self ? EditMode.UPDATE : EditMode.ADD;
-    //history.replaceState({}, null, window.location.href.replace("new=true", "self="+self));
 
     grid.row.bind(entity, grid.editMode);
   }
@@ -480,7 +493,7 @@ class Table extends ItemGrid {
   removeRow(row) {
     let grid = this;
 
-    grid.fetch(grid.currentUrl);
+    grid.refresh();
   }
 
   appendTableRow() {
@@ -494,7 +507,7 @@ class Table extends ItemGrid {
     row.className = "table-row";
     body.append(row);
 
-    let rowEntry = new RowEntry(row, grid.editMode, grid.fetch, grid.removeRow);
+    let rowEntry = new RowEntry(row, grid.editMode, grid.refresh);
 
     rowEntry.columns = grid.columns
       .map((column) => column.addTableCell(rowEntry))
@@ -608,12 +621,13 @@ class Table extends ItemGrid {
     let entity = {};
     row.bind(entity, EditMode.ADD);
     row.element.getElementsByTagName("INPUT")[0].focus();
+    // set initial values.
   }
 
   async removeRow(row) {
     let grid = this;
 
-    await grid.fetch(grid.currentUrl);
+    await grid.refresh();
   }
 
   getData(jsonData) {
