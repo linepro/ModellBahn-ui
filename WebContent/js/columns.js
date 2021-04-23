@@ -1415,7 +1415,8 @@ class ThumbColumn extends VirtualColumn {
     let img = document.getElementById(getFieldId(row.id, column.fieldName));
 
     if (img) {
-      img.src = column.fieldGetter(row.entity, column.fieldName);
+      let src = column.fieldGetter(row.entity, column.fieldName);
+      img.src = src ? src : "";
     }
 
     return img;
