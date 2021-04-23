@@ -518,12 +518,12 @@ class Table extends ItemGrid {
     return rowEntry;
   }
 
-  addHeader(table) {
+  addHeader(table, className) {
     let grid = this;
 
     let header = document.createElement("thead");
     header.id = grid.tableId + "_thead";
-    header.className = "thead";
+    header.className = className;
     table.append(header);
 
     let headings = document.createElement("tr");
@@ -534,7 +534,7 @@ class Table extends ItemGrid {
     grid.columns.forEach((column) => column.addHeading(grid, headings));
   }
 
-  addBody(table, className = "tbody") {
+  addBody(table, className) {
     let grid = this;
 
     let body = document.createElement("tbody");
@@ -547,12 +547,12 @@ class Table extends ItemGrid {
     }
   }
 
-  addFooter(table, className = "table-footer") {
+  addFooter(table, className) {
     let grid = this;
 
     let footer = document.createElement("tfoot");
     footer.id = grid.tableId + "_tfoot";
-    footer.className = "tfoot";
+    footer.className = className;
     table.append(footer);
 
     let navRow = document.createElement("tr");
@@ -562,7 +562,7 @@ class Table extends ItemGrid {
 
     grid.columns.forEach((column) => {
       let tf = document.createElement("td");
-      tf.className = className;
+      tf.className = "table-footer-thin";
       navRow.append(tf)
     });
   }
@@ -596,11 +596,11 @@ class Table extends ItemGrid {
 
     table.appendChild(group);
 
-    grid.addHeader(table);
+    grid.addHeader(table, "thead");
 
-    grid.addBody(table);
+    grid.addBody(table, "tbody");
 
-    grid.addFooter(table);
+    grid.addFooter(table, "tfoot");
   }
 
   freeRow() {
@@ -668,8 +668,16 @@ class ExpandingTable extends Table {
     );
   }
 
-  addFooter(tableName) {
-    super.addFooter(tableName, "table-footer-thin");
+  addHeader(table, className) {
+    super.addHeader(table, className + " scroll");
+  }
+
+  addBody(table, className) {
+    super.addBody(table, className + " scroll");
+  }
+
+  addFooter(table, className) {
+    super.addFooter(table, className + " scroll");
   }
 
   removeRow(row) {
@@ -778,12 +786,12 @@ class PagedTable extends Table {
     return next;
   }
 
-  addFooter(table) {
+  addFooter(table, className) {
     let grid = this;
 
     let footer = document.createElement("tfoot");
     footer.id = grid.tableId + "_tfoot";
-    footer.className = "tfoot";
+    footer.className = className;
     table.append(footer);
 
     let navRow = document.createElement("tr");
@@ -793,7 +801,7 @@ class PagedTable extends Table {
 
     grid.prev = grid.addPrev(navRow);
 
-    for (let i = 0 ; i < grid.columns.length -2; i++) {
+    for (let i = 0 ; i < grid.columns.length - 2; i++) {
       let tf = document.createElement("td");
       tf.className = "table-footer";
       navRow.append(tf)

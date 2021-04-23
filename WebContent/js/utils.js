@@ -1,14 +1,14 @@
 //module "utils.js";
 "use strict";
 
-const apiUrl = path => {
+const apiUrl = (path) => {
   return window.location.origin + "/ModellBahn/api/" + path;
 };
-const fileUrl = path => {
+const fileUrl = (path) => {
   return window.location.origin + "/ModellBahn/modellbahn-ui/" + path;
 };
 
-const fetchUrl = dataType => {
+const fetchUrl = (dataType) => {
   let searchParams = new URLSearchParams(location.search);
   if (searchParams.has("self")) {
     return searchParams.get("self");
@@ -20,15 +20,15 @@ const imageSource = (imageName, extension) => {
   return fileUrl("img/" + imageName + (extension ? extension : ".png"));
 };
 
-const addToEnd = element => {
+const addToEnd = (element) => {
   let docBody = document.getElementsByTagName("BODY")[0];
   docBody.appendChild(element);
 };
 
-const createImage = action => {
+const createImage = (source, className) => {
   let img = document.createElement("img");
-  img.alt = action;
-  img.src = imageSource(action);
+  img.className = className;
+  img.src = source ? source : "";
   return img;
 };
 
@@ -39,7 +39,7 @@ const addHeading = (element, type, text) => {
   return h;
 };
 
-const addRule = element => {
+const addRule = (element) => {
   let hr = document.createElement("hr");
   hr.className = "highlight";
   element.appendChild(hr);
@@ -75,15 +75,17 @@ const addModal = () => {
   return modal;
 };
 
-const createButton = (caption, image, action, className = "nav-button") => {
+const createButton = (caption, imageName, action = undefined, className = "nav-button") => {
   let btn = document.createElement("button");
   btn.value = translate(caption);
   if (action) {
-    btn.addEventListener("click", action);
+    btn.addEventListener("click", action, false);
   }
   btn.className = className;
-  let img = createImage(image);
+  let img = document.createElement("img");
   img.className = className;
+  img.alt = imageName;
+  img.src = imageSource(imageName);
   btn.appendChild(img);
   return btn;
 };
@@ -98,7 +100,31 @@ const addText = (cell, text) => {
   return txt;
 };
 
-const removeChildren = node => {
+const addCssRule = (rule) => {
+  for (let sheet of document.styleSheets) {
+    if (sheet.href.endsWith("site.css")) {
+      for (let rule of sheet.cssRules) {
+        if (rule.cssText == rule) {
+          return rule;
+        }
+      }
+      let i = sheet.insertRule(rule);
+      return sheet.cssRules[i];
+    }
+  }
+};
+
+const addTooltip = (input, text) => {
+  if (text) {
+    input.setAttribute("data-tooltip", text);
+    input.classList.add(".tooltip");
+  } else {
+    input.removeAttribute("data-tooltip");
+    input.classList.remove(".tooltip");
+  }
+};
+
+const removeChildren = (node) => {
   while (node.firstChild) {
     node.removeChild(node.firstChild);
   }
@@ -228,7 +254,7 @@ const navLink = (title, href, action, id) => {
   a.className = "nav-button";
   a.href = href;
   if (action) {
-    a.addEventListener("click", action);
+    a.addEventListener("click", action, false);
   }
   addText(a, title);
   li.appendChild(a);
@@ -257,7 +283,7 @@ const addLingo = (element) => {
   lingo.src = fileUrl(translate("FLAG"));
   lingo.className = "lingo";
   element.appendChild(lingo);
-  lingo.addEventListener("click", () => toggleLanguage());
+  lingo.addEventListener("click", () => toggleLanguage(), false);
   return lingo;
 };
 
@@ -266,11 +292,12 @@ const addLogo = (element) => {
   logo.src = imageSource("ModellBahn", ".svg");
   logo.className = "logo";
   element.appendChild(logo);
-  logo.addEventListener("click", () => showAbout(fileUrl(translate("LIZENZ"))));
+  logo.addEventListener("click", () => showAbout(fileUrl(translate("LIZENZ"))), false);
   return logo;
 };
 
 const refData = () => [
+  navLink("ACHSFOLGEN", fileUrl("achsfolgen.html")),
   navLink("ANTRIEBEN", fileUrl("antrieben.html")),
   navLink("AUFBAUTEN", fileUrl("aufbauten.html")),
   navLink("BAHNVERWALTUNGEN", fileUrl("bahnverwaltungen.html")),

@@ -118,18 +118,18 @@ const vorbildSetter = (entity, value) => entity.gattung = value;
 
 const fieldGetter = (entity, fieldName) => entity ? entity[fieldName] : undefined;
 const fieldSetter = (entity, value, fieldName) => entity[fieldName] = value;
-const dateGetter = (entity, fieldName) => entity ? new Date(Date.parse(entity[fieldName])) : undefined;
+const dateGetter = (entity, fieldName) => entity && entity[fieldName] ? new Date(Date.parse(entity[fieldName])) : undefined;
 const dateSetter = (entity, value, fieldName) => entity[fieldName] = value;
 const noOpSetter = () => {};
 
 const ACHSFOLG_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new DropDownColumn("ACHSFOLG", "achsfolg", getter, setter, ACHSFOLG_DROP, editable, required);
+  new AutoSelectColumn("ACHSFOLG", "achsfolg", getter, setter, ACHSFOLG_DROP, editable, required);
 
 const ADRESS_TYP_SELECT = (editable = Editable.UPDATE, required = true, getter = fieldGetter, setter = fieldSetter) =>
   new DropDownColumn("ADRESS_TYP", "adressTyp", getter, setter, ADRESS_TYP_DROP, editable, required);
 
 const BAHNVERWALTUNG_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new DropDownColumn("BAHNVERWALTUNG", "bahnverwaltung", getter, setter, BAHNVERWALTUNG_DROP, editable, required);
+  new AutoSelectColumn("BAHNVERWALTUNG", "bahnverwaltung", getter, setter, BAHNVERWALTUNG_DROP, editable, required);
 
 const DECODER_SELECT = (editable = Editable.UPDATE, required = false, getter = decoderIdGetter, setter = decoderIdSetter) =>
   new DropDownColumn("DECODER", "decoder", getter, setter, DECODER_DROP, editable, required);
@@ -138,22 +138,22 @@ const DECODER_TYP_SELECT = (editable = Editable.UPDATE, required = true, getter 
   new DropDownColumn("DECODER_TYP", "decoderTyp", getter, setter, DECODER_TYP_DROP, editable, required);
 
 const GATTUNG_SELECT = (editable = Editable.UPDATE, required = true, getter = fieldGetter, setter = fieldSetter) =>
-  new DropDownColumn("GATTUNG", "gattung", getter, setter, GATTUNG_DROP, editable, required);
+  new AutoSelectColumn("GATTUNG", "gattung", getter, setter, GATTUNG_DROP, editable, required);
 
 const HERSTELLER_SELECT = (editable = Editable.UPDATE, required = true, getter = fieldGetter, setter = fieldSetter) =>
-  new DropDownColumn("HERSTELLER", "hersteller", getter, setter, HERSTELLER_DROP, editable, required);
+  new AutoSelectColumn("HERSTELLER", "hersteller", getter, setter, HERSTELLER_DROP, editable, required);
 
 const KONFIGURATION_SELECT = (editable = Editable.UPDATE, required = true, getter = fieldGetter, setter = fieldSetter) =>
   new DropDownColumn("KONFIGURATION", "konfiguration", getter, setter, KONFIGURATION_DROP, editable, required);
 
 const KUPPLUNG_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new DropDownColumn("KUPPLUNG", "kupplung", getter, setter, KUPPLUNG_DROP, editable, required);
+  new ImageSelectColumn("KUPPLUNG", "kupplung", getter, setter, KUPPLUNG_DROP, editable, required);
 
 const LAND_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new DropDownColumn("LAND", "land", getter, setter, LAND_DROP, editable, required);
+  new AutoSelectColumn("LAND", "land", getter, setter, LAND_DROP, editable, required);
 
 const LICHT_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new DropDownColumn("LICHT", "licht", getter, setter, LICHT_DROP, editable, required);
+  new ImageSelectColumn("LICHT", "licht", getter, setter, LICHT_DROP, editable, required);
 
 const MASSSTAB_SELECT = (editable = Editable.UPDATE, required = true, getter = fieldGetter, setter = fieldSetter) =>
   new DropDownColumn("MASSSTAB", "massstab", getter, setter, MASSSTAB_DROP, editable, required);
@@ -162,7 +162,7 @@ const MOTOR_TYP_SELECT = (editable = Editable.UPDATE, required = false, getter =
   new DropDownColumn("MOTOR_TYP", "motorTyp", getter, setter, MOTOR_TYP_DROP, editable, required);
 
 const PRODUKT_SELECT = (editable = Editable.UPDATE, required = true, getter = produktGetter, setter = produktSetter) =>
-  new DropDownColumn("PRODUKT", "produkt", getter, setter, PRODUKT_DROP, editable, required);
+  new AutoSelectColumn("PRODUKT", "produkt", getter, setter, PRODUKT_DROP, editable, required);
 
 const PROTOKOLL_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
   new DropDownColumn("PROTOKOLL", "protokoll", getter, setter, PROTOKOLL_DROP, editable, required);
@@ -183,7 +183,7 @@ const UNTER_KATEGORIE_SELECT = (editable = Editable.UPDATE, required = true, get
   new DropDownColumn("KATEGORIE", "unterKategorie", getter, setter, UNTER_KATEGORIE_DROP, editable, required);
 
 const WAHRUNG_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new DropDownColumn("WAHRUNG", "wahrung", getter, setter, WAHRUNG_DROP, editable, required);
+  new AutoSelectColumn("WAHRUNG", "wahrung", getter, setter, WAHRUNG_DROP, editable, required);
 
 const ZUG_TYP_SELECT = (editable = Editable.UPDATE, required = true, getter = fieldGetter, setter = fieldSetter) =>
   new DropDownColumn("ZUG_TYP", "zugTyp", getter, setter, ZUG_TYP_DROP, editable, required);
@@ -227,6 +227,9 @@ const CV = (editable = Editable.ADD, required = true, getter = fieldGetter, sett
 const DECODER = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
   new TextColumn("DECODER", "decoderId", getter, setter, editable, required, 5, "^[A-Z0-9]+$");
 
+const END_YEAR = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
+  new NumberColumn("END_YEAR", "endYear", getter, setter, editable, required, 2100, 1800, 0, false);
+
 const EXPLOSIONSZEICHNUNG = (editable = Editable.UPDATE, required = false, getter = fieldGetter) =>
   new PdfColumn("EXPLOSIONSZEICHNUNG", "explosionszeichnung", getter, editable, required);
 
@@ -261,7 +264,7 @@ const KAUFDATUM = (editable = Editable.UPDATE, required = false, getter = dateGe
   new DateColumn("KAUFDATUM", "kaufdatum", getter, setter, editable, required);
 
 const LANGE = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new NumberColumn("LANGE", "lange", getter, setter, editable, required, 50, 1, 2);
+  new NumberColumn("LANGE", "lange", getter, setter, editable, required, 50, 1, true, 2);
 
 const MAXIMAL = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
   new NumberColumn("MAXIMAL", "maximal", getter, setter, editable, required, 30);
@@ -289,6 +292,9 @@ const REIHE = (editable = Editable.ADD, required = true, getter = fieldGetter, s
 
 const SPAN = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
   new NumberColumn("SPAN", "span", getter, setter, editable, required, 16, 1);
+
+const START_YEAR = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
+  new NumberColumn("START_YEAR", "startYear", getter, setter, editable, required, 2100, 1800, 0, false);
 
 const URL = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
   new UrlColumn("URL", "url", getter, setter, editable, required);

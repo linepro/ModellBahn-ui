@@ -13,16 +13,15 @@
   <script type="text/javascript" src="js/lib/DatePickerX.js"></script>
   <script type="text/javascript" src="js/lib/pdf.js"></script>
   <script type="text/javascript" src="js/pdfViewer.js"></script>
-  <script type="text/javascript" src="js/select.js"></script>
   <script type="text/javascript" src="js/columns.js"></script>
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
-    const AUFBAU_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new DropDownColumn("AUFBAU", "aufbau", getter, setter, AUFBAU_DROP, editable, required) }
+    const AUFBAU_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new ImageSelectColumn("AUFBAU", "aufbau", getter, setter, AUFBAU_DROP, editable, required) }
     const EPOCH_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new DropDownColumn("EPOCH", "epoch", getter, setter, EPOCH_DROP, editable, required) }
     const SONDERMODELL_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new DropDownColumn("SONDERMODELL", "sondermodell", getter, setter, SONDERMODELL_DROP, editable, required) }
     const TEIL_SELECT = (editable = Editable.UPDATE, required = false, getter = produktTeilGetter, setter = produktTeilSetter) => { return new DropDownColumn("TEIL", "teil", getter, setter, PRODUKT_DROP, editable, required) }
-    const VORBILD_SELECT = (editable = Editable.UPDATE, required = false, getter = vorbildGetter, setter = vorbildSetter) => { return new DropDownColumn("VORBILD", "vorbild", getter, setter, VORBILD_DROP, editable, required) }
+    const VORBILD_SELECT = (editable = Editable.UPDATE, required = false, getter = vorbildGetter, setter = vorbildSetter) => { return new AutoSelectColumn("VORBILD", "vorbild", getter, setter, VORBILD_DROP, editable, required) }
 
     const teilenColumns = [
       TEIL_SELECT(Editable.ADD, true),

@@ -20,20 +20,14 @@ const actionLink = (entity, rel) =>
 
 const boxSize = (length) => Math.ceil(length / 2) * 2;
 
-const closeAutoLists = (elmnt = document) => {
-  for (let a of elmnt.getElementsByClassName("autocomplete-list")) {
-    removeChildren(a);
-    a.parentElement.removeChild(a);
+const closeAutoclose = (elmnt = document) => {
+  for (let auto of elmnt.getElementsByClassName("autoclose-container")) {
+    removeChildren(auto);
+    auto.parentElement.removeChild(auto);
   }
 };
 
-document.addEventListener(
-  "click",
-  () => {
-    closeAutoLists();
-  },
-  false
-);
+document.addEventListener("click", () => closeAutoclose(document), false);
 
 const getRowId = (tableId, i) => [tableId, i].join("_");
 
@@ -131,7 +125,7 @@ class Column extends VirtualColumn {
   }
 
   initialise(ctl) {
-    ctl.autocomplete = "off";
+    ctl.autoclose = "off";
     return ctl;
   }
 
@@ -276,7 +270,8 @@ class NumberColumn extends Column {
     required,
     max = 255,
     min = 0,
-    places = 0
+    places = 0,
+    localize = true
   ) {
     super(
       heading,
@@ -290,6 +285,7 @@ class NumberColumn extends Column {
     this.max = max;
     this.min = min;
     this.places = places;
+    this.localize = localize;
   }
 
   initialise(num) {
@@ -309,12 +305,12 @@ class NumberColumn extends Column {
 
   setControlValue(num, value) {
     let column = this;
-    num.value = value
-      ? value.toLocaleString(getLanguage(), {
-          minimumFractionDigits: column.places,
-          maximumFractionDigits: column.places,
-        })
-      : "";
+    if (value) {
+      num.value = column.places ? value.toFixed(column.places) : value;
+      //value.toLocaleString(getLanguage(), { minimumFractionDigits: column.places, maximumFractionDigits: column.places, }) :
+    } else {
+      num.value =  "";
+    }
   }
 }
 
@@ -331,7 +327,7 @@ class PhoneColumn extends Column {
   }
 
   initialise(tel) {
-    tel = super.initialise(txt);
+    tel = super.initialise(tel);
     tel.type = "tel";
     return tel;
   }
@@ -368,7 +364,7 @@ class TextColumn extends Column {
     txt.maxLength = column.length;
     if (column.pattern) {
       txt.pattern = column.pattern
-    };
+    }
     return txt;
   }
 }
@@ -401,20 +397,63 @@ class UrlColumn extends TextColumn {
     rul = super.initialise(rul);
     rul.type = "url";
     rul.class = "table-url";
-    rul.addEventListener(
-      "click",
-      () => {
+    rul.addEventListener("click", () => {
         if (rul.value) {
           window.open(rul.value, "_blank");
         }
       },
-      false
-    );
+      false);
     return rul;
   }
 }
 
-class DateColumn extends TextColumn {
+class PopupColumn extends TextColumn {
+  constructor(
+    heading,
+    fieldName,
+    fieldGetter,
+    fieldSetter,
+    editable,
+    required,
+    length
+  ) {
+    super(
+      heading,
+      fieldName,
+      fieldGetter,
+      fieldSetter,
+      editable,
+      required,
+      length
+    );
+  }
+
+  popup(event, row, ctl) {
+    if (!ctl.disabled) {
+      event.stopPropagation();
+      closeAutoclose();
+    }
+  }
+
+  createControl(row, className) {
+    let column = this;
+
+    let ctl = super.createControl(row, className);
+    ctl.classList.add("popup");
+    ctl.readOnly = true;
+    ctl.addEventListener("click", (event) => column.popup(event, row, ctl), false);
+    ctl.addEventListener("input", (event) => column.popup(event, row, ctl), false);
+    ctl.addEventListener("keydown", (event) => column.popup(event, row, ctl), false);
+
+    let wrapper = document.createElement("div");
+    wrapper.className = className;
+    wrapper.style.order = 2;
+    wrapper.appendChild(ctl);
+    return wrapper;
+  }
+}
+
+class DateColumn extends PopupColumn {
   constructor(
     heading,
     fieldName,
@@ -434,7 +473,7 @@ class DateColumn extends TextColumn {
     );
   }
 
-  datePicker(row, dte) {
+  popup(event, row, dte) {
     if (!dte.disabled) {
       let column = this;
 
@@ -536,17 +575,7 @@ class DateColumn extends TextColumn {
   }
 
   createControl(row, className) {
-    let column = this;
-
-    let dte = super.createControl(row, className+"-picker");
-    dte.readOnly = true;
-    dte.addEventListener("click", (event) => column.datePicker(row, dte));
-
-    let wrapper = document.createElement("div");
-    wrapper.className = className;
-    wrapper.style.order = 2;
-    wrapper.appendChild(dte);
-    return wrapper;
+    return super.createControl(row, className + "-picker");
   }
 
   getControlValue(dte) {
@@ -852,7 +881,7 @@ class PdfColumn extends FileColumn {
   }
 }
 
-class SelectColumn extends Column {
+class DropDownColumn extends Column {
   constructor(
     heading,
     fieldName,
@@ -871,6 +900,7 @@ class SelectColumn extends Column {
       editable,
       required
     );
+
     this.dropDown = dropDown;
     this.dropSize = dropSize;
   }
@@ -893,11 +923,6 @@ class SelectColumn extends Column {
     let sel = document.createElement("select");
     sel.id = inp.id;
     sel.className = inp.className;
-    sel.setAttribute("data-replace", "jselect");
-    sel.setAttribute("data-locale", getLanguage());
-    sel.setAttribute("data-search", "true");
-    sel.setAttribute("data-multiple","false");
-    sel.setAttribute("data-placeholder","Choose");
     sel.multiple = false;
     sel.size = 1;
 
@@ -937,7 +962,7 @@ class SelectColumn extends Column {
   }
 }
 
-class AutoCompleteColumn extends SelectColumn {
+class AutoSelectColumn extends PopupColumn {
   constructor(
     heading,
     fieldName,
@@ -953,148 +978,168 @@ class AutoCompleteColumn extends SelectColumn {
       fieldName,
       fieldGetter,
       fieldSetter,
-      dropDown,
       editable,
-      required,
-      dropSize
+      required
     );
+
+    this.dropDown = dropDown; 
+    this.dropSize = dropSize;
   }
 
-  bind(row) {
-    let sel = super.bind(row);
+  displayLength() {
+    let column = this;
+    return Math.max(column.dropDown.length, column.headingLength);
+  }
 
-    if (!sel.disabled) {
+  getControlValue(sel) {
+    return sel.dataset["value"];
+  }
+
+  setControlValue(sel, value) {
+    if (value) {
       let column = this;
+      let options = column.dropDown.options;
 
-      sel.addEventListener(
-        "click",
-        (e) => column.open(e, row),
-        false
-      );
-      sel.addEventListener(
-        "input",
-        (e) => column.open(e, row),
-        false
-      );
-      sel.addEventListener(
-        "keydown",
-        (e) => column.keydown(e, row),
-        false
-      );
-      sel.classList.add("autocomplete");
-    }
-
-    return sel;
-  }
-
-  open(event, row) {
-    let column = this;
-
-    let inp = event.target;
-    let div = inp.parentElement;
-
-    if (!inp.value) {
-      return false;
-    }
-
-    event.stopPropagation();
-    closeAutoLists();
-
-    let rect = div.getBoundingClientRect();
-
-    let autoComp = document.createElement("div");
-    autoComp.className = "autocomplete-list";
-    autoComp.style.top = rect.y + rect.height;
-    div.appendChild(autoComp); // turn into dialog?
-
-    let dims = valueAndUnits(getComputedStyle(autoComp).lineHeight);
-
-    column.dropDown.options
-      .filter((o) => o.display.toLowerCase().includes(inp.value.toLowerCase()))
-      .slice(0, column.dropSize)
-      .forEach((o) => {
-        let autoItem = document.createElement("div");
-        autoItem.className = "autocomplete-items";
-        autoItem.style.top = dims.value * i + dims.units;
-        addText(
-          autoItem,
-          o.display.replace(/txt/i, "<strong>" + inp.value + "</strong>")
-        );
-        autoItem.addEventListener(
-          "click",
-          (e) => column.click(e, row),
-          false
-        );
-        autoComp.appendChild(autoItem);
-      });
-  }
-
-  keydown(event, row) {
-    let column = this;
-
-    let autoComps = e.target.parentElement.getElementsByClassName(
-      "autocomplete-list"
-    );
-
-    if (!autoComps || !autoComps.length) {
-      return;
-    }
-
-    let autoComp = autoComps[0];
-
-    if (e.keyCode === 40) {
-      column.addActive(ctl, autoComp, true);
-    } else if (e.keyCode === 38) {
-      column.addActive(ctl, autoComp, false);
-    } else if (e.keyCode === 13) {
-      e.preventDefault();
-      column.selectActive(autoComp);
-    }
-  }
-
-  click(event, row) {
-    let column = this;
-
-    let inp = div.getElementsById(getFieldId(row.id, column.fieldName));
-    if (inp) {
-      inp.value = opt.innerText;
-    }
-    if (row.entity) {
-      if (column.fieldSetter) {
-        column.fieldSetter(row.entity, opt.innerText, column.fieldName);
-      }
-    }
-
-    closeAutoLists();
-  }
-
-  addActive(ctl, autoComp, up) {
-    let items = autoComp.getElementsByClassName("autocomplete-items");
-    let curr = -1;
-    for (let i = 0; i < items.length; i++) {
-      if (items[i].classList.contains("autocomplete-active")) {
-        if (curr === -1) {
-          curr = i;
+      for (let option of options) {
+        if (option.value === value) {
+          sel.value = option.display;
+          sel.dataset["value"] = value;
+          return;
         }
-        items[i].classList.remove("autocomplete-active");
       }
     }
 
-    let next = curr + (up ? 1 : -1);
-    if (0 <= next && next <= items.length) {
-      items[next].classList.add("autocomplete-active");
+    sel.value = "";
+    sel.dataset["value"] = "";
+  }
+
+  selected(event, row, option) {
+    event.preventDefault();
+
+    let column = this;
+
+    let inp = document.getElementById(getFieldId(row.id, column.fieldName));
+    if (inp && option) {
+      inp.value = option.dataset["text"];
+      inp.dataset["value"] = option.dataset["value"];
+      // event listener should update entity but you never know
+      column.fieldSetter(row.entity, option.dataset["value"], column.fieldName);
+    }
+
+    closeAutoclose();
+  }
+
+  addOptions(row, select, list) {
+    let column = this;
+
+    removeChildren(list);
+
+    column.dropDown
+      .options
+        .filter((opt) => opt.display.toLowerCase().includes(select.value.toLowerCase()))
+          .slice(0, column.dropSize)
+          .forEach((opt) => {
+            let item = document.createElement("li");
+            item.className = "autoselect";
+            item.dataset["text"] = opt.display;
+            item.dataset["value"] = opt.value;
+            item.addEventListener("click", (event) => column.selected(event, row, item), false);
+            if (opt.value === item.dataset["value"]) {
+               item.classList.add("selected");
+            } else {
+               item.classList.remove("selected");
+            }
+            list.appendChild(item);
+
+            if (opt.image) {
+              let ico = createImage(opt.image)
+              item.appendChild(ico);
+            }
+            addText(item, opt.display);
+            addTooltip(item, opt.tooltip);
+          });
+  }
+  
+  input(event, row, select, list) {
+    if (!(event.atlKey || event.ctrlKey || event.metaKey || event.isComposing)) {
+      if (list) {
+        let column = this;
+        let items = list.children;
+
+        let selected = undefined;
+        for (let item of items) {
+          if (item.classList.contains("selected")) {
+            selected = item;
+          }
+          item.classList.remove("selected");
+        }
+
+        switch (event.key) {
+          case "ArrowUp":
+            selected = selected ? selected.previousSibling : list.lastChild;
+            if (selected) {
+              selected.classList.add("selected");
+            }
+            break;
+
+          case "ArrowDown":
+            selected = selected ? selected.nextSibling : list.firstChild;
+            if (selected) {
+              selected.classList.add("selected");
+            }
+            break;
+
+          case "Enter":
+            column.selected(event, row, selected);
+            return;
+
+          case "Escape":
+            event.preventDefault();
+            closeAutoclose();
+            return;
+
+          default:
+            break;
+        }
+      }
     }
   }
 
-  selectActive(autoComp) {
-    let active = autoComp.getElementsByClassName("autocomplete-active");
-    if (active.length) {
-      active[0].click();
+  popup(event, row, inp) {
+    if (!inp.disabled) {
+      closeAutoclose();
+
+      super.popup(event, row, inp);
+
+      let column = this;
+      let div = inp.parentElement;
+
+      let container = document.createElement("div");
+      container.id = inp.id + "_popup"; 
+      container.className = "autoclose-container";
+      div.appendChild(container);
+
+      let select = document.createElement("input");
+      select.id = inp.id + "_select";
+      select.className = "autoselect";
+      select.value = inp.value;
+      select.type = "text";
+      container.appendChild(select);
+
+      let list = document.createElement("ul");
+      list.id = select.id + "_list";
+      list.className = "autoselect";
+      container.appendChild(list);
+      select.addEventListener("keydown", (e) => column.input(e, row, select, list), false);
+      select.addEventListener("input", () => column.addOptions(row, select, list), false);
+
+      column.addOptions(row, select, list);
+      select.focus();
     }
   }
 }
 
-class DropDownColumn extends SelectColumn {
+class ImageSelectColumn extends PopupColumn {
   constructor(
     heading,
     fieldName,
@@ -1103,18 +1148,187 @@ class DropDownColumn extends SelectColumn {
     dropDown,
     editable,
     required,
-    dropSize = 5
+    dropSize
   ) {
     super(
       heading,
       fieldName,
       fieldGetter,
       fieldSetter,
-      dropDown,
       editable,
-      required,
-      dropSize
+      required
     );
+
+    this.dropDown = dropDown; 
+    this.dropSize = dropSize;
+  }
+
+  displayLength() {
+    let column = this;
+    return Math.max(5, column.headingLength);
+  }
+
+  createControl(row, className) {
+    let column = this;
+
+    let img = document.createElement("img");
+    img.id = getFieldId(row.id, column.fieldName);
+    img.className = className;
+    img.classList.add("popup");
+    img.readOnly = true;
+    img.required = column.required;
+    img.disabled = true;
+    img.style.visibility = "hidden";
+    img.addEventListener("click", (event) => column.popup(event, row, img), false);
+    img.addEventListener("input", (event) => column.popup(event, row, img), false);
+    img.addEventListener("keydown", (event) => column.popup(event, row, img), false);
+
+    let wrapper = document.createElement("div");
+    wrapper.className = className;
+    wrapper.classList.add("image-select");
+    wrapper.style.order = 2;
+    wrapper.appendChild(img);
+    return wrapper;
+  }
+
+  getControlValue(img) {
+    return img.dataset["value"];
+  }
+
+  setControlValue(img, value) {
+    if (value) {
+      let column = this;
+      let options = column.dropDown.options;
+
+      for (let option of options) {
+        if (option.value === value) {
+          img.src = option.image;
+          img.dataset["value"] = value;
+          return;
+        }
+      }
+    }
+
+    img.src = "";
+    img.dataset["value"] = undefined;
+  }
+
+  selected(event, row, option) {
+    event.preventDefault();
+
+    let column = this;
+
+    let img = document.getElementById(getFieldId(row.id, column.fieldName));
+    if (img && option) {
+      img.src = option.dataset["src"];
+      img.dataset["value"] = option.dataset["value"];
+      // event listener should update entity but you never know
+      column.fieldSetter(row.entity, option.dataset["value"], column.fieldName);
+    }
+
+    document.removeEventListener("keydown", (event) => column.input(event, row, list), false);
+    closeAutoclose();
+  }
+
+  addOptions(row, img, list) {
+    let column = this;
+
+    removeChildren(list);
+
+    column.dropDown
+      .options
+        .forEach((opt) => {
+          let item = document.createElement("li");
+          item.className = "image-select";
+          item.dataset["src"] = opt.image;
+          item.dataset["value"] = opt.value;
+          list.appendChild(item);
+          item.addEventListener("click", (event) => column.selected(event, row, item), false);
+          if (img.dataset["value"] === item.dataset["value"]) {
+            item.classList.add("selected");
+            item.focus();
+           } else {
+            item.classList.remove("selected");
+           }
+
+          let ico = createImage(opt.image);
+          addTooltip(ico, opt.display);
+          item.appendChild(ico);
+        });
+  }
+  
+  input(event, row, list) {
+    if (!(event.atlKey || event.ctrlKey || event.metaKey || event.isComposing)) {
+      if (list) {
+        let column = this;
+        let items = list.children;
+
+        let selected = undefined;
+        for (let item of items) {
+          if (item.classList.contains("selected")) {
+            selected = item;
+          }
+          item.classList.remove("selected");
+        }
+
+        switch (event.key) {
+          case "ArrowUp":
+            selected = selected ? selected.previousSibling : list.lastChild;
+            if (selected) {
+              selected.classList.add("selected");
+              selected.scrollIntoView();
+            }
+            break;
+
+          case "ArrowDown":
+            selected = selected ? selected.nextSibling : list.firstChild;
+            if (selected) {
+              selected.classList.add("selected");
+              selected.scrollIntoView();
+            }
+            break;
+
+          case "Enter":
+            column.selected(event, row, selected);
+            return;
+
+          case "Escape":
+            event.preventDefault();
+            document.removeEventListener("keydown", (event) => column.input(event, row, list), false);
+            closeAutoclose();
+            return;
+
+          default:
+            break;
+        }
+      }
+    }
+  }
+
+  popup(event, row, img) {
+    if (!img.disabled) {
+      closeAutoclose();
+
+      super.popup(event, row, img);
+
+      let column = this;
+      let div = img.parentElement;
+
+      let container = document.createElement("div");
+      container.id = img.id + "_popup"; 
+      container.className = "autoclose-container";
+      div.appendChild(container);
+
+      let list = document.createElement("ul");
+      list.id = img.id + "_list";
+      list.className = "image-select";
+      container.appendChild(list);
+
+      document.addEventListener("keydown", (event) => column.input(event, row, list), false);
+
+      column.addOptions(row, img, list);
+      list.firstChild.focus();
+    }
   }
 }
 

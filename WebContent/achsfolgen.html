@@ -14,22 +14,15 @@
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
-    const columns = [
-      NAMEN(Editable.ADD, true),
-      BEZEICHNUNG(Editable.UPDATE, true),
-      START_YEAR(Editable.UPDATE, true),
-      END_YEAR(Editable.UPDATE, true)
-    ];
-
-    const epochen = new ListEditTable(10, "epoch", "epochen", columns, EditMode.UPDATE);
+    const achsfolgen = new NamedItemTable("achsfolg", "achsfolgen");
 
     async function init() {
       await layout(NavMenu.REF_DATA)
-      .then(() => epochen.init())
+      .then(() => achsfolgen.init())
       .catch(error => reportError("load", error));
     }
   </script>
-  <title>Epochen</title>
+  <title>Antrieben</title>
 </head>
 <body onload="init()">
 <header>
@@ -38,7 +31,7 @@
 <section>
   <article>
     <div id="data">
-      <div id="epochen">
+      <div id="achsfolgen">
       </div>
     </div>
   </article>
