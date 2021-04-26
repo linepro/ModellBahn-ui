@@ -341,7 +341,7 @@ class ItemGrid {
         tab.innerText = translate(tab.id);
       } else {
         let caption = grid.createCaption();
-        addText(caption, grid.tableId);
+        addText(caption, translate(grid.tableId));
         place.append(caption);
       }
 

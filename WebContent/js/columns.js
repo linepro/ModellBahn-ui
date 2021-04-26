@@ -20,14 +20,19 @@ const actionLink = (entity, rel) =>
 
 const boxSize = (length) => Math.ceil(length / 2) * 2;
 
-const closeAutoclose = (elmnt = document) => {
-  for (let auto of elmnt.getElementsByClassName("autoclose-container")) {
-    removeChildren(auto);
-    auto.parentElement.removeChild(auto);
-  }
+let _AUTO_CLOSURES = [];
+const addAutoClose = (closer) => {
+  _AUTO_CLOSURES.push(closer);
 };
 
-document.addEventListener("click", () => closeAutoclose(document), false);
+const closeAutoClose = () => {
+  for (let closure of _AUTO_CLOSURES) {
+    closure();
+  }
+  _AUTO_CLOSURES = [];
+};
+
+document.addEventListener("click", () => closeAutoClose(), false);
 
 const getRowId = (tableId, i) => [tableId, i].join("_");
 
@@ -431,7 +436,7 @@ class PopupColumn extends TextColumn {
   popup(event, row, ctl) {
     if (!ctl.disabled) {
       event.stopPropagation();
-      closeAutoclose();
+      closeAutoClose();
     }
   }
 
@@ -507,9 +512,9 @@ class DateColumn extends PopupColumn {
       datepicker.options.translator.setTitleTranslation(TheDatepicker.TitleName.Close, translate("CLOSE"));
       datepicker.options.setDeselectHtml("&times;");
       datepicker.options.setGoBackHtml("&lt;");
-      datepicker.options.translator.setTitleTranslation(TheDatepicker.TitleName.GoBack, translate("PREVIOUS"));
+      datepicker.options.translator.setTitleTranslation(TheDatepicker.TitleName.GoBack, translate("VORIGE"));
       datepicker.options.setGoForwardHtml("&gt;");
-      datepicker.options.translator.setTitleTranslation(TheDatepicker.TitleName.GoForward, translate("NEXT"));
+      datepicker.options.translator.setTitleTranslation(TheDatepicker.TitleName.GoForward, translate("NACHSTE"));
       datepicker.options.setResetHtml("&olarr;");
       datepicker.options.translator.setTitleTranslation(TheDatepicker.TitleName.Reset, translate("CLEAR"));
 
@@ -557,7 +562,8 @@ class DateColumn extends PopupColumn {
 
       datepicker.options.onOpenAndClose((event, isOpening) => {
         if (!isOpening) {
-          column.setControlValue(dte, datepicker.getSelectedDate());
+          let date = datepicker.getSelectedDate();
+          column.setControlValue(dte, date);
           column.updateEntity(event, row);
           datepicker.destroy();
         }
@@ -1026,7 +1032,7 @@ class AutoSelectColumn extends PopupColumn {
       column.fieldSetter(row.entity, option.dataset["value"], column.fieldName);
     }
 
-    closeAutoclose();
+    closeAutoClose();
   }
 
   addOptions(row, select, list) {
@@ -1095,7 +1101,7 @@ class AutoSelectColumn extends PopupColumn {
 
           case "Escape":
             event.preventDefault();
-            closeAutoclose();
+            closeAutoClose();
             return;
 
           default:
@@ -1107,7 +1113,7 @@ class AutoSelectColumn extends PopupColumn {
 
   popup(event, row, inp) {
     if (!inp.disabled) {
-      closeAutoclose();
+      closeAutoClose();
 
       super.popup(event, row, inp);
 
@@ -1118,6 +1124,8 @@ class AutoSelectColumn extends PopupColumn {
       container.id = inp.id + "_popup"; 
       container.className = "autoclose-container";
       div.appendChild(container);
+
+      addAutoClose(() => div.removeChild(container));
 
       let select = document.createElement("input");
       select.id = inp.id + "_select";
@@ -1221,13 +1229,14 @@ class ImageSelectColumn extends PopupColumn {
     let img = document.getElementById(getFieldId(row.id, column.fieldName));
     if (img && option) {
       img.src = option.dataset["src"];
+      img.alt = option.dataset["value"];
       img.dataset["value"] = option.dataset["value"];
       // event listener should update entity but you never know
       column.fieldSetter(row.entity, option.dataset["value"], column.fieldName);
     }
 
     document.removeEventListener("keydown", (event) => column.input(event, row, list), false);
-    closeAutoclose();
+    closeAutoClose();
   }
 
   addOptions(row, img, list) {
@@ -1251,7 +1260,8 @@ class ImageSelectColumn extends PopupColumn {
             item.classList.remove("selected");
            }
 
-          let ico = createImage(opt.image);
+          let ico = createImage(opt.image, "image-select");
+          ico.alt = opt.value;
           addTooltip(ico, opt.display);
           item.appendChild(ico);
         });
@@ -1295,7 +1305,7 @@ class ImageSelectColumn extends PopupColumn {
           case "Escape":
             event.preventDefault();
             document.removeEventListener("keydown", (event) => column.input(event, row, list), false);
-            closeAutoclose();
+            closeAutoClose();
             return;
 
           default:
@@ -1307,7 +1317,7 @@ class ImageSelectColumn extends PopupColumn {
 
   popup(event, row, img) {
     if (!img.disabled) {
-      closeAutoclose();
+      closeAutoClose();
 
       super.popup(event, row, img);
 
@@ -1325,6 +1335,11 @@ class ImageSelectColumn extends PopupColumn {
       container.appendChild(list);
 
       document.addEventListener("keydown", (event) => column.input(event, row, list), false);
+
+      addAutoClose(() => {
+        div.removeChild(container);
+        document.removeEventListener("keydown", (event) => column.input(event, row, list), false);
+        });
 
       column.addOptions(row, img, list);
       list.firstChild.focus();

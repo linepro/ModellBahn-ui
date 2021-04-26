@@ -34,7 +34,7 @@ const createImage = (source, className) => {
 
 const addHeading = (element, type, text) => {
   let h = document.createElement(type);
-  addText(h, text);
+  addText(h, translate(text));
   element.appendChild(h);
   return h;
 };
@@ -91,27 +91,13 @@ const createButton = (caption, imageName, action = undefined, className = "nav-b
 };
 
 const addText = (cell, text) => {
-  let txt = document.createTextNode(translate(text));
+  let txt = document.createTextNode(text);
   if (cell.firstChild) {
     cell.insertBefore(txt, cell.firstChild);
   } else {
     cell.appendChild(txt);
   }
   return txt;
-};
-
-const addCssRule = (rule) => {
-  for (let sheet of document.styleSheets) {
-    if (sheet.href.endsWith("site.css")) {
-      for (let rule of sheet.cssRules) {
-        if (rule.cssText == rule) {
-          return rule;
-        }
-      }
-      let i = sheet.insertRule(rule);
-      return sheet.cssRules[i];
-    }
-  }
 };
 
 const addTooltip = (input, text) => {
@@ -157,7 +143,7 @@ const reportError = (description, error) => {
     closer.onclick = () => {
       alertBox.style.display = "none";
     };
-    addText(closer, "x");
+    addText(closer, translate("CLOSE"));
     alertBox.appendChild(closer);
     let messageSpan = document.createElement("span");
     messageSpan.id = "alert-message";
@@ -192,7 +178,7 @@ const showModal = content => {
   closer.onclick = () => {
     modal.style.display = "none";
   };
-  addText(closer, "x");
+  addText(closer, translate("CLOSE"));
   contents.appendChild(closer);
 
   contents.appendChild(content);
@@ -256,7 +242,7 @@ const navLink = (title, href, action, id) => {
   if (action) {
     a.addEventListener("click", action, false);
   }
-  addText(a, title);
+  addText(a, translate(title));
   li.appendChild(a);
 
   return li;
@@ -416,7 +402,7 @@ const addFooter = () => {
   div.appendChild(ul);
 
   let li = document.createElement("li");
-  addText(li, "COPYRIGHT");
+  addText(li, translate("COPYRIGHT"));
   ul.appendChild(li);
 };
 

@@ -37,6 +37,7 @@
   "CV": { "message": "CV" },
   "CVS": { "message": "CVS" },
   "CVSLINK": { "message": "CVS" },
+  "DATUM": { "message": "Date" }, 
   "DECODER": { "message": "Decoder" },
   "DECODER_TYP": { "message": "Decoder Type" },
   "DECODER_TYPEN": { "message": "Decoder Types" },
@@ -193,7 +194,14 @@
   "TH": { "message": "Th" },
   "FR": { "message": "Fr" },
   "SA": { "message": "Sa" },
+  "SUNDAY": { "message": "Sunday" },
+  "MONDAY": { "message": "Monday" },
+  "TUESDAY": { "message": "Tuesday" },
+  "WEDNESDAY": { "message": "Wednesday" },
+  "THURSDAY": { "message": "Thursday" },
+  "FRIDAY": { "message": "Friday" },
+  "SATURDAY": { "message": "Saturday" },
   "TODAY":{ "message": "Today" },
   "CLEAR":{ "message": "Clear" },
-  "X": { "message":  "X" }
+  "CLOSE":{ "message": "x" }
 }

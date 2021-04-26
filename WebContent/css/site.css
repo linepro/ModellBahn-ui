@@ -404,6 +404,7 @@ img {
 
 img.form-control {
   max-height: 3rem;
+  max-width: 3rem;
   order: 2;
   writing-mode: vertical-lr;
 }
@@ -455,6 +456,11 @@ img.nav-button {
   text-align: center;
   vertical-align: top;
   width: 1.3rem;
+}
+
+img.image-select {
+  max-height: 3rem;
+  max-width: 3rem;
 }
 
 img.table-cell {
