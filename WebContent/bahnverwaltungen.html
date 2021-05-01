@@ -17,7 +17,8 @@
     const columns = [
       NAMEN(Editable.ADD, true),
       BEZEICHNUNG(Editable.UPDATE, true),
-      LAND_SELECT(Editable.UPDATE, true)
+      LAND_SELECT(Editable.UPDATE, true),
+      ABBILDUNG(Editable.UPDATE, false)
     ];
 
     const bahnverwaltungen = new ListEditTable(10, "bahnverwaltung", "bahnverwaltungen", columns, EditMode.UPDATE);

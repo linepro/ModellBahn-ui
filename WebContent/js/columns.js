@@ -347,7 +347,7 @@ class TextColumn extends Column {
     editable,
     required,
     length,
-    pattern
+    pattern = undefined
   ) {
     super(
       heading,
@@ -887,6 +887,11 @@ class PdfColumn extends FileColumn {
   }
 }
 
+const nichtBenotigt = (required, options) =>
+  required ?
+    options :
+    [dropOption(undefined, translate("NICHT_BENOTIGT"), undefined, "")].concat(options);
+
 class DropDownColumn extends Column {
   constructor(
     heading,
@@ -904,16 +909,13 @@ class DropDownColumn extends Column {
       fieldGetter,
       fieldSetter,
       editable,
-      required
+      required,
+      dropDown.length + (editable === Editable.NEVER ? 0 : 3.5)
     );
 
-    this.dropDown = dropDown;
-    this.dropSize = dropSize;
-  }
-
-  displayLength() {
-    let column = this;
-    return Math.max(column.dropDown.length, column.headingLength) + 3.5;
+    this.options = dropDown.options;
+    this.grouped = dropDown.grouped;
+    this.dropSize = (editable === Editable.NEVER) ? 1 : dropSize;
   }
 
   initialise(inp) {
@@ -921,7 +923,7 @@ class DropDownColumn extends Column {
 
     inp = super.initialise(inp);
 
-    if (inp.readOnly) {
+    if (column.editable === Editable.NEVER) {
       inp.type = "text";
       return inp;
     }
@@ -932,12 +934,11 @@ class DropDownColumn extends Column {
     sel.multiple = false;
     sel.size = 1;
 
-    if (!column.required) {
-      sel.add(createOption(undefined, translate("NICHT_BENOTIGT")));
-    }
+    if (column.grouped.length) {
+      nichtBenotigt(column.required, [])
+        .forEach((opt) => sel.add(createOption(opt.value, opt.display, opt.tooltip, opt.abbildung)));
 
-    if (column.dropDown.grouped.length) {
-      for (let group of column.dropDown.grouped) {
+      for (let group of column.grouped) {
         let grp = createOptGroup(group.name);
         sel.add(grp);
         for (let opt of group.options) {
@@ -945,25 +946,56 @@ class DropDownColumn extends Column {
         }
       }
     } else {
-      for (let opt of column.dropDown.options) {
-        sel.add(createOption(opt.value, opt.display, opt.tooltip, opt.abbildung));
-      }
+      nichtBenotigt(column.required, column.options)
+        .forEach((opt) => sel.add(createOption(opt.value, opt.display, opt.tooltip, opt.abbildung)));
     }
 
     return sel;
   }
 
+  createControl(row, className) {
+    let sel = super.createControl(row, className);
+    if (sel.nodeName === "SELECT") {
+        let column = this;
+
+        sel.addEventListener("input", (event) => column.updateEntity(event, row), false);
+    }
+    return sel;
+  }
+
+  getControlValue(sel) {
+    if (sel.nodeName === "SELECT") {
+      return super.getControlValue(sel);
+    } else {
+      return sel.selectedOptions ? sel.selectedOptions[0].value : "";
+    }
+  }
+
   setControlValue(sel, value) {
-    if (value) {
+    let column = this;
+
+    if (sel.nodeName === "SELECT") {
+      let index = column.required ? -1 : 0;
       let options = sel.options;
 
       for (let i = 0; i < options.length; i++) {
         if (options[i].value === value) {
-          sel.selectedIndex = i;
+          index = i;
           options[i].selected = true;
-          break;
+        } else {
+          options[i].selected = false;
         }
       }
+      sel.selectedIndex = index;
+    } else {
+      let options = column.options;
+      for (let option of options) {
+        if (value === option.value) {
+          sel.value = option.display;
+          return;
+        }
+      }
+      sel.value = "";
     }
   }
 }
@@ -988,13 +1020,9 @@ class AutoSelectColumn extends PopupColumn {
       required
     );
 
-    this.dropDown = dropDown; 
+    this.options = dropDown.options; 
+    this.length = dropDown.length;
     this.dropSize = dropSize;
-  }
-
-  displayLength() {
-    let column = this;
-    return Math.max(column.dropDown.length, column.headingLength);
   }
 
   getControlValue(sel) {
@@ -1004,7 +1032,7 @@ class AutoSelectColumn extends PopupColumn {
   setControlValue(sel, value) {
     if (value) {
       let column = this;
-      let options = column.dropDown.options;
+      let options = column.options;
 
       for (let option of options) {
         if (option.value === value) {
@@ -1040,8 +1068,7 @@ class AutoSelectColumn extends PopupColumn {
 
     removeChildren(list);
 
-    column.dropDown
-      .options
+    nichtBenotigt(column.required, column.options)
         .filter((opt) => opt.display.toLowerCase().includes(select.value.toLowerCase()))
           .slice(0, column.dropSize)
           .forEach((opt) => {
@@ -1167,7 +1194,7 @@ class ImageSelectColumn extends PopupColumn {
       required
     );
 
-    this.dropDown = dropDown; 
+    this.options = dropDown.options; 
     this.dropSize = dropSize;
   }
 
@@ -1181,11 +1208,11 @@ class ImageSelectColumn extends PopupColumn {
 
     let img = document.createElement("img");
     img.id = getFieldId(row.id, column.fieldName);
-    img.className = className;
+    img.className = className + "-select";
     img.classList.add("popup");
     img.readOnly = true;
     img.required = column.required;
-    img.disabled = true;
+    img.dataset["disabled"] = true;
     img.style.visibility = "hidden";
     img.addEventListener("click", (event) => column.popup(event, row, img), false);
     img.addEventListener("input", (event) => column.popup(event, row, img), false);
@@ -1203,22 +1230,36 @@ class ImageSelectColumn extends PopupColumn {
     return img.dataset["value"];
   }
 
+  updateImage(img, option) {
+    if (option) {
+      // could be a li (dataset[]) or a drop option...
+      img.src = option.dataset ? option.dataset["src"] : option.image;
+      img.alt = option.dataset ? option.dataset["value"] : option.value;
+      img.dataset["value"] = option.dataset ? option.dataset["value"] : option.value;
+      addTooltip(img.parentElement, option.dataset ? option.dataset["tool"] : option.tooltip);
+    } else {
+      img.src = "";
+      img.alt = "";
+      img.dataset["value"] = undefined;
+      addTooltip(img.parentElement, undefined);
+    }
+  }
+
   setControlValue(img, value) {
+    let column = this;
+
     if (value) {
-      let column = this;
-      let options = column.dropDown.options;
+      let options = column.options;
 
       for (let option of options) {
         if (option.value === value) {
-          img.src = option.image;
-          img.dataset["value"] = value;
+          column.updateImage(img, option);
           return;
         }
       }
     }
 
-    img.src = "";
-    img.dataset["value"] = undefined;
+    column.updateImage(img, undefined);
   }
 
   selected(event, row, option) {
@@ -1228,9 +1269,7 @@ class ImageSelectColumn extends PopupColumn {
 
     let img = document.getElementById(getFieldId(row.id, column.fieldName));
     if (img && option) {
-      img.src = option.dataset["src"];
-      img.alt = option.dataset["value"];
-      img.dataset["value"] = option.dataset["value"];
+      column.updateImage(img, option);
       // event listener should update entity but you never know
       column.fieldSetter(row.entity, option.dataset["value"], column.fieldName);
     }
@@ -1244,14 +1283,15 @@ class ImageSelectColumn extends PopupColumn {
 
     removeChildren(list);
 
-    column.dropDown
-      .options
+    nichtBenotigt(column.required, column.options) 
         .forEach((opt) => {
           let item = document.createElement("li");
           item.className = "image-select";
           item.dataset["src"] = opt.image;
           item.dataset["value"] = opt.value;
+          item.dataset["tool"] = opt.display;
           list.appendChild(item);
+
           item.addEventListener("click", (event) => column.selected(event, row, item), false);
           if (img.dataset["value"] === item.dataset["value"]) {
             item.classList.add("selected");
@@ -1262,7 +1302,6 @@ class ImageSelectColumn extends PopupColumn {
 
           let ico = createImage(opt.image, "image-select");
           ico.alt = opt.value;
-          addTooltip(ico, opt.display);
           item.appendChild(ico);
         });
   }
@@ -1321,6 +1360,8 @@ class ImageSelectColumn extends PopupColumn {
 
       super.popup(event, row, img);
 
+      addTooltip(img.parentElement, undefined);
+
       let column = this;
       let div = img.parentElement;
 
@@ -1343,6 +1384,17 @@ class ImageSelectColumn extends PopupColumn {
 
       column.addOptions(row, img, list);
       list.firstChild.focus();
+    }
+  }
+  
+  bind(row) {
+    let column = this;
+
+    super.bind(row);
+
+    let img = document.getElementById(getFieldId(row.id, column.fieldName));
+    if (img) {
+      img.dataset["disabled"] = shouldDisable(column.editable, row.editMode, row.entity);
     }
   }
 }

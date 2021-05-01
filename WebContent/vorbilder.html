@@ -16,14 +16,14 @@
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
     const columns = [
-      GATTUNG_SELECT(Editable.ADD, true),
-      UNTER_KATEGORIE_SELECT(Editable.ADD, true),
-      BAHNVERWALTUNG_SELECT(Editable.ADD, false),
-      HERSTELLER(Editable.ADD, false),
-      BAUZEIT(Editable.ADD, false),
-      AUSSERDIENST(Editable.ADD, false),
-      MENGE(Editable.ADD, false),
-      ABBILDUNG(Editable.UPDATE, false)
+      GATTUNG_SELECT(Editable.NEVER, true),
+      UNTER_KATEGORIE_SELECT(Editable.NEVER, true),
+      BAHNVERWALTUNG_SELECT(Editable.NEVER, false),
+      HERSTELLER(Editable.NEVER, false),
+      BAUZEIT(Editable.NEVER, false),
+      AUSSERDIENST(Editable.NEVER, false),
+      MENGE(Editable.NEVER, false),
+      ABBILDUNG(Editable.NEVER, false)
     ];
    
     const actions = [

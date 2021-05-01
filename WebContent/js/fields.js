@@ -7,7 +7,7 @@ const bezeichnungOption = (entity) =>
   dropOption(
     entity.name,
     entity.bezeichnung,
-    entity.tooltip,
+    entity.tooltip ? entity.tooltip : entity.bezeichnung,
     entity.abbildung
   );
 
@@ -67,7 +67,7 @@ const ARTIKEL_DROP = dropDown(apiUrl("artikel"), optionExtractor, artikelOption)
 const AUFBAU_DROP = dropDown(apiUrl("aufbau"), optionExtractor, bezeichnungOption);
 const BAHNVERWALTUNG_DROP = dropDown(apiUrl("bahnverwaltung"), optionExtractor, bezeichnungOption);
 const DECODER_DROP = dropDown(apiUrl("decoder"), optionExtractor, decoderOption);
-const DECODER_STATUS_DROP = dropDown(apiUrl("enums/decoderStatus"), optionExtractor, decoderOption);
+const DECODER_STATUS_DROP = dropDown(apiUrl("enums/decoderStatus"), optionExtractor, bezeichnungOption);
 const DECODER_TYP_DROP = dropDown(apiUrl("decoderTyp"), optionExtractor, produktOption);
 const EPOCH_DROP = dropDown(apiUrl("epoch"), optionExtractor, bezeichnungOption);
 const GATTUNG_DROP = dropDown(apiUrl("gattung"), optionExtractor, bezeichnungOption);
@@ -128,11 +128,17 @@ const ACHSFOLG_SELECT = (editable = Editable.UPDATE, required = false, getter = 
 const ADRESS_TYP_SELECT = (editable = Editable.UPDATE, required = true, getter = fieldGetter, setter = fieldSetter) =>
   new DropDownColumn("ADRESS_TYP", "adressTyp", getter, setter, ADRESS_TYP_DROP, editable, required);
 
+const ARTIKEL_SELECT = (editable, required, getter = artikelIdGetter, setter = artikelIdSetter) =>
+  new DropDownColumn("ARTIKEL", "artikel", getter, setter, ARTIKEL_DROP, editable, required);
+
 const BAHNVERWALTUNG_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
   new AutoSelectColumn("BAHNVERWALTUNG", "bahnverwaltung", getter, setter, BAHNVERWALTUNG_DROP, editable, required);
 
 const DECODER_SELECT = (editable = Editable.UPDATE, required = false, getter = decoderIdGetter, setter = decoderIdSetter) =>
-  new DropDownColumn("DECODER", "decoder", getter, setter, DECODER_DROP, editable, required);
+  new DropDownColumn("DECODER", "decoderId", getter, setter, DECODER_DROP, editable, required);
+
+const DECODER_STATUS_SELECT = (editable, required, getter = fieldGetter, setter = fieldSetter) =>
+  new DropDownColumn("DECODER_STATUS", "status", getter, setter, DECODER_STATUS_DROP, editable, required);
 
 const DECODER_TYP_SELECT = (editable = Editable.UPDATE, required = true, getter = produktGetter, setter = produktSetter) =>
   new DropDownColumn("DECODER_TYP", "decoderTyp", getter, setter, DECODER_TYP_DROP, editable, required);
@@ -159,13 +165,13 @@ const MASSSTAB_SELECT = (editable = Editable.UPDATE, required = true, getter = f
   new DropDownColumn("MASSSTAB", "massstab", getter, setter, MASSSTAB_DROP, editable, required);
 
 const MOTOR_TYP_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new DropDownColumn("MOTOR_TYP", "motorTyp", getter, setter, MOTOR_TYP_DROP, editable, required);
+  new ImageSelectColumn("MOTOR_TYP", "motorTyp", getter, setter, MOTOR_TYP_DROP, editable, required);
 
 const PRODUKT_SELECT = (editable = Editable.UPDATE, required = true, getter = produktGetter, setter = produktSetter) =>
   new AutoSelectColumn("PRODUKT", "produkt", getter, setter, PRODUKT_DROP, editable, required);
 
 const PROTOKOLL_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new DropDownColumn("PROTOKOLL", "protokoll", getter, setter, PROTOKOLL_DROP, editable, required);
+  new ImageSelectColumn("PROTOKOLL", "protokoll", getter, setter, PROTOKOLL_DROP, editable, required);
 
 const SPURWEITE_SELECT = (editable = Editable.UPDATE, required = true, getter = fieldGetter, setter = fieldSetter) =>
   new DropDownColumn("SPURWEITE", "spurweite", getter, setter, SPURWEITE_DROP, editable, required);
@@ -177,7 +183,7 @@ const STECKER_SELECT = (editable = Editable.UPDATE, required = true, getter = fi
   new DropDownColumn("STECKER", "stecker", getter, setter, STECKER_DROP, editable, required);
 
 const STEUERUNG_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new DropDownColumn("STEUERUNG", "steuerung", getter, setter, STEUERUNG_DROP, editable, required);
+  new ImageSelectColumn("STEUERUNG", "steuerung", getter, setter, STEUERUNG_DROP, editable, required);
 
 const UNTER_KATEGORIE_SELECT = (editable = Editable.UPDATE, required = true, getter = unterKategorieGetter, setter = unterKategorieSetter) =>
   new DropDownColumn("KATEGORIE", "unterKategorie", getter, setter, UNTER_KATEGORIE_DROP, editable, required);
@@ -202,9 +208,6 @@ const ANMERKUNG = (editable = Editable.UPDATE, required = false, getter = fieldG
 
 const ARTIKEL = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
   new TextColumn("ARTIKEL", "artikelId", getter, setter, editable, required, 5, "^[A-Z0-9]+$");
-
-const AUFBAU = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new TextColumn("AUFBAU", "aufbau", getter, setter, editable, required, 5);
 
 const AUSSERDIENST = (editable = Editable.UPDATE, required = false, getter = dateGetter, setter = dateSetter) =>
   new DateColumn("AUSSERDIENST", "ausserdienst", getter, setter, editable, required);
@@ -237,16 +240,7 @@ const FAHRSTUFE = (editable = Editable.UPDATE, required = false, getter = fieldG
   new NumberColumn("FAHRSTUFE", "fahrstufe", getter, setter, editable, required, 127, 1);
 
 const FUNKTION = (editable = Editable.ADD, required = true, getter = fieldGetter, setter = fieldSetter) =>
-  new TextColumn(
-    "FUNKTION",
-    "funktion",
-    getter,
-    setter,
-    editable,
-    required,
-    3,
-    "^F([12]d|3[012]|d)$|^K(1[012345]|d)$|^S[0123456]$"
-  );
+  new TextColumn("FUNKTION", "funktion", getter, setter, editable, required, 3, "^F([12]d|3[012]|d)$|^K(1[012345]|d)$|^S[0123456]$");
 
 const GERAUSCH = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
   new BoolColumn("GERAUSCH", "gerausch", getter, setter, editable, required);

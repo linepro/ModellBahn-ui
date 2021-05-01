@@ -17,16 +17,10 @@
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
-    const ANDERUNGS_TYP_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new DropDownColumn("ANDERUNGS_TYP", "anderungsTyp", getter, setter, ANDERUNGS_TYP_DROP, editable, required) }
-    const ANDERUNGS_DATUM = (editable = Editable.UPDATE, required = false, getter = dateGetter, setter = dateSetter) => { return new DateColumn("DATUM", "anderungsDatum", getter, setter, editable, required, 5) }
-    const ANDERUNGS_ID = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("ANDERUNG", "anderungId", getter, setter, editable, required, 30, 0) }
-    const BELADUNG = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new TextColumn("BELADUNG", "beladung", getter, setter, editable, required, 30) }
-    const VERBLEIBENDE = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("VERBLEIBENDE", "verbleibende", getter, setter, editable, required, 300, 0) }
-
     const anderungenColumns = [
-      ANDERUNGS_ID(Editable.NEVER, true),
-      ANDERUNGS_TYP_SELECT(Editable.UPDATE, true),
-      ANDERUNGS_DATUM(Editable.UPDATE, true),
+      new NumberColumn("ANDERUNG", "anderungId", fieldGetter, fieldSetter, Editable.NEVER, true),
+      new DropDownColumn("ANDERUNGS_TYP", "anderungsTyp", fieldGetter, fieldSetter, ANDERUNGS_TYP_DROP, Editable.UPDATE, true),
+      new DateColumn("DATUM", "anderungsDatum", dateGetter, dateSetter, Editable.UPDATE, true),
       BEZEICHNUNG(Editable.UPDATE, true),
       MENGE(Editable.UPDATE, true)
     ];
@@ -47,17 +41,17 @@
       WAHRUNG_SELECT(Editable.UPDATE, false),
       PREIS(Editable.UPDATE, false),
       MENGE(Editable.UPDATE, true),
-      VERBLEIBENDE(Editable.UPDATE, true),
+      new NumberColumn("VERBLEIBENDE", "verbleibende", fieldGetter, fieldSetter, Editable.UPDATE, true),
       STEUERUNG_SELECT(Editable.UPDATE, false),
       MOTOR_TYP_SELECT(Editable.UPDATE, false),
       LICHT_SELECT(Editable.UPDATE, false),
       KUPPLUNG_SELECT(Editable.UPDATE, false),
       DECODER_SELECT(Editable.UPDATE, false),
       ANMERKUNG(Editable.UPDATE, false),
-      BELADUNG(Editable.UPDATE, false),
+      new TextColumn("BELADUNG", "beladung", fieldGetter, fieldSetter, Editable.UPDATE, false, 30),
       ABBILDUNG(Editable.UPDATE, false),
       STATUS_SELECT(Editable.UPDATE, true)
-      ];
+    ];
    
     const artikelActions = [
       saveAction()

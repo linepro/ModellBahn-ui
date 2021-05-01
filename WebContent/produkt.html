@@ -17,14 +17,8 @@
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
-    const AUFBAU_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new ImageSelectColumn("AUFBAU", "aufbau", getter, setter, AUFBAU_DROP, editable, required) }
-    const EPOCH_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new DropDownColumn("EPOCH", "epoch", getter, setter, EPOCH_DROP, editable, required) }
-    const SONDERMODELL_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new DropDownColumn("SONDERMODELL", "sondermodell", getter, setter, SONDERMODELL_DROP, editable, required) }
-    const TEIL_SELECT = (editable = Editable.UPDATE, required = false, getter = produktTeilGetter, setter = produktTeilSetter) => { return new DropDownColumn("TEIL", "teil", getter, setter, PRODUKT_DROP, editable, required) }
-    const VORBILD_SELECT = (editable = Editable.UPDATE, required = false, getter = vorbildGetter, setter = vorbildSetter) => { return new AutoSelectColumn("VORBILD", "vorbild", getter, setter, VORBILD_DROP, editable, required) }
-
     const teilenColumns = [
-      TEIL_SELECT(Editable.ADD, true),
+      new DropDownColumn("TEIL", "teil", fieldGetter, fieldSetter, PRODUKT_DROP, Editable.ADD, true),
       MENGE(Editable.UPDATE, true)
       ];
    
@@ -42,13 +36,13 @@
       UNTER_KATEGORIE_SELECT(Editable.UPDATE, true),
       MASSSTAB_SELECT(Editable.UPDATE, false),
       SPURWEITE_SELECT(Editable.UPDATE, false),
-      EPOCH_SELECT(Editable.UPDATE, false),
+      new ImageSelectColumn("EPOCH", "epoch", fieldGetter, fieldSetter, EPOCH_DROP, Editable.UPDATE, false),
       BAHNVERWALTUNG_SELECT(Editable.UPDATE, false),
       GATTUNG_SELECT(Editable.UPDATE, false),
       ACHSFOLG_SELECT(Editable.UPDATE, false),
-      VORBILD_SELECT(Editable.UPDATE, false),
-      SONDERMODELL_SELECT(Editable.UPDATE, false),
-      AUFBAU_SELECT(Editable.UPDATE, false),
+      new DropDownColumn("VORBILD", "vorbild", fieldGetter, fieldSetter, VORBILD_DROP, Editable.UPDATE, false),
+      new DropDownColumn("SONDERMODELL", "sondermodell", fieldGetter, fieldSetter, SONDERMODELL_DROP, Editable.UPDATE, false),
+      new ImageSelectColumn("AUFBAU", "aufbau", fieldGetter, fieldSetter, AUFBAU_DROP, Editable.UPDATE, false),
       LICHT_SELECT(Editable.UPDATE, false),
       KUPPLUNG_SELECT(Editable.UPDATE, false),
       STEUERUNG_SELECT(Editable.UPDATE, false),

@@ -14,7 +14,13 @@
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
-    const antrieben = new NamedItemTable("antrieb", "antrieben");
+    const columns = [
+      NAMEN(Editable.ADD, true),
+      BEZEICHNUNG(Editable.UPDATE, true),
+      ABBILDUNG(Editable.UPDATE, false)
+    ];
+
+    const antrieben = new ListEditTable(10, "antrieb", "antrieben", columns, EditMode.UPDATE);
 
     async function init() {
       await layout(NavMenu.REF_DATA)

@@ -15,12 +15,12 @@
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
     const produktenColumns = [
-      HERSTELLER_SELECT(Editable.ADD, true),
-      BESTELL_NR(Editable.ADD, true),
-      UNTER_KATEGORIE_SELECT(Editable.ADD, true),
-      MASSSTAB_SELECT(Editable.ADD, false),
-      SPURWEITE_SELECT(Editable.ADD, false),
-      BEZEICHNUNG(Editable.ADD, true)
+      HERSTELLER_SELECT(Editable.NEVER, true),
+      BESTELL_NR(Editable.NEVER, true),
+      UNTER_KATEGORIE_SELECT(Editable.NEVER, true),
+      MASSSTAB_SELECT(Editable.NEVER, false),
+      SPURWEITE_SELECT(Editable.NEVER, false),
+      BEZEICHNUNG(Editable.NEVER, true)
     ];
    
     const produktenActions = [

@@ -103,10 +103,10 @@ const addText = (cell, text) => {
 const addTooltip = (input, text) => {
   if (text) {
     input.setAttribute("data-tooltip", text);
-    input.classList.add(".tooltip");
+    input.classList.add("tooltip");
   } else {
     input.removeAttribute("data-tooltip");
-    input.classList.remove(".tooltip");
+    input.classList.remove("tooltip");
   }
 };
 

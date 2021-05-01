@@ -14,17 +14,13 @@
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
-    const ARTIKEL_SELECT = (editable, required, getter = artikelIdGetter, setter = artikelIdSetter) => { return new DropDownColumn("ARTIKEL", "artikel", getter, setter, ARTIKEL_DROP, editable, required) }
-
-    const THUMBNAIL = (getter = fieldGetter) => { return new ThumbColumn("abbildung", "abbildung", getter); };
-
     const fahrzeugColumns = [
       POSITION(Editable.NEVER),
       ARTIKEL_SELECT(Editable.UPDATE, true),
       UNTER_KATEGORIE_SELECT(Editable.NEVER, false),
       BEZEICHNUNG(Editable.NEVER, false),
       LANGE(Editable.NEVER, false),
-      THUMBNAIL()
+      new ThumbColumn("abbildung", "abbildung", fieldGetter)
     ];
    
     const fahrzeugActions = [

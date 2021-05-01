@@ -20,14 +20,14 @@
     };
 
     const artikelenColumns = [
-      ARTIKEL(Editable.ADD, true),
-      PRODUKT_SELECT(Editable.ADD, false),
-      UNTER_KATEGORIE_SELECT(Editable.ADD, false),
-      BEZEICHNUNG(Editable.ADD),
-      DECODER_SELECT(Editable.ADD, false),
-      ANMERKUNG(Editable.ADD, false),
+      ARTIKEL(Editable.NEVER, true),
+      PRODUKT_SELECT(Editable.NEVER, false),
+      UNTER_KATEGORIE_SELECT(Editable.NEVER, false),
+      BEZEICHNUNG(Editable.NEVER),
+      DECODER_SELECT(Editable.NEVER, false),
+      ANMERKUNG(Editable.NEVER, false),
       ABBILDUNG(Editable.UPDATE, false),
-      STATUS_SELECT(Editable.ADD, true)
+      STATUS_SELECT(Editable.NEVER, true)
     ];
 
     const artikelenActions = [

@@ -38,6 +38,7 @@
   "CVSLINK": { "message": "CVS" },
   "DATUM": { "message": "Datum" }, 
   "DECODER": { "message": "Decoder" },
+  "DECODER_STATUS": { "message": "Status" },
   "DECODER_TYP": { "message": "Decoder Typ" },
   "DECODER_TYPEN": { "message": "Decoder Typen " },
   "DECODEREN": { "message": "Decoderen" },

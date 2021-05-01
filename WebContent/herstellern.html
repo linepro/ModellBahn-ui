@@ -14,14 +14,13 @@
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
-    const TELEFON = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new PhoneColumn("TELEFON", "telefon", getter, setter, editable, required) }
-
     const columns = [
       NAMEN(Editable.ADD, true),
       BEZEICHNUNG(Editable.UPDATE, true),
       LAND_SELECT(Editable.UPDATE, true),
-      TELEFON(Editable.UPDATE, true),
-      URL(Editable.UPDATE, true)
+      new PhoneColumn("TELEFON", "telefon", fieldGetter, fieldSetter, Editable.UPDATE, false),
+      URL(Editable.UPDATE, true),
+      ABBILDUNG(Editable.UPDATE, false)
     ];
 
     const herstellern = new ListEditTable(10, "hersteller", "herstellern", columns, EditMode.UPDATE);

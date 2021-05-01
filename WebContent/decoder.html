@@ -17,15 +17,10 @@
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
-    const DECODER_STATUS_SELECT = (editable, required, getter = decoderIdGetter, setter = decoderIdSetter) => { return new DropDownColumn("DECODER_STATUS", "decoder", getter, setter, DECODER_STATUS_DROP, editable, required) }
-    const WERT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) => { return new NumberColumn("WERT", "wert", getter, setter, editable, required, 65535, 1) }
-
-    const adress = ADRESS(Editable.UPDATE, true);
-
     const adressColumns = [
       INDEX(Editable.NEVER, false),
       ADRESS_TYP_SELECT(Editable.UPDATE, true),
-      adress
+      ADRESS(Editable.UPDATE, true)
     ];
    
     const adressActions = [
@@ -38,7 +33,7 @@
       CV(Editable.NEVER, false),
       BEZEICHNUNG(Editable.NEVER, false),
       WERKSEINSTELLUNG(Editable.NEVER, false),
-      WERT(Editable.UPDATE, false)
+      new NumberColumn("WERT", "wert", fieldGetter, fieldSetter, Editable.UPDATE, false, 65535, 1)
     ];
    
     const cvActions = [
@@ -47,11 +42,9 @@
 
     const cvs = new ExpandingTable(10, undefined, "cvs", cvColumns, cvActions, EditMode.UPDATE);
 
-    const funktion = FUNKTION(Editable.NEVER, false);
-
     const funktiononenColumns = [
       REIHE(Editable.NEVER, false),
-      funktion,
+      FUNKTION(Editable.NEVER, false),
       BEZEICHNUNG(Editable.UPDATE, true),
       PROGRAMMABLE(Editable.NEVER, false)
     ];
@@ -66,6 +59,7 @@
       DECODER(Editable.NEVER, true),
       DECODER_TYP_SELECT(Editable.NEVER, true),
       BEZEICHNUNG(Editable.NEVER, true),
+      ARTIKEL_SELECT(Editable.NEVER, false),
       PROTOKOLL_SELECT(Editable.UPDATE, true),
       FAHRSTUFE(Editable.UPDATE, false),
       GERAUSCH(Editable.NEVER, true),
@@ -94,11 +88,14 @@
 
     async function init() {
       await layout(NavMenu.BACK)
-      .then(() => initDropDown(DECODER_STATUS_DROP))
       .then(() => initDropDown(DECODER_TYP_DROP))
+      .then(() => initDropDown(ARTIKEL_DROP))
       .then(() => initDropDown(PROTOKOLL_DROP))
       .then(() => initDropDown(KONFIGURATION_DROP))
       .then(() => initDropDown(ADRESS_TYP_DROP))
+      .then(() => initDropDown(STECKER_DROP))
+      .then(() => initDropDown(WAHRUNG_DROP))
+      .then(() => initDropDown(DECODER_STATUS_DROP))
       .then(() => decoder.init())
       .catch(error => reportError("load", error));
 

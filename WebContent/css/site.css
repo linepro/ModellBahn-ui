@@ -106,34 +106,77 @@ button {
   padding: 0.3rem 0.3rem;
 }
 
-button.form-control-add,
-button.table-cell-add {
-  height: 1.3rem;
-  margin-bottom: 1.5rem;
+button.form-control-add {
+  align-content: center;
+  display: grid;
+  float: right;
+  margin: 0 0 0 0;
+  max-height: 1.2rem;
+  max-width: 1.3rem;
+  min-height: 1.2rem;
+  min-width: 1.3rem;
   order: 3;
   padding: 0 0 0 0;
-  vertical-align: top;
-  width: 1.3rem;
+  position: relative;
+  transform: translate(0, -0.9rem);
 }
 
-button.form-control-del,
-button.table-cell-del {
-  height: 1.3rem;
-  margin-bottom: 1.5rem;
+button.form-control-del {
+  align-content: center;
+  display: grid;
+  float: right;
+  margin: 0 0 0 0;
+  max-height: 1.2rem;
+  max-width: 1.3rem;
+  min-height: 1.2rem;
+  min-width: 1.3rem;
   order: 4;
   padding: 0 0 0 0;
-  vertical-align: top;
-  width: 1.3rem;
+  position: relative;
+  transform: translate(0, -0.9rem);
+}
+
+button.table-cell-add {
+  align-content: center;
+  display: grid;
+  float: right;
+  margin: 0 0 0 0;
+  max-height: 1.2rem;
+  max-width: 1.3rem;
+  min-height: 1.2rem;
+  min-width: 1.3rem;
+  order: 3;
+  padding: 0 0 0 0;
+  position: relative;
+}
+
+button.table-cell-del {
+  align-content: center;
+  display: grid;
+  float: right;
+  margin: 0 0 0 0;
+  max-height: 1.2rem;
+  max-width: 1.3rem;
+  min-height: 1.2rem;
+  min-width: 1.3rem;
+  order: 4;
+  padding: 0 0 0 0;
+  position: relative;
 }
 
 button.img-button {
   border: 0;
   display: inline-grid;
-  height: 1.2rem;
-  margin: 0.1rem;
-  padding: 0;
-  vertical-align: top;
-  width: 1.2rem;
+  height: 1.1rem;
+  margin: 0 0 0 0;
+  max-height: 1.1rem;
+  max-width: 1.1rem;
+  min-height: 1.1rem;
+  min-width: 1.1rem;
+  padding: 0 0 0 0;
+  text-align: center;
+  vertical-align: middle;
+  width: 1.1rem;
 }
 
 button.img-button:disabled {
@@ -402,18 +445,24 @@ img {
   text-align: center;
 }
 
-img.form-control {
+img.form-control,
+img.form-control-select,
+img.table-cell-select {
   max-height: 3rem;
-  max-width: 3rem;
   order: 2;
   writing-mode: vertical-lr;
+}
+
+img.form-control-select[data-disabled="false"],
+img.table-cell-select[data-disabled="false"] {
+  background-color: White;
 }
 
 img.img-button {
   border: 0;
   display: inline-grid;
   height: 1.2rem;
-  margin: 0;
+  margin: -1px -1px 1px -1px;
   padding: 0;
   width: 1.2rem;
 }
@@ -459,13 +508,15 @@ img.nav-button {
 }
 
 img.image-select {
+  background-color: Ivory;
   max-height: 3rem;
   max-width: 3rem;
 }
 
 img.table-cell {
   order: 2;
-  max-height: 3rem;
+  max-height: 2.25rem;
+  max-width: calc(100% - 2.7rem);
   vertical-align: bottom;
 }
 
@@ -652,18 +703,14 @@ svg:not(:root) {
 table {
   border-collapse: collapse;
   border-bottom: 0.1rem solid LightSkyBlue;
-  display: flex;
-  flex-flow: column;
   overflow: hidden;
   padding: 0;
-  table-layout: fixed;
   text-align: left;
   vertical-align: middle;
   width: 100%;
 }
 
 tbody {
-  display: block;
   flex: 2 2 auto;
   height: 31.8rem;
   max-height: 31.8rem;
@@ -677,6 +724,22 @@ tbody {
 tbody.scroll {
   overflow-y: scroll;
 }
+
+tbody::-webkit-scrollbar {
+  width: 0.5rem;
+}
+
+tbody::-webkit-scrollbar-track {
+  background: inherit;
+  border: 0.1rem solid lightGrey;
+}
+
+tbody::-webkit-scrollbar-thumb {
+  background-color: lightGrey;
+  border-radius: 0.3rem;
+  border: 0.1rem solid lightGrey;
+}
+
 
 td.table-cell {
   height: 2.5rem;
@@ -719,24 +782,21 @@ textarea {
 tfoot {
   background-color: LightSkyBlue;
   color: white;
-  display: table;
-  flex: 0 0 auto;
   font-weight: bold;
   height: fit-content;
   padding: 0;
-  table-layout: fixed;
   text-align: center;
   width: 100%;
 }
 
 tfoot.scroll {
-  width: calc(100% - 15px);
+  width: calc(100% - 0.5rem);
 }
 
 th.table-heading {
   height: 3rem;
   margin: 1.5rem 1rem 0 0.5rem;
-  text-align: center;
+  text-align: left;
   vertical-align: middle;
 }
 
@@ -749,40 +809,31 @@ th.table-heading-btn {
 thead {
   background-color: LightSkyBlue;
   color: white;
-  display: table;
-  flex: 0 0 auto;
   font-weight: bold;
   height: 3rem;
   padding: 0;
-  table-layout: fixed;
   text-align: left;
   width: 100%;
 }
 
 thead.scroll {
-  width: calc(100% - 15px);
+  width: calc(100% - 0.5rem);
 }
 
 tr.table-foot {
-  display: table;
   font-weight: bold;
   height: fit-content;
-  table-layout: fixed;
   width: 100%;
 }
 
 tr.table-head {
-  display: table;
   font-weight: bold;
   height: 3rem;
-  table-layout: fixed;
   width: 100%;
 }
 
 tr.table-row {
-  display: table;
   height: 3.1rem;
-  table-layout: fixed;
   width: 100%;
 }
 
@@ -796,6 +847,19 @@ tr.table-row:nth-child(even) {
 
 tr.table-row:nth-child(even):hover {
   background-color: Khaki;
+}
+
+ul.autoselect,
+ul.image-select {
+  background-color: LightYellow;
+  cursor: pointer;
+  line-height: 2.25rem;
+  list-style-type: none;
+  margin: 0;
+  max-height: 13.5rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 0.1rem;
 }
 
 ul.footer {
@@ -835,6 +899,21 @@ ul.nav {
 
 ul.nav > li {
   display: inline-block;
+}
+
+ul::-webkit-scrollbar {
+  width: 0.5rem;
+}
+
+ul::-webkit-scrollbar-track {
+  background: inherit;
+  border: 0.1rem solid lightGrey;
+}
+
+ul::-webkit-scrollbar-thumb {
+  background-color: lightGrey;
+  border-radius: 0.3rem;
+  border: 0.1rem solid lightGrey;
 }
 
 .about {
@@ -919,18 +998,6 @@ li.autoselect.selected,
 li.image-select.selected {
   background-color: Ivory;
   border: 1px dashed LightSkyBlue;
-}
-
-ul.autoselect,
-ul.image-select {
-  background-color: LightYellow;
-  cursor: pointer;
-  line-height: 2.25rem;
-  list-style-type: none;
-  margin: 0;
-  max-height: 13.5rem;
-  overflow-y: auto;
-  padding: 0.1rem;
 }
 
 .closebtn {
@@ -1137,46 +1204,31 @@ ul.image-select {
 }
 
 .tooltip:before {
-  background: White;
-  border: solid Grey;
-  border-radius: 10px;
-  color:  Grey;
-  content:  attr(data-tooltip);
+  background: LightGrey;
+  border: solid LightGrey;
+  border-radius: 0.1rem;
+  color: Ivory;
+  content: attr(data-tooltip);
   display: none;
   font-size: 0.8rem;
-  height: 1rem;
-  left: 100%;
-  margin: 0.1rem;
+  height: 1.2rem;
+  left: calc(100% - 3rem);
+  margin: 0.2rem 0rem -0.5rem 0rem;
   opacity: 0;
-  padding: 0.1rem;
+  padding: 0.9rem 0.4rem 0rem 0.4rem;
   position: absolute;
-  top: 50%;
+  top: 4rem;
   transform: translateY(-50%);
-  width: auto;
-  text-align: center;
+  width: max-content;
+  text-align: justify;
   transition: 0.3s;
+  vertical-align: bottom;
   z-index: 1000;
 }
 
 .tooltip:hover:before {
-  display:block;
-  opacity:1;
-}
-
-.tooltip:after {
-  border: 10px solid Grey;
-  border-color: transparent Grey transparent transparent;
-  content: "";
-  display: none;
-  left: 100%;
-  margin-left: -5px;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.tooltip:hover:after {
-  display:block;
+  display: inline-block;
+  opacity: 1;
 }
 
 #anderungen_tbody {
