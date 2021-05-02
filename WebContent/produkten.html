@@ -1,39 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <link rel="stylesheet" href="css/site.css"/>
+  <script type="text/javascript" src="js/api.js"></script>
   <script type="text/javascript" src="js/i18n.js"></script>
   <script type="text/javascript" src="js/utils.js"></script>
   <script type="text/javascript" src="js/dropdown.js"></script>
+  <script type="text/javascript" src="js/columns.js"></script>
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
-    const columns = [
-      HERSTELLER_SELECT(Editable.ADD, true),
-      BESTELL_NR(Editable.ADD, true),
-      UNTER_KATEGORIE_SELECT(Editable.ADD, true),
-      MASSSTAB_SELECT(Editable.ADD, false),
-      SPURWEITE_SELECT(Editable.ADD, false),
-      BEZEICHNUNG(Editable.ADD, true),
-      new ButtonColumn([newRow], [editRow, deleteRow])
+    const produktenColumns = [
+      HERSTELLER_SELECT(Editable.NEVER, true),
+      BESTELL_NR(Editable.NEVER, true),
+      UNTER_KATEGORIE_SELECT(Editable.NEVER, true),
+      MASSSTAB_SELECT(Editable.NEVER, false),
+      SPURWEITE_SELECT(Editable.NEVER, false),
+      BEZEICHNUNG(Editable.NEVER, true)
+    ];
+   
+    const produktenActions = [
+      newAction("produkt.html"),
+      editAction("produkt.html"),
+      deleteAction()
     ];
 
-    const produkten = new ItemGrid(10, fetchUrl("produkt"), "produkten", columns, Paged.PAGED, EditMode.UPDATE, undefined, "produkt.html");
+    const produkten = new PagedTable(10, "produkt", "produkten", produktenColumns, produktenActions, EditMode.UPDATE);
 
     async function init() {
-      addNavBar(NavMenu.INVENTORY);
-      addFooter();
-      await HERSTELLER_DROP.init()
-      .then(() => UNTER_KATEGORIE_DROP.init())
-      .then(() => MASSSTAB_DROP.init())
-      .then(() => SPURWEITE_DROP.init())
-      .then(() => EPOCH_DROP.init())
-      .then(() => BAHNVERWALTUNG_DROP.init())
-      .then(() => GATTUNG_DROP.init())
-      .then(() => produkten.init());
+      await layout(NavMenu.INVENTORY)
+      .then(() => initDropDown(HERSTELLER_DROP))
+      .then(() => initDropDown(UNTER_KATEGORIE_DROP))
+      .then(() => initDropDown(MASSSTAB_DROP))
+      .then(() => initDropDown(SPURWEITE_DROP))
+      .then(() => initDropDown(EPOCH_DROP))
+      .then(() => initDropDown(BAHNVERWALTUNG_DROP))
+      .then(() => initDropDown(GATTUNG_DROP))
+      .then(() => produkten.init())
+      .catch(error => reportError("load", error));
     }
   </script>
   <title>Produkten</title>

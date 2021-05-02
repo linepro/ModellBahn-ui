@@ -1,83 +1,154 @@
-// module 'utils.js'
-'use strict';
+//module "utils.js";
+"use strict";
 
-const NavMenu = {
-  BACK: 0,
-  REF_DATA: 1,
-  INVENTORY: 2,
-  HOME: 3
+const apiUrl = (path) => {
+  return window.location.origin + "/ModellBahn/api/" + path;
 };
-
-window.onerror = function (msg, url, lineNo, columnNo, error) {
-  if (msg.toLowerCase().includes('script error')) {
-    reportError('Script Error: See Browser Console for Detail');
-  } else {
-    const message = getMessage('ERROR_DETAIL', {
-      msg: msg,
-      url: url,
-      lineNo: lineNo,
-      columnNo: columnNo,
-      error:  error.toString()
-    });
-
-    reportError(message);
-  }
-
-  return false;
-};
-
-const apiRoot = () => {
-  return '/ModellBahn/api/';
-};
-
-const siteRoot = () => {
-  return '/';
+const fileUrl = (path) => {
+  return window.location.origin + "/ModellBahn/modellbahn-ui/" + path;
 };
 
 const fetchUrl = (dataType) => {
-  let fetchUrl = apiRoot() + dataType;
   let searchParams = new URLSearchParams(location.search);
-
-  if (searchParams.has('self')) { fetchUrl = searchParams.get('self') }
-
-  return fetchUrl;
+  if (searchParams.has("self")) {
+    return searchParams.get("self");
+  }
+  return apiUrl(dataType);
 };
 
-const removeChildren = (node) => {
-  while (node.firstChild) { node.removeChild(node.firstChild) }
+const imageSource = (imageName, extension) => {
+  return fileUrl("img/" + imageName + (extension ? extension : ".png"));
 };
 
 const addToEnd = (element) => {
-  let docBody = document.getElementsByTagName('BODY')[0];
+  let docBody = document.getElementsByTagName("BODY")[0];
   docBody.appendChild(element);
 };
 
-const addToStart = (element) => {
-  let docBody = document.getElementsByTagName('BODY')[0];
-  docBody.insertBefore(element, docBody.firstChild);
+const createImage = (source, className) => {
+  let img = document.createElement("img");
+  img.className = className;
+  img.src = source ? source : "";
+  return img;
 };
 
-const reportError = (error) => {
-  console.log(error);
+const addHeading = (element, type, text) => {
+  let h = document.createElement(type);
+  addText(h, translate(text));
+  element.appendChild(h);
+  return h;
+};
 
-  let alertBox = document.getElementById('alert-box');
+const addRule = (element) => {
+  let hr = document.createElement("hr");
+  hr.className = "highlight";
+  element.appendChild(hr);
+  return hr;
+};
 
+const addModal = () => {
+  let modal = document.getElementById("modal");
+
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = "modal";
+    modal.className = "modal";
+
+    let content = document.createElement("div");
+    content.id = "modal-content";
+    content.className = "modal-content";
+
+    modal.appendChild(content);
+    addToEnd(modal);
+
+    window.addEventListener(
+      "click",
+      e => {
+        if (e.target === modal) {
+          modal.style.display = "none";
+        }
+      },
+      false
+    );
+  }
+
+  return modal;
+};
+
+const createButton = (caption, imageName, action = undefined, className = "nav-button") => {
+  let btn = document.createElement("button");
+  btn.value = translate(caption);
+  if (action) {
+    btn.addEventListener("click", action, false);
+  }
+  btn.className = className;
+  let img = document.createElement("img");
+  img.className = className;
+  img.alt = imageName;
+  img.src = imageSource(imageName);
+  btn.appendChild(img);
+  return btn;
+};
+
+const addText = (cell, text) => {
+  let txt = document.createTextNode(text);
+  if (cell.firstChild) {
+    cell.insertBefore(txt, cell.firstChild);
+  } else {
+    cell.appendChild(txt);
+  }
+  return txt;
+};
+
+const addTooltip = (input, text) => {
+  if (text) {
+    input.setAttribute("data-tooltip", text);
+    input.classList.add("tooltip");
+  } else {
+    input.removeAttribute("data-tooltip");
+    input.classList.remove("tooltip");
+  }
+};
+
+const removeChildren = (node) => {
+  while (node.firstChild) {
+    node.removeChild(node.firstChild);
+  }
+};
+
+const createOptGroup = (text) => {
+  let grp = document.createElement("optgroup");
+  grp.label = text;
+  return grp;
+};
+
+const createOption = (value, text, tooltip, abbildung) => {
+  let opt = document.createElement("option");
+  opt.value = value;
+  opt.text = text;
+  opt.setAttribute("data-img", abbildung);
+  opt.setAttribute("data-desc", tooltip);
+  return opt;
+};
+
+const reportError = (description, error) => {
+  console.trace("%s: %o", description, error);
+  let alertBox = document.getElementById("alert-box");
   if (!alertBox) {
-    alertBox = document.createElement('div');
-    alertBox.id = 'alert-box';
-    alertBox.className = 'alert';
-
-    let closer = document.createElement('span');
-    closer.className = 'closebtn';
-    closer.onclick = () => { alertBox.style.display = 'none' };
-    addText(closer, 'x');
+    alertBox = document.createElement("div");
+    alertBox.id = "alert-box";
+    alertBox.className = "alert";
+    let closer = document.createElement("span");
+    closer.className = "closebtn";
+    closer.onclick = () => {
+      alertBox.style.display = "none";
+    };
+    addText(closer, translate("CLOSE"));
     alertBox.appendChild(closer);
-
-    let message = document.createElement('span');
-    message.id = 'alert-message';
-    alertBox.appendChild(message);
-
-    let body = document.getElementsByTagName('BODY')[0];
+    let messageSpan = document.createElement("span");
+    messageSpan.id = "alert-message";
+    alertBox.appendChild(messageSpan);
+    let body = document.getElementsByTagName("BODY")[0];
     if (body) {
       if (body.firstChild) {
         body.insertBefore(alertBox, body.firstChild);
@@ -89,376 +160,273 @@ const reportError = (error) => {
     }
   }
 
-  let message = document.getElementById('alert-message');
+  let message = document.getElementById("alert-message");
   if (message) {
-    message.innerText = error;
-    alertBox.style.display = 'inline-block';
+    message.innerText = description + ":\n" + error;
+    alertBox.style.display = "inline-block";
   }
 };
 
-const getLink = (links, rel) => {
-  if (!links) { return; }
-  return links.find((lnk) => { return lnk.rel === rel; });
-};
-
-const getImgSrc = (image) => {
-  return 'img/' + image + '.png';
-};
-
-const getImg = (action) => {
-  let img = document.createElement('img');
-
-  img.alt = action;
-  img.src = getImgSrc(action);
-
-  return img;
-};
-
-const getButton = (value, alt, action) => {
-  let btn = document.createElement('button');
-
-  btn.value = getMessage(value.toUpperCase());
-  if (action) { btn.addEventListener('click', action) }
-  btn.className = 'nav-button';
-
-  let img = getImg(alt);
-  img.className = 'nav-button';
-
-  btn.appendChild(img);
-
-  return btn;
-};
-
-const addText = (cell, text) => {
-  let txt = document.createTextNode(getMessage(text));
-  if (cell.firstChild) {
-    cell.insertBefore(txt, cell.firstChild);
-  } else {
-    cell.appendChild(txt);
-  }
-  return txt;
-};
-
-const addOption = (select, value, text) => {
-  let opt = document.createElement('option');
-  opt.value = value;
-  opt.text = text;
-  select.add(opt);
-};
-
-const valueAndUnits = (cssSize) => {
-  let dims = /^(\d+)([^\d]+)$/.exec(cssSize);
-  return {
-    value: dims[1],
-    units: dims[2]
-  };
-};
-
-const boxSize = (length) => {
-  return Math.ceil(length / 5) * 5;
-};
-
-const addHeading = (element, type, text) => {
-  let h = document.createElement(type);
-  addText(h, text);
-  element.appendChild(h);
-  return h;
-};
-
-const addRule = (element) => {
-  let hr = document.createElement('hr');
-  hr.className = 'highlight';
-  element.appendChild(hr);
-  return hr;
-};
-
-async function checkResponse(response) {
-  let clone = response.clone();
-  if (200 <= response.status && response.status <= 202) {
-    return response.json();
-  } else if (response.status === 204) {
-    return {entities: [], links: []};
-  } else if (response.status === 400 || response.status === 500) {
-    let errorMessage = response.status + ': ' + response.statusText;
-
-    try {
-      let jsonData = await response.json();
-
-      errorMessage = jsonData.errorCode + ': ' + jsonData.userMessage;
-    } catch (err) {
-      errorMessage = await clone.text();
-    }
-
-    console.log(errorMessage);
-
-    throw new Error(errorMessage);
-  } else {
-    console.log(response.statusText);
-
-    throw new Error(response.statusText);
-  }
-}
-
-const addModal = () => {
-  let modal = document.getElementById('modal');
-
-  if (!modal) {
-    modal = document.createElement('div');
-    modal.id = 'modal';
-    modal.className = 'modal';
-
-    let content = document.createElement('div');
-    content.id = 'modal-content';
-    content.className = 'modal-content';
-
-    modal.appendChild(content);
-    addToEnd(modal);
-
-    window.addEventListener('click', (e) => { if (e.target === modal) { modal.style.display = 'none'; } }, false);
-  }
-
-  return modal;
-};
-
-const showModal = (content) => {
+const showModal = content => {
   let modal = addModal();
 
-  let contents = document.getElementById('modal-content');
+  let contents = document.getElementById("modal-content");
   removeChildren(contents);
 
-  let closer = document.createElement('div');
-  closer.className = 'closebtn';
-  closer.onclick = () => { modal.style.display = 'none' };
-  addText(closer, 'x');
+  let closer = document.createElement("div");
+  closer.className = "closebtn";
+  closer.onclick = () => {
+    modal.style.display = "none";
+  };
+  addText(closer, translate("CLOSE"));
   contents.appendChild(closer);
 
   contents.appendChild(content);
-  modal.style.display = 'block';
+  modal.style.display = "block";
 };
 
-const about = () => {
-  fetch(siteRoot() + 'LICENSE')
-  .then(response => response.text())
-  .then(text => {
-    let about = document.createElement('div');
-    about.className = 'about';
+const showAbout = async licenseUrl => {
+  await download(
+    licenseUrl,
+    text => {
+      let about = document.createElement("div");
+      about.className = "about";
 
-    let heading = document.createElement('div');
-    heading.className = 'about-header';
-    about.appendChild(heading);
+      let heading = document.createElement("div");
+      heading.className = "about-header";
+      about.appendChild(heading);
 
-    addHeading(heading, 'h2', 'ABOUT');
+      let h2 = addHeading(heading, "h2", "ABOUT");
+      h2.className = "about-h2";
 
-    let body = document.createElement('div');
-    body.className = 'about-body';
-    about.appendChild(body);
+      let body = document.createElement("div");
+      body.className = "about-body";
+      about.appendChild(body);
 
-    let area = document.createElement('textarea');
-    area.value = text;
-    area.readOnly = true;
-    area.disabled = true;
-    body.appendChild(area);
+      let area = document.createElement("textarea");
+      area.value = text;
+      area.readOnly = true;
+      area.disabled = true;
+      body.appendChild(area);
 
-    let footer = document.createElement('div');
-    footer.className = 'about-footer';
-    about.appendChild(footer);
+      let footer = document.createElement("div");
+      footer.className = "about-footer";
+      about.appendChild(footer);
 
-    showModal(about);
-  })
-  .catch(error => reportError(error));
+      showModal(about);
+    },
+    error => reportError(licenseUrl, error)
+  );
 };
 
 const setActiveTab = (event, tabName) => {
-  let tabContents = document.getElementsByClassName('tabContent');
-  let tabLinks = document.getElementsByClassName('tabLinks');
-
-  for (let i = 0; i < tabContents.length; i++) {
-    tabContents[i].style.display = (tabContents[i].id === tabName) ? 'block' : 'none';
+  let activeLink = tabName.replace("Tab", "Link");
+  let tabContents = document.getElementsByClassName("tabContent");
+  for (let tab of tabContents) {
+    tab.style.display = (tab.id === tabName) ? "block" : "none";
+    let link = document.getElementById(tab.id.replace("Tab", "Link"));
+    if (link) {
+      link.className = (link.id === activeLink) ? "tabLinks active" : "tabLinks"
+    }
   }
-
-  resizeAll();
-
-  let linkName = tabName.replace('Tab', 'Link');
-  for (let i = 0; i < tabLinks.length; i++) {
-    tabLinks[i].className = (tabLinks[i].id === linkName) ? 'tabLinks active' : 'tabLinks';
-  }
-};
-
-const setWidths = (element, width) => {
-  element.width = width;
-  //element.maxWidth = width;  
-  element.style.width = width;
-  element.style.maxWidth = width;
-};
-
-const resizeAll = (element = document) => {
-  let nav = element.getElementsByTagName('NAV')[0];
-  let rect = nav.getBoundingClientRect();
-  let section = document.getElementsByTagName('SECTION')[0];
-  section.style.top = rect.height + 'px';
-
-  let tables = element.getElementsByTagName('TABLE');
-  for (let i = 0; i < tables.length; i++) {
-    let rect = tables[i].getBoundingClientRect();
-    setWidths(tables[i].getElementsByTagName('TBODY')[0], rect.width + 'px');
-  }
-};
-
-window.addEventListener('resize', () => { resizeAll() }, true);
-
-async function removeFile(deleteUrl, grid, rowId) {
-  await fetch(deleteUrl, { method: 'DELETE', headers: {'Content-type': 'application/json'} })
-  .then(response => checkResponse(response))
-  .then(jsonData => grid.renderUpdate(jsonData, rowId))
-  .catch(error => reportError(error));
-}
-
-async function uploadFile(e, uploadUrl, fileData, grid, rowId) {
-  let body = new FormData();
-
-  body.append('file', fileData);
-
-  await fetch(uploadUrl, { method: 'PUT', body: body })
-  .then(response => checkResponse(response))
-  .then(jsonData => grid.renderUpdate(jsonData, rowId))
-  .catch(error => reportError(error));
-}
-
-const readFile = (uploadUrl, fileData, grid, rowId) => {
-  const reader = new FileReader();
-
-  reader.onload = (e) => { uploadFile(e, uploadUrl, fileData, grid, rowId) };
-
-  reader.onerror = (e) => {
-    reader.abort();
-
-    reportError(getMessage('BADFILE', [fileData, e]));
-  };
-
-  reader.readAsDataURL(fileData);
 };
 
 const navLink = (title, href, action, id) => {
-  let li = document.createElement('li');
-  let a = document.createElement('a');
-  if (id) { a.id = id; }
-  a.className = 'nav-button';
+  let li = document.createElement("li");
+  let a = document.createElement("a");
+  if (id) {
+    a.id = id;
+  }
+  a.className = "nav-button";
   a.href = href;
-  if (action) { a.addEventListener('click', action) }
-  addText(a, title);
+  if (action) {
+    a.addEventListener("click", action, false);
+  }
+  addText(a, translate(title));
   li.appendChild(a);
 
   return li;
 };
 
+const addHomeBack = ul => {
+  ul.appendChild(navLink("HOME", fileUrl("index.html")));
+  ul.appendChild(
+    navLink("BACK", "#", () => {
+      history.back();
+    })
+  );
+};
+
+const NavMenu = {
+  BACK: 0,
+  REF_DATA: 1,
+  INVENTORY: 2,
+  HOME: 3,
+};
+
+const addLingo = (element) => {
+  let lingo = document.createElement("img");
+  lingo.src = fileUrl(translate("FLAG"));
+  lingo.className = "lingo";
+  element.appendChild(lingo);
+  lingo.addEventListener("click", () => toggleLanguage(), false);
+  return lingo;
+};
+
+const addLogo = (element) => {
+  let logo = document.createElement("img");
+  logo.src = imageSource("ModellBahn", ".svg");
+  logo.className = "logo";
+  element.appendChild(logo);
+  logo.addEventListener("click", () => showAbout(fileUrl(translate("LIZENZ"))), false);
+  return logo;
+};
+
+const refData = () => [
+  navLink("ACHSFOLGEN", fileUrl("achsfolgen.html")),
+  navLink("ANTRIEBEN", fileUrl("antrieben.html")),
+  navLink("AUFBAUTEN", fileUrl("aufbauten.html")),
+  navLink("BAHNVERWALTUNGEN", fileUrl("bahnverwaltungen.html")),
+  navLink("DECODER_TYPEN", fileUrl("decoderTypen.html")),
+  navLink("EPOCHEN", fileUrl("epochen.html")),
+  navLink("GATTUNGEN", fileUrl("gattungen.html")),
+  navLink("HERSTELLERN", fileUrl("herstellern.html")),
+  navLink("KATEGORIEN", fileUrl("kategorien.html")),
+  navLink("KUPPLUNGEN", fileUrl("kupplungen.html")),
+  navLink("LICHTEN", fileUrl("lichten.html")),
+  navLink("MASSSTABEN", fileUrl("massstaben.html")),
+  navLink("MOTOR_TYPEN", fileUrl("motorTypen.html")),
+  navLink("PROTOKOLLEN", fileUrl("protokollen.html")),
+  navLink("SONDERMODELLEN", fileUrl("sonderModellen.html")),
+  navLink("SPURWEITEN", fileUrl("spurweiten.html")),
+  navLink("STEUERUNGEN", fileUrl("steuerungen.html")),
+  navLink("ZUG_TYPEN", fileUrl("zugTypen.html"))
+  ];
+
+const inventory = () => [
+  navLink("ARTIKELEN", fileUrl("artikelen.html")),
+  navLink("DECODEREN", fileUrl("decoderen.html")),
+  navLink("PRODUKTEN", fileUrl("produkten.html")),
+  navLink("VORBILDER", fileUrl("vorbilder.html")),
+  navLink("ZUGEN", fileUrl("zugen.html"))
+  ];
+ 
 const addNavBar = (menuStyle) => {
-  let header = document.getElementsByTagName('HEADER')[0];
+  let header = document.getElementsByTagName("HEADER")[0];
   removeChildren(header);
 
-  let nav = document.createElement('nav');
+  let nav = document.createElement("nav");
   header.appendChild(nav);
 
   if (menuStyle === NavMenu.HOME) {
-    addHeading(nav, 'H1', 'MODELLBAHN');
-    addRule(nav);
-  }
+    let home = document.createElement("div");
+    home.className = "home";
+    nav.appendChild(home);
 
-  const addHomeBack = (ul) => {
-    ul.appendChild(navLink('HOME', siteRoot() + 'index.html'));
-    ul.appendChild(navLink('BACK', '#', () => { history.back() }));
-  };
+    let heading = addHeading(home, "H1", "MODELLBAHN");
+    heading.className = "title";
 
-  if (menuStyle !== NavMenu.INVENTORY) {
-    let ul = document.createElement('ul');
-    ul.className = 'nav';
-    
-    if (menuStyle === NavMenu.HOME) {
-      addHeading(nav, 'H3', 'REF_DATA');
-    } else {
-      addHomeBack(ul);
+    let bar = document.createElement("div");
+    bar.style.display = "flex";
+    bar.style.float = "right";
+    home.appendChild(bar);
+
+    addLingo(bar);
+    addLogo(bar);
+
+    addHeading(nav, "H3", "REF_DATA");
+
+    let ref = document.createElement("ul");
+    ref.className = "nav";
+    nav.appendChild(ref);
+
+    refData().filter((li) => document.location.href !== li.firstChild.href)
+             .sort((a, b) => a.innerText.localeCompare(b.innerText))
+             .forEach((li) => ref.appendChild(li));
+
+    addHeading(nav, "H3", "INVENTORY");
+
+    let inv = document.createElement("ul");
+    inv.className = "nav";
+    nav.appendChild(inv);
+
+    inventory().filter((li) => document.location.href !== li.firstChild.href)
+               .sort((a, b) => a.innerText.localeCompare(b.innerText))
+               .forEach((li) => inv.appendChild(li));
+  } else {
+    let div = document.createElement("div");
+    div.style.display = "flex";
+    nav.appendChild(div);
+
+    let opts = document.createElement("ul");
+    opts.className = "nav";
+    div.appendChild(opts);
+
+    addHomeBack(opts);
+
+    if (menuStyle === NavMenu.INVENTORY) {
+      inventory().filter((li) => document.location.href !== li.firstChild.href)
+                 .sort((a, b) => a.innerText.localeCompare(b.innerText))
+                 .forEach((li) => opts.appendChild(li));
+    } else if (menuStyle === NavMenu.REF_DATA) {
+      refData().filter((li) => document.location.href !== li.firstChild.href)
+               .sort((a, b) => a.innerText.localeCompare(b.innerText))
+               .forEach((li) => opts.appendChild(li));
     }
 
-    if (menuStyle !== NavMenu.BACK) {
-      let lnks = [];
-      lnks.push(navLink('ANTRIEBEN', siteRoot() + 'antrieben.html'));
-      lnks.push(navLink('AUFBAUTEN', siteRoot() + 'aufbauten.html'));
-      lnks.push(navLink('BAHNVERWALTUNGEN', siteRoot() + 'bahnverwaltungen.html'));
-      lnks.push(navLink('DECODER_TYPEN', siteRoot() + 'decoderTypen.html'));
-      lnks.push(navLink('EPOCHEN', siteRoot() + 'epochen.html'));
-      lnks.push(navLink('GATTUNGEN', siteRoot() + 'gattungen.html'));
-      lnks.push(navLink('HERSTELLERN', siteRoot() + 'herstellern.html'));
-      lnks.push(navLink('KATEGORIEN', siteRoot() + 'kategorien.html'));
-      lnks.push(navLink('KUPPLUNGEN', siteRoot() + 'kupplungen.html'));
-      lnks.push(navLink('LANDER', siteRoot() + 'lander.html'));
-      lnks.push(navLink('LICHTEN', siteRoot() + 'lichten.html'));
-      lnks.push(navLink('MASSSTABEN', siteRoot() + 'massstaben.html'));
-      lnks.push(navLink('MOTOR_TYPEN', siteRoot() + 'motorTypen.html'));
-      lnks.push(navLink('PROTOKOLLEN', siteRoot() + 'protokollen.html'));
-      lnks.push(navLink('SONDERMODELLEN', siteRoot() + 'sonderModellen.html'));
-      lnks.push(navLink('SPURWEITEN', siteRoot() + 'spurweiten.html'));
-      lnks.push(navLink('STEUERUNGEN', siteRoot() + 'steuerungen.html'));
-      lnks.push(navLink('WAHRUNGEN', siteRoot() + 'wahrungen.html'));
-      lnks.push(navLink('ZUG_TYPEN', siteRoot() + 'zugtypen.html'));
-      lnks.filter(li => { return document.location.href !== li.firstChild.href })
-          .sort((a, b) => { return a.innerText.localeCompare(b.innerText) })
-          .forEach(li => ul.appendChild(li));
-    }
+    let bar = document.createElement("div");
+    bar.style.display = "flex";
+    bar.style.float = "right";
+    div.appendChild(bar);
 
-    nav.appendChild(ul);
-    addRule(nav);
+    addLingo(bar);
+    addLogo(bar);
   }
 
-  if (menuStyle === NavMenu.INVENTORY || menuStyle === NavMenu.HOME) {
-    let ul = document.createElement('ul');
-    ul.className = 'nav';
+  addRule(nav);
 
-    if (menuStyle === NavMenu.HOME) {
-      addHeading(nav, 'H3', 'INVENTORY');
-    } else {
-      addHomeBack(ul);
-    }
-
-    let lnks = [];
-    lnks.push(navLink('ARTIKELEN', siteRoot() + 'artikelen.html'));
-    lnks.push(navLink('DECODEREN', siteRoot() + 'decoderen.html'));
-    lnks.push(navLink('PRODUKTEN', siteRoot() + 'produkten.html'));
-    lnks.push(navLink('VORBILDER', siteRoot() + 'vorbilder.html'));
-    lnks.push(navLink('ZUGEN', siteRoot() + 'zugen.html'));
-    lnks.filter(li => { return document.location.href !== li.firstChild.href })
-        .sort((a, b) => { return a.innerText.localeCompare(b.innerText) })
-        .forEach(li => ul.appendChild(li));
-
-    nav.appendChild(ul);
-    addRule(nav);
-  }
-
-  let rect = nav.getBoundingClientRect();
-  let section = document.getElementsByTagName('SECTION')[0];
-  section.style.top = rect.height + 'px';
+  let section = document.getElementsByTagName("SECTION")[0];
+  section.style.top = nav.getBoundingClientRect().height + "px";
 };
 
 const addFooter = () => {
-  let div = document.getElementsByTagName('FOOTER')[0];
+  let div = document.getElementsByTagName("FOOTER")[0];
   removeChildren(div);
 
-  let hr = document.createElement('hr');
-  hr.className = 'highlight';
+  let hr = document.createElement("hr");
+  hr.className = "highlight";
   div.appendChild(hr);
 
-  let ul = document.createElement('ul');
-  ul.className = 'footer';
+  let ul = document.createElement("ul");
+  ul.className = "footer";
   div.appendChild(ul);
 
-  let li = document.createElement('li');
-  addText(li, 'COPYRIGHT');
+  let li = document.createElement("li");
+  addText(li, translate("COPYRIGHT"));
   ul.appendChild(li);
-
-  ul.appendChild(navLink('ABOUT', '#', about, 'license'));
 };
 
-const createStyle = (className, values) => {
-  let style = document.createElement('style');
-  style.type = 'text/css';
-  style.innerHTML = className & ' ' & JSON.stringify(values, null, 1).replace(/"/g, '');
-  document.getElementsByTagName('head')[0].appendChild(style);
+const layout = async menuStyle => {
+  setAuthorisation("johng", "password");
+  await loadTranslations(getLanguage());
+  addNavBar(menuStyle);
+  addFooter();
+};
+
+window.onerror = (message, path, lineNo, columnNo, error) => {
+  if (message.toLowerCase().includes("script error")) {
+    reportError("Script Error: See Browser Console for Detail", error);
+  } else {
+    reportError(
+      translate("ERROR_DETAIL", {
+        msg: message,
+        url: path,
+        lineNo: lineNo,
+        columnNo: columnNo,
+        error: error.toString(),
+      }),
+      error
+    );
+  }
+  return false;
 };

@@ -1,74 +1,80 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <link rel="stylesheet" href="css/site.css"/>
+  <script type="text/javascript" src="js/api.js"></script>
   <script type="text/javascript" src="js/i18n.js"></script>
   <script type="text/javascript" src="js/utils.js"></script>
   <script type="text/javascript" src="js/dropdown.js"></script>
+  <script type="text/javascript" src="js/lib/DatePickerX.js"></script>
+  <script type="text/javascript" src="js/columns.js"></script>
   <script type="text/javascript" src="js/fields.js"></script>
-  <script src="js/lib/DatePickerX-1.0.4.min.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
-    const columns = [
+    const vorbildColumns = [
       GATTUNG_SELECT(Editable.ADD, true),
       UNTER_KATEGORIE_SELECT(Editable.UPDATE),
       BAHNVERWALTUNG_SELECT(Editable.UPDATE),
       HERSTELLER(Editable.UPDATE),
       BAUZEIT(Editable.UPDATE),
-      ANZAHL(Editable.UPDATE),
+      MENGE(Editable.UPDATE),
       BETREIBSNUMMER(Editable.UPDATE),
-      ANTRIEB_SELECT(Editable.UPDATE),
+      new DropDownColumn("ANTRIEB", "antrieb", fieldGetter, fieldSetter, ANTRIEB_DROP, Editable.UPDATE, required),
       ACHSFOLG_SELECT(Editable.UPDATE),
-      ANFAHRZUGKRAFT(Editable.UPDATE),
-      LEISTUNG(Editable.UPDATE),
-      DIENSTGEWICHT(Editable.UPDATE),
-      GESCHWINDIGKEIT(Editable.UPDATE),
+      new NumberColumn("ANFAHRZUGKRAFT", "anfahrzugkraft", fieldGetter, fieldSetter, Editable.UPDATE, false, 300000, 1),
+      new NumberColumn("LEISTUNG", "leistung", fieldGetter, fieldSetter, Editable.UPDATE, false, 10000, 0, 2),
+      new NumberColumn("DIENSTGEWICHT", "dienstgewicht", fieldGetter, fieldSetter, Editable.UPDATE, false, 999, 1),
+      new NumberColumn("GESCHWINDIGKEIT", "geschwindigkeit", fieldGetter, fieldSetter, Editable.UPDATE, false, 300, 1),
       LANGE(Editable.UPDATE),
       AUSSERDIENST(Editable.UPDATE),
-      DMTREIBRAD(Editable.UPDATE),
-      DMLAUFRADVORN(Editable.UPDATE),
-      DMLAUFRADHINTEN(Editable.UPDATE),
-      ZYLINDER(Editable.UPDATE),
-      DMZYLINDER(Editable.UPDATE),
-      KOLBENHUB(Editable.UPDATE),
-      KESSELUBERDRUCK(Editable.UPDATE),
-      ROSTFLACHE(Editable.UPDATE),
-      UBERHITZERFLACHE(Editable.UPDATE),
-      WASSERVORRAT(Editable.UPDATE),
-      VERDAMPFUNG(Editable.UPDATE),
-      FAHRMOTOREN(Editable.UPDATE),
-      MOTORBAUART(Editable.UPDATE),
-      LEISTUNGSUBERTRAGUNG_SELECT(Editable.UPDATE),
-      REICHWEITE(Editable.UPDATE),
-      KAPAZITAT(Editable.UPDATE),
-      KLASSE(Editable.UPDATE),
-      SITZPLATZEKL1(Editable.UPDATE),
-      SITZPLATZEKL2(Editable.UPDATE),
-      SITZPLATZEKL3(Editable.UPDATE),
-      SITZPLATZEKL4(Editable.UPDATE),
+      new NumberColumn("DM_TREIBRAD", "dmTreibrad", fieldGetter, fieldSetter, Editable.UPDATE, false, 3000, 1),
+      new NumberColumn("DM_LAUFRAD_VORN", "dmLaufradVorn", fieldGetter, fieldSetter, Editable.UPDATE, false, 3000, 1),
+      new NumberColumn("DM_LAUFRAD_HINTEN", "dmLaufradHinten", fieldGetter, fieldSetter, Editable.UPDATE, false, 3000, 1),
+      new NumberColumn("ZYLINDER", "zylinder", fieldGetter, fieldSetter, Editable.UPDATE, false, 100, 1),
+      new NumberColumn("DM_ZYLINDER", "dmZylinder", fieldGetter, fieldSetter, Editable.UPDATE, false, 3000, 1),
+      new NumberColumn("KOLBENHUB", "kolbenhub", fieldGetter, fieldSetter, Editable.UPDATE, false, 3000, 1, 2),
+      new NumberColumn("KESSELUBERDRUCK", "kesseluberdruck", fieldGetter, fieldSetter, Editable.UPDATE, false, 3000, 0, 2),
+      new NumberColumn("ROSTFLACHE", "rostflache", fieldGetter, fieldSetter, Editable.UPDATE, false, 3000, 0, 2),
+      new NumberColumn("UBERHITZERFLACHE", "uberhitzerflache", fieldGetter, fieldSetter, Editable.UPDATE, false, 3000, 0, 2),
+      new NumberColumn("WASSERVORRAT", "wasservorrat", fieldGetter, fieldSetter, Editable.UPDATE, false, 3000, 0, 2),
+      new NumberColumn("VERDAMPFUNG", "verdampfung", fieldGetter, fieldSetter, Editable.UPDATE, false, 3000, 0, 2),
+      new NumberColumn("FAHRMOTOREN", "fahrmotoren", fieldGetter, fieldSetter, Editable.UPDATE, false, 5, 1),
+      new TextColumn("MOTORBAUART", "motorbauart", fieldGetter, fieldSetter, Editable.UPDATE, false, 30),
+      new DropDownColumn("LEISTUNGSUBERTRAGUNG", "leistungsubertragung", fieldGetter, fieldSetter, LEISTUNGSUBERTRAGUNG_DROP, Editable.UPDATE, required),
+      new NumberColumn("REICHWEITE", "reichweite", fieldGetter, fieldSetter, Editable.UPDATE, false, 3000, 0),
+      new NumberColumn("KAPAZITAT", "kapazitat", fieldGetter, fieldSetter, Editable.UPDATE, false, 3000, 1, 2),
+      new NumberColumn("KLASSE", "klasse", fieldGetter, fieldSetter, Editable.UPDATE, false, 4, 0),
+      new NumberColumn("SITZPLATZE_KL1", "sitzplatzeKL1", fieldGetter, fieldSetter, Editable.UPDATE, false, 300, 0),
+      new NumberColumn("SITZPLATZE_KL2", "sitzplatzeKL2", fieldGetter, fieldSetter, Editable.UPDATE, false, 300, 0),
+      new NumberColumn("SITZPLATZE_KL3", "sitzplatzeKL3", fieldGetter, fieldSetter, Editable.UPDATE, false, 300, 0),
+      new NumberColumn("SITZPLATZE_KL4", "sitzplatzeKL4", fieldGetter, fieldSetter, Editable.UPDATE, false, 300, 0),
       AUFBAU(Editable.UPDATE),
-      TRIEBKOPF(Editable.UPDATE),
-      MITTELWAGEN(Editable.UPDATE),
-      DREHGESTELLBAUART(Editable.UPDATE),
-      ABBILDUNG(Editable.NEVER),
-      new ButtonColumn([], [updateRow])
+      new NumberColumn("TRIEBKOPFE", "triebkopf", fieldGetter, fieldSetter, Editable.UPDATE, false, 2, 0),
+      new NumberColumn("MITTELWAGEN", "mittelwagen", fieldGetter, fieldSetter, Editable.UPDATE, false, 30, 0),
+      new TextColumn("DREHGESTELL", "drehgestellBauart", fieldGetter, fieldSetter, Editable.UPDATE, false, 30),
+      ABBILDUNG(Editable.NEVER)
     ];
 
-    const vorbild = new ItemGrid(1, fetchUrl("vorbild"), "vorbild", columns, Paged.FORM, EditMode.UPDATE, undefined);
+    const vorbildActions = [
+      saveAction()
+    ];
+
+    const vorbild = new Form("vorbild", "vorbild", vorbildColumns, vorbildActions, EditMode.UPDATE);
 
     async function init() {
-      addNavBar(NavMenu.BACK);
-      addFooter();
-      await GATTUNG_DROP.init()
-      .then(() => UNTER_KATEGORIE_DROP.init())
-      .then(() => BAHNVERWALTUNG_DROP.init())
-      .then(() => ANTRIEB_DROP.init())
-      .then(() => ACHSFOLG_DROP.init())
-      .then(() => LEISTUNGSUBERTRAGUNG_DROP.init())
-      .then(() => vorbild.init());
+      await layout(NavMenu.BACK)
+      .then(() => initDropDown(GATTUNG_DROP))
+      .then(() => initDropDown(UNTER_KATEGORIE_DROP))
+      .then(() => initDropDown(BAHNVERWALTUNG_DROP))
+      .then(() => initDropDown(ANTRIEB_DROP))
+      .then(() => initDropDown(ACHSFOLG_DROP))
+      .then(() => initDropDown(LEISTUNGSUBERTRAGUNG_DROP))
+      .then(() => vorbild.init())
+      .catch(error => reportError("load", error));
     }
   </script>
   <title>Vorbild</title>

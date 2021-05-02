@@ -1,4 +1,5 @@
 # Eclipse artefacts
+.externalToolBuilders/
 .metadata/
 .settings/
 eclipse/
@@ -52,3 +53,5 @@ Thumbs.db
 node_modules/
 package.json
 package-lock.json
+
+mk.cmd

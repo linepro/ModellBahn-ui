@@ -1,66 +1,70 @@
-// module 'pdfViewer.js'
-'use strict';
+// module "pdfViewer.js";
+"use strict";
 
-class PDFViewer {
-  constructor(canvas) {
-    this.pdfDoc = undefined;
-    this.pageNum = 1;
-    this.scale = 1;
-    this.canvas = canvas;
-  }
+const pdfViewer = () => {
+  let container = document.createElement("div");
+  container.className = "display-pdf-container";
 
-  load(file) {
-    let pdfjsLib = window['pdfjs-dist/build/pdf'];
+  let canvas = document.createElement("canvas");
+  canvas.className = "display-pdf-canvas";
+  container.appendChild(canvas);
 
-    pdfjsLib.GlobalWorkerOptions.workerSrc = siteRoot() + '/js/lib/pdf.min-2.0.943.worker.js';
+  let bar = document.createElement("div");
+  bar.className = "display-pdf-bar";
+  container.appendChild(bar);
 
-    pdfjsLib.getDocument({url: file, disableRange: true, disableStream: true})
-    .then(pdf => this.initialPage(pdf))
-    .catch(error => reportError(error));
+  let prev = createButton("vorig", "prev", undefined, "table-prev");
+  prev.disabled = true;
+  prev.style.visible = "hidden";
+  bar.appendChild(prev);
+
+  let next = createButton("nachste", "next", undefined, "table-next");
+  next.disabled = true;
+  next.style.visible = "hidden";
+  bar.appendChild(next);
+
+  let pageNum = 1;
+
+  let showPage = async (pdf, newPage) => {
+    await pdf.getPage(pageNum)
+      .then((page) => {
+        pageNum = newPage;
+
+        prev.disabled = pageNum <= 1;
+        prev.style.visibility = prev.disabled ? "hidden" : "visible";
+
+        next.disabled = pageNum >= pdf.numPages;
+        next.style.visibility = next.disabled ? "hidden" : "visible";
+         
+        let viewport = page.getViewport(1);
+        let context = canvas.getContext("2d");
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        return page.render({
+          canvasContext: context,
+          viewport: viewport,
+        });
+      })
+      .catch(error => reportError("showPage", error));
   };
 
-  async initialPage(pdfDoc) {
-    this.pdfDoc = pdfDoc;
+  return {
+    element: container,
+    load: async (file) => {
+      let pdfjsLib = window["pdfjs-dist/build/pdf"];
+      pdfjsLib.GlobalWorkerOptions.workerSrc = fileUrl("js/lib/pdf.worker.js");
+      await pdfjsLib.getDocument({
+        url: file,
+        disableRange: true,
+        disableStream: true
+      })
+      .then(pdf => {
+        prev.addEventListener("click", () => showPage(pdf, pageNum > 1 ? pageNum - 1 : 1), false);
+        next.addEventListener("click", () => showPage(pdf, pageNum < pdf.numPages - 1 ? pageNum + 1 : pdf.numPages - 1), false);
 
-    await this.showPage(1);
-  }
-
-  async showPage(pageNum) {
-    this.pageNum = pageNum;
-
-    this.pdfDoc.getPage(pageNum)
-    .then(page => this.renderPage(page))
-    .catch(error => reportError(error));
-  }
-
-  async renderPage(page) {
-    let canvas = this.canvas;
-    let viewport = page.getViewport(this.scale);
-
-    let context = canvas.getContext('2d');
-    canvas.height = viewport.height;
-    canvas.width = viewport.width;
-
-    let renderContext = {
-      canvasContext: context,
-      viewport: viewport
-    };
-
-    return await page.render(renderContext);
-  }
-
-  async zoom(newScale) {
-    this.scale = newScale;
-    await this.showPage(this.pageNum);
-  }
-
-  async prevPage() {
-    let prev = this.pageNum <= 1 ? this.pageNum - 1 : 1;
-    await this.showPage(prev);
-  }
-
-  async nextPage() {
-    let next = this.pageNum < this.pdfDoc.numPages ? this.pageNum + 1 : this.pdfDoc.numPages;
-    await this.showPage(next);
-  }
-}
+        showPage(pdf, 1);
+      })
+      .catch(error => reportError(file, error));
+    }
+  };
+};

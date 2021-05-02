@@ -1,30 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <link rel="stylesheet" href="css/site.css"/>
+  <script type="text/javascript" src="js/api.js"></script>
   <script type="text/javascript" src="js/i18n.js"></script>
   <script type="text/javascript" src="js/utils.js"></script>
   <script type="text/javascript" src="js/dropdown.js"></script>
+  <script type="text/javascript" src="js/columns.js"></script>
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
-    const columns = [
-      NAMEN(EditMode.ADD),
-      ZUG_TYP_SELECT(EditMode.ADD),
-      BEZEICHNUNG(EditMode.ADD),
-      LANGE(EditMode.ADD),
-      new ButtonColumn([newRow], [editRow, deleteRow])
+    const zugenColumns = [
+      NAMEN(Editable.ADD),
+      ZUG_TYP_SELECT(Editable.ADD),
+      BEZEICHNUNG(Editable.ADD),
+      LANGE(Editable.NEVER)
+    ];
+   
+    const zugenActions = [
+      newAction("zug.html"),
+      editAction("zug.html"),
+      deleteAction()
     ];
 
-    const zugen = new ItemGrid(10, fetchUrl("zug"), "zugen", columns, Paged.PAGED, EditMode.UPDATE, undefined, "zug.html");
+    const zugen = new PagedTable(10, "zug", "zugen", zugenColumns, zugenActions, EditMode.UPDATE);
 
     async function init() {
-      addNavBar(NavMenu.INVENTORY);
-      addFooter();
-      await ZUG_TYP_DROP.init()
-      .then(() => zugen.init());
+      await layout(NavMenu.INVENTORY)
+      .then(() => initDropDown(ZUG_TYP_DROP))
+      .then(() => zugen.init())
+      .catch(error => reportError("load", error));
     }
   </script>
   <title>Zugen</title>

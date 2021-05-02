@@ -1,80 +1,52 @@
-// module "dropdown.js"
+// module "dropdown.js";
 "use strict";
 
-class DropOption {
-  constructor(value, display, tooltip, image) {
-    this.display = display;
-    this.value = value;
-    this.tooltip = tooltip;
-    this.image = image;
+const utf8decoder = new TextDecoder();
+const utf8encoder = new TextEncoder();
+
+const dropOption = (value, display, tooltip, image, group) => {
+  return {
+    display: utf8decoder.decode(utf8encoder.encode(display)),
+    value: value,
+    tooltip: utf8decoder.decode(utf8encoder.encode(tooltip)),
+    image: image,
+    group: group
+  };
+};
+
+const dropDown = (apiQuery, valuesExtractor, rowExtractor) => {
+  return {
+    apiQuery: apiQuery,
+    valuesExtractor: valuesExtractor,
+    rowExtractor: rowExtractor,
+    length: 10,
+    grouped: [],
+    options: []
+  };
+};
+
+const initDropDown = async (drop, force) => {
+  if (drop.options.length === 0 || force) {
+    await getRest(
+      drop.apiQuery,
+      (jsonData) => drop.valuesExtractor(jsonData)
+        .forEach(o => {
+          let opt = drop.rowExtractor(o);
+          if (opt.group) {
+            let group = drop.grouped.find(g => g.name === opt.group);
+            if (!group) {
+              group = {
+                name: opt.group,
+                options: []
+              };
+              drop.grouped.push(group);
+            }
+            group.options.push(opt);
+          }
+          drop.options.push(opt);
+          drop.length = Math.max(drop.length, opt.display.length);
+        }),
+      (error) => reportError("init " + dropDown.apiQuery, error)
+    );
   }
-
-  getDisplay() {
-    return this.display;
-  }
-
-  getValue() {
-    return this.value;
-  }
-
-  getTooltip() {
-    return this.tooltip;
-  }
-
-  getImage() {
-    return this.image;
-  }
-
-  getLength() {
-    return this.getDisplay().length;
-  }
-}
-
-class DropDown {
-  constructor(apiQuery, optionExtractor) {
-    this.apiQuery = apiQuery;
-    this.optionExtractor = optionExtractor;
-    this.length = 0;
-    this.options = [];
-    this.initialized = false;
-  }
-
-  loadOptions(jsonData) {
-    let entities = jsonData.entities ? jsonData.entities : jsonData;
-    let dropDown = this;
-    let length = 0;
-
-    dropDown.options = [];
-
-    entities.forEach(entity => {
-      let opt = dropDown.optionExtractor(entity);
-
-      dropDown.options.push(opt);
-
-      length = Math.max(opt.getLength(), length);
-    });
-
-    dropDown.length = length;
-  }
-
-  getOptions() {
-    return this.options;
-  }
-
-  async init(force) {
-    let select = this;
-
-    if (!select.initialized || force) {
-      await fetch(select.apiQuery, { method: "GET", headers: {"Content-type": "application/json"} })
-      .then(response => checkResponse(response))
-      .then(jsonData => select.loadOptions(jsonData))
-      .catch(error => reportError(error));
-    }
-
-    select.initialized = true;
-  }
-
-  getLength() {
-    return this.length;
-  }
-}
+};

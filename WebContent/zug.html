@@ -1,47 +1,63 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <link rel="stylesheet" href="css/site.css"/>
+  <script type="text/javascript" src="js/api.js"></script>
   <script type="text/javascript" src="js/i18n.js"></script>
   <script type="text/javascript" src="js/utils.js"></script>
   <script type="text/javascript" src="js/dropdown.js"></script>
+  <script type="text/javascript" src="js/columns.js"></script>
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
-    const consistColumns = [
+    const fahrzeugColumns = [
       POSITION(Editable.NEVER),
       ARTIKEL_SELECT(Editable.UPDATE, true),
-      UNTER_KATEGORIE_SELECT(Editable.NEVER, false, artikelProduktKategorieGetter, noOpSetter),
-      BEZEICHNUNG(Editable.NEVER, false, artikelBezeichnungGetter, noOpSetter),
-      LANGE(Editable.NEVER, false, artikelProduktLangeGetter, noOpSetter),
-      gridButtonColumn()
+      UNTER_KATEGORIE_SELECT(Editable.NEVER, false),
+      BEZEICHNUNG(Editable.NEVER, false),
+      LANGE(Editable.NEVER, false),
+      new ThumbColumn("abbildung", "abbildung", fieldGetter)
+    ];
+   
+    const fahrzeugActions = [
+      addAction("consist"),
+      saveAction(),
+      deleteAction()
     ];
 
-    const consisten = new ItemGrid(2, "consist", "consist", consistColumns, Paged.EXPAND, EditMode.ADD, undefined);
+    const fahrzeugen = new ExpandingTable(2, "fahrzeugen", "fahrzeugen", fahrzeugColumns, fahrzeugActions, EditMode.UPDATE);
 
-    const columns = [
+    const zugColumns = [
       NAMEN(Editable.ADD, true),
       ZUG_TYP_SELECT(Editable.UPDATE, true),
       BEZEICHNUNG(Editable.UPDATE, true),
-      LANGE(Editable.NEVER),
-      new ButtonColumn([], [updateRow])
+      LANGE(Editable.NEVER)
+    ];
+   
+    const zugActions = [
+      saveAction()
     ];
 
-    const zug = new ItemGrid(1, fetchUrl("zug"), "zug", columns, Paged.FORM, EditMode.UPDATE, [consisten]);
+    const zugChildren = [
+      fahrzeugen
+    ];
+
+    const zug = new Form("zug", "zug", zugColumns, zugActions, EditMode.UPDATE, zugChildren);
 
     async function init() {
-      addNavBar(NavMenu.BACK);
-      addFooter();
-      await ZUG_TYP_DROP.init()
-      .then(() => ARTIKEL_DROP.init())
-      .then(() => UNTER_KATEGORIE_DROP.init())
-      .then(() => zug.init());
+      await layout(NavMenu.BACK)
+      .then(() => initDropDown(ZUG_TYP_DROP))
+      .then(() => initDropDown(ARTIKEL_DROP))
+      .then(() => initDropDown(UNTER_KATEGORIE_DROP))
+      .then(() => zug.init())
+      .catch(error => reportError("load", error));
     }
   </script>
-  <title>Zugen</title>
+  <title>Zug</title>
 </head>
 <body onLoad="init()">
 <header>
@@ -52,7 +68,9 @@
     <div id="data">
       <div id="zug">
       </div>
-      <div id="consist">
+      <div id="abbildung">
+      </div>
+      <div id="fahrzeugen">
       </div>
     </div>
   </article>

@@ -1,22 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <link rel="stylesheet" href="css/site.css"/>
+  <script type="text/javascript" src="js/api.js"></script>
   <script type="text/javascript" src="js/i18n.js"></script>
   <script type="text/javascript" src="js/utils.js"></script>
   <script type="text/javascript" src="js/dropdown.js"></script>
+  <script type="text/javascript" src="js/columns.js"></script>
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
-    const bahnverwaltungen = new NamedItemGrid("bahnverwaltung", "bahnverwaltungen");
+    const columns = [
+      NAMEN(Editable.ADD, true),
+      BEZEICHNUNG(Editable.UPDATE, true),
+      LAND_SELECT(Editable.UPDATE, true),
+      ABBILDUNG(Editable.UPDATE, false)
+    ];
+
+    const bahnverwaltungen = new ListEditTable(10, "bahnverwaltung", "bahnverwaltungen", columns, EditMode.UPDATE);
 
     async function init() {
-      addNavBar(NavMenu.REF_DATA);
-      addFooter();
-      await bahnverwaltungen.init();
+      await layout(NavMenu.REF_DATA)
+      .then(() => initDropDown(LAND_DROP))
+      .then(() => bahnverwaltungen.init())
+      .catch(error => reportError("load", error));
     }
   </script>
   <title>Bahnverwaltungen</title>

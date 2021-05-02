@@ -1,54 +1,100 @@
-// module 'i18n.js'
-'use strict';
+// module "i18n.js";
+"use strict";
 
-const TRANSLATIONS = {};
+const DEFAULT_LANGUAGE = "de-DE";
+const ALTERNATE_LANGUAGE = "en-GB";
 
-const language = () => {
-  return navigator.language.split('-')[0];
+const _TRANSLATIONS = {};
+
+const getLanguage = () => {
+  return localStorage.getItem("language") ? localStorage.getItem("language") : DEFAULT_LANGUAGE;
 };
 
-const setTranslations = (language, data) => {
-  try {
-    Object.keys(data).forEach(key => TRANSLATIONS[key] = data[key].message);
-  } catch (error) {
-    console.log(error);
+const _DATE_FORMATTER = new Intl.DateTimeFormat(getLanguage(), { year: "numeric", month: "numeric", day: "numeric", timeZone: "UTC" });
+
+let _TEMPLATE_DATE = _DATE_FORMATTER.format(new Date(Date.parse("1999-11-22")));
+
+const _LOCAL_TO_DATE_EXPRESSION = new RegExp(_TEMPLATE_DATE
+    .replace("22","(?<day>[0-9]{1,2})")
+    .replace("11","(?<month>[0-9]{1,2})")
+    .replace("1999","(?<year>[0-9]{4})")
+  );
+
+const _LOCAL_DATE_FORMAT = _TEMPLATE_DATE
+  .replace("22","d")
+  .replace("11","m")
+  .replace("1999","Y");
+
+const setLanguage = (language) => {
+  localStorage.setItem("language", language);
+  console.log("language: %s", language);
+};
+
+const primaryLanguage = (language) => {
+  return language.split("-")[0];
+};
+
+const dateToLocalString = (date) => date ? _DATE_FORMATTER.format(date) : "";
+
+const localStringToDate = (value) => {
+  if (value) {
+    let match = _LOCAL_TO_DATE_EXPRESSION.exec(value);
+    if (match) {
+      let year = parseInt(match.groups.year);
+      let month = parseInt(match.groups.month);
+      let day = parseInt(match.groups.day);
+      let ts = Date.UTC(year, month, day);
+      return new Date(ts);
+    }
   }
-  TRANSLATIONS[language] = 'loaded';
+
+  return undefined;
 };
 
 const loadTranslations = async (language) => {
-  if (TRANSLATIONS[language] !== 'loaded') {
-    let translations = '/_locales/' + language + '/messages.json';
-
-    await fetch(translations)
-      .then(response => response.json())
-      .then(json => setTranslations(language, json))
-      .catch(async () => { if (language !== 'de') { loadTranslations('de'); }
-    });
-  }
+  await download(
+    window.location.origin + "/ModellBahn/modellbahn-ui/_locales/" + primaryLanguage(language) + "/messages.json",
+    (data) => {
+      try {
+        Object.keys(data)
+              .forEach(key => (_TRANSLATIONS[key] = data[key].message));
+        _TRANSLATIONS[language] = "loaded";
+        console.log("language: %s loaded", language);
+      } catch (error) {
+        console.log("language: %s load failed: %s", language, error);
+      }
+    },
+    () => {
+      if (language !== DEFAULT_LANGUAGE) {
+        loadTranslations(DEFAULT_LANGUAGE);
+      }
+    }
+  );
 };
 
-(async () => { await loadTranslations(language()) })();
+const toggleLanguage = async () => {
+  setLanguage(getLanguage() === DEFAULT_LANGUAGE ? ALTERNATE_LANGUAGE : DEFAULT_LANGUAGE);
+  location.reload();
+};
 
-const getMessage = (messageKey, substitutions) => {
+const translate = (messageKey, substitutions) => {
   if (/^\s*$/.test(messageKey)) return messageKey;
-
   try {
-    const key = messageKey.toUpperCase();
-    if (!TRANSLATIONS[key]) {
-      console.log("No translation : '" + messageKey + '"\n' + new Error().stack);
+    let message = _TRANSLATIONS[messageKey.toUpperCase()];
+    if (message) {
+      if (substitutions) {
+        Object.keys(substitutions)
+              .forEach(substitute => {
+          let token = new RegExp("\\$\\{" + substitute + "\\}");
+          message = message.replace(token, substitutions[substitute]);
+        });
+      }
+      return message;
+    } else {
+      console.log("No translation for: %s", messageKey);
     }
-    let message = TRANSLATIONS[key] ? TRANSLATIONS[key] : messageKey;
-    if (substitutions) {
-      Object.keys(substitutions).forEach(substitute => {
-        let token = new RegExp('\\$\\{' + substitute + '\\}');
-        let substitution = substitutions[substitute];
-        message = message.replace(token, substitution);
-      });
-    }
-
-    return message;
-  } catch (err) {
-    return messageKey;
+  } catch (error) {
+    console.log("Error translating: %s %o", messageKey, error);
   }
+  return messageKey;
 };

@@ -1,42 +1,48 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <link rel="stylesheet" href="css/site.css"/>
+  <script type="text/javascript" src="js/api.js"></script>
   <script type="text/javascript" src="js/i18n.js"></script>
   <script type="text/javascript" src="js/utils.js"></script>
   <script type="text/javascript" src="js/dropdown.js"></script>
-  <script type="text/javascript" src="js/fields.js"></script>
-  <script type="text/javascript" src="js/lib/DatePickerX-1.0.4.min.js"></script>
+  <script type="text/javascript" src="js/lib/DatePickerX.js"></script>
+  <script type="text/javascript" src="js/lib/pdf.js"></script>
   <script type="text/javascript" src="js/pdfViewer.js"></script>
+  <script type="text/javascript" src="js/columns.js"></script>
+  <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
-  <script type="text/javascript" src="js/lib/pdf.min-2.0.943.js"></script>
   <script type="text/javascript">
-    const stuck = STUCK(Editable.UPDATE, true);
-
     const teilenColumns = [
-      TEIL_SELECT(Editable.ADD, true),
-      stuck,
-      new ButtonColumn([], [ (grid, rowId) => { return getButton( 'update', 'save', () => { updateByFieldValue(grid, rowId, stuck) } ) } ])
+      new DropDownColumn("TEIL", "teil", fieldGetter, fieldSetter, PRODUKT_DROP, Editable.ADD, true),
+      MENGE(Editable.UPDATE, true)
+      ];
+   
+    const teilenActions = [
+      addAction("teilen"),
+      saveAction(),
+      deleteAction()
     ];
 
-    const teilen = new ItemGrid(5, "teilen", "teilen", teilenColumns, Paged.EXPAND, EditMode.ADD, undefined);
+    const teilen = new ExpandingTable(5, "teilen", "teilen", teilenColumns, teilenActions, EditMode.UPDATE);
 
-    const columns = [
+    const produktColumns = [
       HERSTELLER_SELECT(Editable.ADD, true),
       BESTELL_NR(Editable.ADD, true),
       UNTER_KATEGORIE_SELECT(Editable.UPDATE, true),
       MASSSTAB_SELECT(Editable.UPDATE, false),
       SPURWEITE_SELECT(Editable.UPDATE, false),
-      EPOCH_SELECT(Editable.UPDATE, false),
+      new ImageSelectColumn("EPOCH", "epoch", fieldGetter, fieldSetter, EPOCH_DROP, Editable.UPDATE, false),
       BAHNVERWALTUNG_SELECT(Editable.UPDATE, false),
       GATTUNG_SELECT(Editable.UPDATE, false),
       ACHSFOLG_SELECT(Editable.UPDATE, false),
-      VORBILD_SELECT(Editable.UPDATE, false),
-      SONDERMODELL_SELECT(Editable.UPDATE, false),
-      AUFBAU_SELECT(Editable.UPDATE, false),
+      new DropDownColumn("VORBILD", "vorbild", fieldGetter, fieldSetter, VORBILD_DROP, Editable.UPDATE, false),
+      new DropDownColumn("SONDERMODELL", "sondermodell", fieldGetter, fieldSetter, SONDERMODELL_DROP, Editable.UPDATE, false),
+      new ImageSelectColumn("AUFBAU", "aufbau", fieldGetter, fieldSetter, AUFBAU_DROP, Editable.UPDATE, false),
       LICHT_SELECT(Editable.UPDATE, false),
       KUPPLUNG_SELECT(Editable.UPDATE, false),
       STEUERUNG_SELECT(Editable.UPDATE, false),
@@ -47,35 +53,42 @@
       ANMERKUNG(Editable.UPDATE, false),
       BETREIBSNUMMER(Editable.UPDATE, false),
       LANGE(Editable.UPDATE, false),
-      ANLEITUNGEN(Editable.NEVER),
-      EXPLOSIONSZEICHNUNG(Editable.NEVER),
-      ABBILDUNG(Editable.NEVER),
-      new ButtonColumn([], [updateRow])
+      ANLEITUNGEN(Editable.UPDATE, false),
+      EXPLOSIONSZEICHNUNG(Editable.UPDATE, false),
+      ABBILDUNG(Editable.UPDATE, false)
+    ];
+   
+    const produktActions = [
+      saveAction()
     ];
 
-    const produkt = new ItemGrid(1, fetchUrl("produkt"), "produkt", columns, Paged.FORM, EditMode.UPDATE, [teilen]);
+    produktChildren = [
+      teilen
+    ];
+
+    const produkt = new Form("produkt", "produkt", produktColumns, produktActions, EditMode.UPDATE, produktChildren);
 
     async function init() {
-      addNavBar(NavMenu.BACK);
-      addFooter();
-      await HERSTELLER_DROP.init()
-      .then(() => UNTER_KATEGORIE_DROP.init())
-      .then(() => MASSSTAB_DROP.init())
-      .then(() => SPURWEITE_DROP.init())
-      .then(() => EPOCH_DROP.init())
-      .then(() => BAHNVERWALTUNG_DROP.init())
-      .then(() => GATTUNG_DROP.init())
-      .then(() => ACHSFOLG_DROP.init())
-      .then(() => VORBILD_DROP.init())
-      .then(() => SONDERMODELL_DROP.init())
-      .then(() => AUFBAU_DROP.init())
-      .then(() => LICHT_DROP.init())
-      .then(() => KUPPLUNG_DROP.init())
-      .then(() => STEUERUNG_DROP.init())
-      .then(() => DECODER_TYP_DROP.init())
-      .then(() => MOTOR_TYP_DROP.init())
-      .then(() => PRODUKT_DROP.init())
-      .then(() => produkt.init());
+      await layout(NavMenu.BACK)
+      .then(() => initDropDown(HERSTELLER_DROP))
+      .then(() => initDropDown(UNTER_KATEGORIE_DROP))
+      .then(() => initDropDown(MASSSTAB_DROP))
+      .then(() => initDropDown(SPURWEITE_DROP))
+      .then(() => initDropDown(EPOCH_DROP))
+      .then(() => initDropDown(BAHNVERWALTUNG_DROP))
+      .then(() => initDropDown(GATTUNG_DROP))
+      .then(() => initDropDown(ACHSFOLG_DROP))
+      .then(() => initDropDown(VORBILD_DROP))
+      .then(() => initDropDown(SONDERMODELL_DROP))
+      .then(() => initDropDown(AUFBAU_DROP))
+      .then(() => initDropDown(LICHT_DROP))
+      .then(() => initDropDown(KUPPLUNG_DROP))
+      .then(() => initDropDown(STEUERUNG_DROP))
+      .then(() => initDropDown(DECODER_TYP_DROP))
+      .then(() => initDropDown(MOTOR_TYP_DROP))
+      .then(() => initDropDown(PRODUKT_DROP))
+      .then(() => produkt.init())
+      .catch(error => reportError("load", error));
     }
   </script>
   <title>Produkt</title>

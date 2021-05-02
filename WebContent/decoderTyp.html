@@ -1,48 +1,69 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <link rel="stylesheet" href="css/site.css"/>
+  <script type="text/javascript" src="js/api.js"></script>
   <script type="text/javascript" src="js/i18n.js"></script>
   <script type="text/javascript" src="js/utils.js"></script>
   <script type="text/javascript" src="js/dropdown.js"></script>
+  <script type="text/javascript" src="js/lib/pdf.js"></script>
+  <script type="text/javascript" src="js/pdfViewer.js"></script>
+  <script type="text/javascript" src="js/columns.js"></script>
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
     const adressColumns = [
       INDEX(Editable.ADD, true),
+      BEZEICHNUNG(Editable.UPDATE, true),
       ADRESS_TYP_SELECT(Editable.UPDATE, true),
       SPAN(Editable.UPDATE, true),
-      WERKSEINSTELLUNG(Editable.UPDATE, true),
-      gridButtonColumn()
+      WERKSEINSTELLUNG(Editable.UPDATE, true)
+    ];
+   
+    const adressActions = [
+      addAction("adressen"),
+      saveAction(),
+      deleteAction()
     ];
 
-    const adressen = new ItemGrid(2, "adressen", "adressen", adressColumns, Paged.EXPAND, EditMode.ADD, undefined);
+    const adressen = new ExpandingTable(2, "adressen", "adressen", adressColumns, adressActions, EditMode.UPDATE);
 
     const cvColumns = [
       CV(Editable.ADD, true),
       BEZEICHNUNG(Editable.UPDATE, true),
       MAXIMAL(Editable.UPDATE, false),
       MINIMAL(Editable.UPDATE, false),
-      WERKSEINSTELLUNG(Editable.UPDATE, false),
-      gridButtonColumn()
+      WERKSEINSTELLUNG(Editable.UPDATE, false)
+    ];
+   
+    const cvActions = [
+      addAction("cvs"),
+      saveAction(),
+      deleteAction()
     ];
 
-    const cvs = new ItemGrid(10, "cvs", "cvs", cvColumns, Paged.EXPAND, EditMode.ADD, undefined);
+    const cvs = new ExpandingTable(10, "cvs", "cvs", cvColumns, cvActions, EditMode.UPDATE);
 
     const funktionenColumns = [
       REIHE(Editable.ADD, true),
       FUNKTION(Editable.ADD, true),
       WERKSEINSTELLUNG(Editable.UPDATE, true),
-      PROGRAMMABLE(Editable.UPDATE, true),
-      gridButtonColumn()
+      PROGRAMMABLE(Editable.UPDATE, true)
+    ];
+   
+    const funktionenActions = [
+      addAction("funktionen"),
+      saveAction(),
+      deleteAction()
     ];
 
-    const funktionen = new ItemGrid(10, "funktionen", "funktionen", funktionenColumns, Paged.EXPAND, EditMode.ADD, undefined);
+    const funktionen = new ExpandingTable(10, "funktionen", "funktionen", funktionenColumns, funktionenActions, EditMode.UPDATE);
 
-    const columns = [
+    const decoderTypColumns = [
       HERSTELLER_SELECT(Editable.ADD, true),
       BESTELL_NR(Editable.ADD, true),
       BEZEICHNUNG(Editable.UPDATE, true),
@@ -52,21 +73,30 @@
       I_MAX(Editable.UPDATE, true),
       KONFIGURATION_SELECT(Editable.UPDATE, true),
       STECKER_SELECT(Editable.UPDATE, true),
-      new ButtonColumn([], [updateRow])];
+      ANLEITUNGEN(Editable.UPDATE, false)
+    ];
+   
+    const decoderTypActions = [
+      saveAction()
+    ];
 
-    const children = [adressen, cvs, funktionen];
+    const decoderTypChildren = [
+      adressen,
+      cvs,
+      funktionen
+    ];
 
-    const decoderTyp = new ItemGrid(1, fetchUrl("decoderTyp"), "decoderTyp", columns, Paged.FORM, EditMode.UPDATE, children);
+    const decoderTyp = new Form("decoderTyp", "decoderTyp", decoderTypColumns, decoderTypActions, EditMode.UPDATE, decoderTypChildren);
 
     async function init() {
-      addNavBar(NavMenu.BACK);
-      addFooter();
-      await HERSTELLER_DROP.init()
-      .then(() => PROTOKOLL_DROP.init())
-      .then(() => KONFIGURATION_DROP.init())
-      .then(() => ADRESS_TYP_DROP.init())
-      .then(() => STECKER_DROP.init())
-      .then(() => decoderTyp.init());
+      await layout(NavMenu.BACK)
+      .then(() => initDropDown(HERSTELLER_DROP))
+      .then(() => initDropDown(PROTOKOLL_DROP))
+      .then(() => initDropDown(KONFIGURATION_DROP))
+      .then(() => initDropDown(ADRESS_TYP_DROP))
+      .then(() => initDropDown(STECKER_DROP))
+      .then(() => decoderTyp.init())
+      .catch(error => reportError("load", error));
 
       setActiveTab(undefined, "adressenTab");
     }

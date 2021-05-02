@@ -1,76 +1,103 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <link rel="stylesheet" href="css/site.css"/>
+  <script type="text/javascript" src="js/api.js"></script>
   <script type="text/javascript" src="js/i18n.js"></script>
   <script type="text/javascript" src="js/utils.js"></script>
   <script type="text/javascript" src="js/dropdown.js"></script>
+  <script type="text/javascript" src="js/lib/DatePickerX.js"></script>
+  <script type="text/javascript" src="js/lib/pdf.js"></script>
+  <script type="text/javascript" src="js/pdfViewer.js"></script>
+  <script type="text/javascript" src="js/columns.js"></script>
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
-    const adress = ADRESS(Editable.UPDATE, true);
-
     const adressColumns = [
       INDEX(Editable.NEVER, false),
       ADRESS_TYP_SELECT(Editable.UPDATE, true),
-      adress,
-      new ButtonColumn([], [ (grid, rowId) => { return getButton( 'update', 'save', () => { updateByFieldValue(grid, rowId, adress) } ) } ])
+      ADRESS(Editable.UPDATE, true)
+    ];
+   
+    const adressActions = [
+      saveAction()
     ];
 
-    const adressen = new ItemGrid(2, undefined, "adressen", adressColumns, Paged.EXPAND, EditMode.UPDATE, undefined);
-
-    const wert = WERT(Editable.UPDATE, false);
+    const adressen = new ExpandingTable(2, undefined, "adressen", adressColumns, adressActions, EditMode.UPDATE);
 
     const cvColumns = [
-      CV(Editable.NEVER, false, decoderCvCvGetter, noOpSetter),
-      BEZEICHNUNG(Editable.NEVER, false, decoderCvBezeichnungGetter, noOpSetter),
-      WERKSEINSTELLUNG(Editable.NEVER, false, decoderCvWerkseinstellungGetter, noOpSetter),
-      wert,
-      new ButtonColumn([], [ (grid, rowId) => { return getButton( 'update', 'save', () => { updateByFieldValue(grid, rowId, wert) } ) } ])
+      CV(Editable.NEVER, false),
+      BEZEICHNUNG(Editable.NEVER, false),
+      WERKSEINSTELLUNG(Editable.NEVER, false),
+      new NumberColumn("WERT", "wert", fieldGetter, fieldSetter, Editable.UPDATE, false, 65535, 1)
+    ];
+   
+    const cvActions = [
+      saveAction()
     ];
 
-    const cvs = new ItemGrid(10, undefined, "cvs", cvColumns, Paged.EXPAND, EditMode.UPDATE, undefined);
-
-    const funktion = FUNKTION(Editable.NEVER, false, decoderFunktionFunktionGetter, noOpSetter);
+    const cvs = new ExpandingTable(10, undefined, "cvs", cvColumns, cvActions, EditMode.UPDATE);
 
     const funktiononenColumns = [
-      REIHE(Editable.NEVER, false, decoderFunktionReiheGetter, noOpSetter),
-      funktion,
+      REIHE(Editable.NEVER, false),
+      FUNKTION(Editable.NEVER, false),
       BEZEICHNUNG(Editable.UPDATE, true),
-      PROGRAMMABLE(Editable.NEVER, false, decoderFunktionProgrammableGetter, noOpSetter),
-      new ButtonColumn([], [ (grid, rowId) => { return getButton( 'update', 'save', () => { updateByFieldValue(grid, rowId, funktion) } ) } ])
+      PROGRAMMABLE(Editable.NEVER, false)
+    ];
+   
+    const funktionenActions = [
+      saveAction()
     ];
 
-    const funktionen = new ItemGrid(10, undefined, "funktionen", funktiononenColumns, Paged.EXPAND, EditMode.UPDATE, undefined);
+    const funktionen = new ExpandingTable(10, undefined, "funktionen", funktiononenColumns, funktionenActions, EditMode.UPDATE);
 
     const decoderColumns = [
       DECODER(Editable.NEVER, true),
       DECODER_TYP_SELECT(Editable.NEVER, true),
-      BEZEICHNUNG(Editable.NEVER, true, decoderTypBezeichnungGetter, noOpSetter),
+      BEZEICHNUNG(Editable.NEVER, true),
+      ARTIKEL_SELECT(Editable.NEVER, false),
       PROTOKOLL_SELECT(Editable.UPDATE, true),
       FAHRSTUFE(Editable.UPDATE, false),
-      GERAUSCH(Editable.NEVER, true, decoderTypSoundGetter, noOpSetter),
-      I_MAX(Editable.NEVER, true, decoderTypIMaxGetter, noOpSetter),
-      KONFIGURATION_SELECT(Editable.NEVER, true, decoderTypKonfigurationGetter, noOpSetter),
-      ANLEITUNGEN(Editable.NEVER),
-      new ButtonColumn([], [updateRow])
+      GERAUSCH(Editable.NEVER, true),
+      I_MAX(Editable.NEVER, true),
+      KONFIGURATION_SELECT(Editable.NEVER, true),
+      STECKER_SELECT(Editable.UPDATE, true),
+      KAUFDATUM(Editable.UPDATE, true),
+      WAHRUNG_SELECT(Editable.UPDATE, true),
+      PREIS(Editable.UPDATE, true),
+      ANMERKUNG(Editable.UPDATE, true),
+      DECODER_STATUS_SELECT(Editable.UPDATE, true),
+      ANLEITUNGEN(Editable.NEVER)
+    ];
+   
+    const decoderActions = [
+      saveAction()
     ];
 
-    const children = [adressen, cvs, funktionen];
+    const decoderChildren = [
+      adressen,
+      cvs,
+      funktionen
+    ];
 
-    const decoder = new ItemGrid(1, fetchUrl("decoder"), "decoder", decoderColumns, Paged.FORM,  EditMode.UPDATE, children);
+    const decoder = new Form(fetchUrl("decoder"), "decoder", decoderColumns, decoderActions, EditMode.UPDATE, decoderChildren);
 
     async function init() {
-      addNavBar(NavMenu.BACK);
-      addFooter();
-      await DECODER_TYP_DROP.init()
-      .then(() => PROTOKOLL_DROP.init())
-      .then(() => KONFIGURATION_DROP.init())
-      .then(() => ADRESS_TYP_DROP.init())
-      .then(() => decoder.init());
+      await layout(NavMenu.BACK)
+      .then(() => initDropDown(DECODER_TYP_DROP))
+      .then(() => initDropDown(ARTIKEL_DROP))
+      .then(() => initDropDown(PROTOKOLL_DROP))
+      .then(() => initDropDown(KONFIGURATION_DROP))
+      .then(() => initDropDown(ADRESS_TYP_DROP))
+      .then(() => initDropDown(STECKER_DROP))
+      .then(() => initDropDown(WAHRUNG_DROP))
+      .then(() => initDropDown(DECODER_STATUS_DROP))
+      .then(() => decoder.init())
+      .catch(error => reportError("load", error));
 
       setActiveTab(undefined, "adressenTab");
     }

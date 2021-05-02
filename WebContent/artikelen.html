@@ -1,43 +1,51 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <link rel="stylesheet" href="css/site.css"/>
+  <script type="text/javascript" src="js/api.js"></script>
   <script type="text/javascript" src="js/i18n.js"></script>
   <script type="text/javascript" src="js/utils.js"></script>
   <script type="text/javascript" src="js/dropdown.js"></script>
+  <script type="text/javascript" src="js/columns.js"></script>
   <script type="text/javascript" src="js/fields.js"></script>
-  <script src="js/lib/DatePickerX-1.0.4.min.js"></script>
+  <script src="js/lib/DatePickerX.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
     const artikelUnterKategorieGetter = (entity) => {
       return entity.produkt ? unterKategorieGetter(entity.produkt) : undefined
     };
 
-    const columns = [
-      ARTIKEL(Editable.ADD, true),
-      PRODUKT_SELECT(Editable.ADD, false),
-      UNTER_KATEGORIE_SELECT(Editable.ADD, false, artikelUnterKategorieGetter),
-      BEZEICHNUNG(Editable.ADD),
-      DECODER_SELECT(Editable.ADD, false),
-      ANMERKUNG(Editable.ADD, false),
-      ABBILDUNG(Editable.NEVER),
-      STATUS_SELECT(Editable.ADD, true),
-      new ButtonColumn([newRow], [editRow, deleteRow])
+    const artikelenColumns = [
+      ARTIKEL(Editable.NEVER, true),
+      PRODUKT_SELECT(Editable.NEVER, false),
+      UNTER_KATEGORIE_SELECT(Editable.NEVER, false),
+      BEZEICHNUNG(Editable.NEVER),
+      DECODER_SELECT(Editable.NEVER, false),
+      ANMERKUNG(Editable.NEVER, false),
+      ABBILDUNG(Editable.UPDATE, false),
+      STATUS_SELECT(Editable.NEVER, true)
     ];
 
-    const artikelen = new ItemGrid(10, fetchUrl("artikel"), "artikelen", columns, Paged.PAGED, EditMode.UPDATE, undefined, "artikel.html");
+    const artikelenActions = [
+      newAction("artikel.html"),
+      editAction("artikel.html"),
+      deleteAction()
+    ];
+
+    const artikelen = new PagedTable(10, "artikel", "artikelen", artikelenColumns, artikelenActions, EditMode.UPDATE);
 
     async function init() {
-      addNavBar(NavMenu.INVENTORY);
-      addFooter();
-      await PRODUKT_DROP.init()
-      .then(() => UNTER_KATEGORIE_DROP.init())
-      .then(() => DECODER_DROP.init())
-      .then(() => STATUS_DROP.init())
-      .then(() => artikelen.init());
+      await layout(NavMenu.INVENTORY)
+      .then(() => initDropDown(PRODUKT_DROP))
+      .then(() => initDropDown(UNTER_KATEGORIE_DROP))
+      .then(() => initDropDown(DECODER_DROP))
+      .then(() => initDropDown(STATUS_DROP))
+      .then(() => artikelen.init())
+      .catch(error => reportError("load", error));
     }
   </script>
   <title>Artikelen</title>

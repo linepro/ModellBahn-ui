@@ -1,33 +1,42 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <link rel="stylesheet" href="css/site.css"/>
+  <script type="text/javascript" src="js/api.js"></script>
   <script type="text/javascript" src="js/i18n.js"></script>
   <script type="text/javascript" src="js/utils.js"></script>
   <script type="text/javascript" src="js/dropdown.js"></script>
+  <script type="text/javascript" src="js/columns.js"></script>
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
     const columns = [
-      HERSTELLER_SELECT(Editable.ADD),
-      BESTELL_NR(Editable.ADD),
-      PROTOKOLL_SELECT(Editable.ADD, true),
-      GERAUSCH(Editable.ADD, true),
-      STECKER_SELECT(Editable.ADD, true),
-      new ButtonColumn([newRow], [editRow, deleteRow])];
+      HERSTELLER_SELECT(Editable.NEVER),
+      BESTELL_NR(Editable.NEVER),
+      PROTOKOLL_SELECT(Editable.NEVER, true),
+      GERAUSCH(Editable.NEVER, true),
+      STECKER_SELECT(Editable.NEVER, true)
+    ];
+   
+    const actions = [
+      newAction("decoderTyp.html"),
+      editAction("decoderTyp.html"),
+      deleteAction()
+    ];
 
-    const decoderTypen = new ItemGrid(10, fetchUrl("decoderTyp"), "decoderTypen", columns, Paged.PAGED, EditMode.UPDATE, undefined, "decoderTyp.html");
+    const decoderTypen = new PagedTable(10, "decoderTyp", "decoderTypen", columns, actions, EditMode.UPDATE);
 
     async function init() {
-      addNavBar(NavMenu.REF_DATA);
-      addFooter();
-      await HERSTELLER_DROP.init()
-      .then(() => PROTOKOLL_DROP.init())
-      .then(() => STECKER_DROP.init())
-      .then(() => decoderTypen.init());
+      await layout(NavMenu.REF_DATA)
+      .then(() => initDropDown(HERSTELLER_DROP))
+      .then(() => initDropDown(PROTOKOLL_DROP))
+      .then(() => initDropDown(STECKER_DROP))
+      .then(() => decoderTypen.init())
+      .catch(error => reportError("load", error));
     }
   </script>
   <title>Decoder Typen</title>

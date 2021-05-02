@@ -1,40 +1,46 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <link rel="stylesheet" href="css/site.css"/>
+  <script type="text/javascript" src="js/api.js"></script>
   <script type="text/javascript" src="js/i18n.js"></script>
   <script type="text/javascript" src="js/utils.js"></script>
   <script type="text/javascript" src="js/dropdown.js"></script>
+  <script type="text/javascript" src="js/lib/DatePickerX.js"></script>
+  <script type="text/javascript" src="js/columns.js"></script>
   <script type="text/javascript" src="js/fields.js"></script>
-  <script src="js/lib/DatePickerX-1.0.4.min.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
     const columns = [
-      GATTUNG_SELECT(Editable.ADD, true),
-      UNTER_KATEGORIE_SELECT(Editable.ADD, true),
-      BAHNVERWALTUNG_SELECT(Editable.ADD, false),
-      HERSTELLER(Editable.ADD, false),
-      BAUZEIT(Editable.ADD, false),
-      AUSSERDIENST(Editable.ADD, false),
-      ANZAHL(Editable.ADD, false),
-      ABBILDUNG(Editable.NEVER, false),
-      new ButtonColumn(
-          [newRow],
-          [editRow, deleteRow])
+      GATTUNG_SELECT(Editable.NEVER, true),
+      UNTER_KATEGORIE_SELECT(Editable.NEVER, true),
+      BAHNVERWALTUNG_SELECT(Editable.NEVER, false),
+      HERSTELLER(Editable.NEVER, false),
+      BAUZEIT(Editable.NEVER, false),
+      AUSSERDIENST(Editable.NEVER, false),
+      MENGE(Editable.NEVER, false),
+      ABBILDUNG(Editable.NEVER, false)
+    ];
+   
+    const actions = [
+      newAction("vorbild.html"),
+      editAction("vorbild.html"),
+      deleteAction()
     ];
 
-    const vorbilder = new ItemGrid(10, fetchUrl("vorbild"), "vorbilder", columns, Paged.PAGED, EditMode.UPDATE, undefined, "vorbild.html");
+    const vorbilder = new PagedTable(10, "vorbild", "vorbilder", columns, actions, EditMode.UPDATE);
 
     async function init() {
-      addNavBar(NavMenu.INVENTORY);
-      addFooter();
-      await GATTUNG_DROP.init()
-      .then(() => UNTER_KATEGORIE_DROP.init())
-      .then(() => BAHNVERWALTUNG_DROP.init())
-      .then(() => vorbilder.init());
+      await layout(NavMenu.INVENTORY)
+      .then(() => initDropDown(GATTUNG_DROP))
+      .then(() => initDropDown(UNTER_KATEGORIE_DROP))
+      .then(() => initDropDown(BAHNVERWALTUNG_DROP))
+      .then(() => vorbilder.init())
+      .catch(error => reportError("load", error));
     }
   </script>
   <title>Vorbilder</title>
