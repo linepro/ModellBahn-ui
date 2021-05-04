@@ -578,7 +578,7 @@ textarea[focus] {
 input[type="checkbox"] {
   float: left;
   height: 1rem;
-  margin: 0 0.3rem 0 1F.3rem;
+  margin: 0 0.3rem 0 1.3rem;
   position: relative;
   width: unset;
   text-align: center;

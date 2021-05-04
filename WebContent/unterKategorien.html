@@ -14,37 +14,39 @@
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
-    const unterKategorieColumns = [
-      NAMEN(Editable.ADD),
-      BEZEICHNUNG(Editable.UPDATE)
-    ];
-
-    const unterKategorieActions = [
-      addAction("unterKategorien"),
-      saveAction(),
-      deleteAction()
-    ];
-
-    const unterKategorien = new ExpandingTable(10, "unterKategorien", "unterKategorien", unterKategorieColumns, unterKategorieActions, EditMode.ADD);
-
-    const kategorieColumns = [
-      NAMEN(Editable.ADD, true),
-      BEZEICHNUNG(Editable.UPDATE, true)
-    ];
-
-    const kategorieActions = [
-      saveAction()
-    ];
-
-    const kategorieChildren = [
-      unterKategorien
-    ];
-
-    const kategorie = new Form("kategorie", "kategorie", kategorieColumns, kategorieActions, EditMode.UPDATE, kategorieChildren);
-
     async function init() {
       await layout(NavMenu.BACK)
-      .then(() => kategorie.init())
+      .then(() => {
+        const unterKategorieColumns = [
+          NAMEN(Editable.ADD),
+          BEZEICHNUNG(Editable.UPDATE)
+        ];
+
+        const unterKategorieActions = [
+          addAction("unterKategorien"),
+          saveAction(),
+          deleteAction()
+        ];
+
+        const unterKategorien = new ExpandingTable(10, "unterKategorien", "unterKategorien", unterKategorieColumns, unterKategorieActions, EditMode.ADD);
+
+        const kategorieColumns = [
+          NAMEN(Editable.ADD, true),
+          BEZEICHNUNG(Editable.UPDATE, true)
+        ];
+
+        const kategorieActions = [
+          saveAction()
+        ];
+
+        const kategorieChildren = [
+          unterKategorien
+        ];
+
+        const kategorie = new Form("kategorie", "kategorie", kategorieColumns, kategorieActions, EditMode.UPDATE, kategorieChildren);
+
+        kategorie.init();
+      })
       .catch(error => reportError("load", error));
     }
   </script>
