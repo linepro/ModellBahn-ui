@@ -17,75 +17,6 @@
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
-    const adressColumns = [
-      INDEX(Editable.NEVER, false),
-      ADRESS_TYP_SELECT(Editable.UPDATE, true),
-      ADRESS(Editable.UPDATE, true)
-    ];
-   
-    const adressActions = [
-      saveAction()
-    ];
-
-    const adressen = new ExpandingTable(2, undefined, "adressen", adressColumns, adressActions, EditMode.UPDATE);
-
-    const cvColumns = [
-      CV(Editable.NEVER, false),
-      BEZEICHNUNG(Editable.NEVER, false),
-      WERKSEINSTELLUNG(Editable.NEVER, false),
-      new NumberColumn("WERT", "wert", fieldGetter, fieldSetter, Editable.UPDATE, false, 65535, 1)
-    ];
-   
-    const cvActions = [
-      saveAction()
-    ];
-
-    const cvs = new ExpandingTable(10, undefined, "cvs", cvColumns, cvActions, EditMode.UPDATE);
-
-    const funktiononenColumns = [
-      REIHE(Editable.NEVER, false),
-      FUNKTION(Editable.NEVER, false),
-      BEZEICHNUNG(Editable.UPDATE, true),
-      PROGRAMMABLE(Editable.NEVER, false)
-    ];
-   
-    const funktionenActions = [
-      saveAction()
-    ];
-
-    const funktionen = new ExpandingTable(10, undefined, "funktionen", funktiononenColumns, funktionenActions, EditMode.UPDATE);
-
-    const decoderColumns = [
-      DECODER(Editable.NEVER, true),
-      DECODER_TYP_SELECT(Editable.NEVER, true),
-      BEZEICHNUNG(Editable.NEVER, true),
-      ARTIKEL_SELECT(Editable.NEVER, false),
-      PROTOKOLL_SELECT(Editable.UPDATE, true),
-      FAHRSTUFE(Editable.UPDATE, false),
-      GERAUSCH(Editable.NEVER, true),
-      I_MAX(Editable.NEVER, true),
-      KONFIGURATION_SELECT(Editable.NEVER, true),
-      STECKER_SELECT(Editable.UPDATE, true),
-      KAUFDATUM(Editable.UPDATE, true),
-      WAHRUNG_SELECT(Editable.UPDATE, true),
-      PREIS(Editable.UPDATE, true),
-      ANMERKUNG(Editable.UPDATE, true),
-      DECODER_STATUS_SELECT(Editable.UPDATE, true),
-      ANLEITUNGEN(Editable.NEVER)
-    ];
-   
-    const decoderActions = [
-      saveAction()
-    ];
-
-    const decoderChildren = [
-      adressen,
-      cvs,
-      funktionen
-    ];
-
-    const decoder = new Form(fetchUrl("decoder"), "decoder", decoderColumns, decoderActions, EditMode.UPDATE, decoderChildren);
-
     async function init() {
       await layout(NavMenu.BACK)
       .then(() => initDropDown(DECODER_TYP_DROP))
@@ -96,7 +27,78 @@
       .then(() => initDropDown(STECKER_DROP))
       .then(() => initDropDown(WAHRUNG_DROP))
       .then(() => initDropDown(DECODER_STATUS_DROP))
-      .then(() => decoder.init())
+      .then(() => {
+        const adressColumns = [
+          INDEX(Editable.NEVER, false),
+          ADRESS_TYP_SELECT(Editable.UPDATE, true),
+          ADRESS(Editable.UPDATE, true)
+        ];
+       
+        const adressActions = [
+          saveAction()
+        ];
+
+        const adressen = new ExpandingTable(2, undefined, "adressen", adressColumns, adressActions, EditMode.UPDATE);
+
+        const cvColumns = [
+          CV(Editable.NEVER, false),
+          BEZEICHNUNG(Editable.NEVER, false),
+          WERKSEINSTELLUNG(Editable.NEVER, false),
+          new NumberColumn("WERT", "wert", fieldGetter, fieldSetter, Editable.UPDATE, false, 65535, 1)
+        ];
+       
+        const cvActions = [
+          saveAction()
+        ];
+
+        const cvs = new ExpandingTable(10, undefined, "cvs", cvColumns, cvActions, EditMode.UPDATE);
+
+        const funktiononenColumns = [
+          REIHE(Editable.NEVER, false),
+          FUNKTION(Editable.NEVER, false),
+          BEZEICHNUNG(Editable.UPDATE, true),
+          PROGRAMMABLE(Editable.NEVER, false)
+        ];
+       
+        const funktionenActions = [
+          saveAction()
+        ];
+
+        const funktionen = new ExpandingTable(10, undefined, "funktionen", funktiononenColumns, funktionenActions, EditMode.UPDATE);
+
+        const decoderColumns = [
+          DECODER(Editable.NEVER, true),
+          DECODER_TYP_SELECT(Editable.NEVER, true),
+          BEZEICHNUNG(Editable.NEVER, true),
+          ARTIKEL_SELECT(Editable.NEVER, false),
+          PROTOKOLL_SELECT(Editable.UPDATE, true),
+          FAHRSTUFE(Editable.UPDATE, false),
+          GERAUSCH(Editable.NEVER, true),
+          I_MAX(Editable.NEVER, true),
+          KONFIGURATION_SELECT(Editable.NEVER, true),
+          STECKER_SELECT(Editable.UPDATE, true),
+          KAUFDATUM(Editable.UPDATE, true),
+          WAHRUNG_SELECT(Editable.UPDATE, true),
+          PREIS(Editable.UPDATE, true),
+          ANMERKUNG(Editable.UPDATE, true),
+          DECODER_STATUS_SELECT(Editable.UPDATE, true),
+          ANLEITUNGEN(Editable.NEVER)
+        ];
+       
+        const decoderActions = [
+          saveAction()
+        ];
+
+        const decoderChildren = [
+          adressen,
+          cvs,
+          funktionen
+        ];
+
+        const decoder = new Form(fetchUrl("decoder"), "decoder", decoderColumns, decoderActions, EditMode.UPDATE, decoderChildren);
+
+        decoder.init();
+      })
       .catch(error => reportError("load", error));
 
       setActiveTab(undefined, "adressenTab");
@@ -120,21 +122,22 @@
           <button id="cvsLink" class="tabLinks" onclick="setActiveTab(event, 'cvsTab')">CVS</button>
           <button id="funktionenLink" class="tabLinks" onclick="setActiveTab(event, 'funktionenTab')">Funktionen</button>
         </div>
-
-        <div id="adressenTab" class="tabContent">
-          <h3>Addressen</h3>
-          <div id="adressen">
-          </div>
-        </div>
-        <div id="cvsTab" class="tabContent">
-          <h3>cvs</h3>
-          <div id="cvs">
-          </div>
-        </div>
-        <div id="funktionenTab" class="tabContent">
-          <h3>Funktionen</h3>
-          <div id="funktionen">
-          </div>
+        <div class="tabContainer">
+          <div id="adressenTab" class="tabContent">
+	        <h3>Adressen</h3>
+	        <div id="adressen">
+	        </div>
+	      </div>
+	      <div id="cvsTab" class="tabContent">
+	        <h3>Cvs</h3>
+	        <div id="cvs">
+	        </div>
+	      </div>
+	      <div id="funktionenTab" class="tabContent">
+	        <h3>Funktionen</h3>
+	        <div id="funktionen">
+	        </div>
+	      </div>
         </div>
       </div>
     </div>

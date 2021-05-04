@@ -124,7 +124,7 @@ class Column extends VirtualColumn {
     let column = this;
 
     let header = document.createElement("th");
-    header.className = "table-heading";
+    header.className = grid.classPrefix + "-heading";
     header.appendChild(document.createTextNode(translate(column.heading)));
     headerRow.append(header);
   }
@@ -170,16 +170,17 @@ class Column extends VirtualColumn {
     let column = this;
 
     let cell = document.createElement("div");
-    cell.className = "form-item";
+    cell.className = row.classPrefix + "-item";
+    setWidths(cell, (labelWidth + column.displayLength()) + "ch");
     row.element.append(cell);
 
     let label = document.createElement("label");
-    label.className = "form-label";
+    label.className = row.classPrefix + "-label";
     label.appendChild(document.createTextNode(translate(column.heading)));
     setWidths(label, labelWidth + "ch");
     cell.append(label);
 
-    let ctl = column.createControl(row, "form-control");
+    let ctl = column.createControl(row, row.classPrefix + "-control");
     label.for = ctl.id;
     ctl.style.order = 2;
     cell.append(ctl);
@@ -195,10 +196,10 @@ class Column extends VirtualColumn {
     let column = this;
 
     let cell = document.createElement("td");
-    cell.className = "table-cell";
+    cell.className = row.classPrefix + "-cell";
     row.element.append(cell);
 
-    let ctl = column.createControl(row, "table-cell");
+    let ctl = column.createControl(row, row.classPrefix + "-cell");
     cell.append(ctl);
 
     return {
@@ -619,7 +620,7 @@ class FileColumn extends Column {
       undefined,
       editable,
       required,
-      10
+      14
     );
 
     this.mask = mask;
@@ -716,10 +717,10 @@ class FileColumn extends Column {
     let column = this;
 
     let cell = document.createElement("td");
-    cell.className = "table-cell";
+    cell.className = row.classPrefix + "-cell";
     row.element.append(cell);
 
-    let img = column.createControl(row, "table-cell");
+    let img = column.createControl(row, row.classPrefix + "-cell");
     cell.append(img);
 
     column.addButtons(row, cell, img);
@@ -1017,11 +1018,11 @@ class AutoSelectColumn extends PopupColumn {
       fieldGetter,
       fieldSetter,
       editable,
-      required
+      required,
+      dropDown.length
     );
 
     this.options = dropDown.options; 
-    this.length = dropDown.length;
     this.dropSize = dropSize;
   }
 
@@ -1200,7 +1201,7 @@ class ImageSelectColumn extends PopupColumn {
 
   displayLength() {
     let column = this;
-    return Math.max(5, column.headingLength);
+    return Math.max(14, column.headingLength);
   }
 
   createControl(row, className) {

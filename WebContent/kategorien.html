@@ -14,22 +14,24 @@
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
-    const kategorienColumns = [
-      NAMEN(Editable.NEVER, true),
-      BEZEICHNUNG(Editable.NEVER, true)
-    ];
-   
-    const kategorienActions = [
-      newAction("unterKategorien.html"),
-      editAction("unterKategorien.html"),
-      deleteAction()
-    ];
-
-    const kategorien = new PagedTable(10, "kategorie", "kategorien", kategorienColumns, kategorienActions, EditMode.UPDATE);
-
     async function init() {
       await layout(NavMenu.REF_DATA)
-      .then(() => kategorien.init())
+      .then(() => {
+        const kategorienColumns = [
+          NAMEN(Editable.NEVER, true),
+          BEZEICHNUNG(Editable.NEVER, true)
+        ];
+       
+        const kategorienActions = [
+          newAction("unterKategorien.html"),
+          editAction("unterKategorien.html"),
+          deleteAction()
+        ];
+
+        const kategorien = new PagedTable(10, "kategorie", "kategorien", kategorienColumns, kategorienActions, EditMode.UPDATE);
+
+        kategorien.init();
+      })
       .catch(error => reportError("load", error));
     }
   </script>

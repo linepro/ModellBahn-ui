@@ -14,17 +14,19 @@
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
-    const columns = [
-      NAMEN(Editable.ADD, true),
-      BEZEICHNUNG(Editable.UPDATE, true),
-      ABBILDUNG(Editable.UPDATE, false)
-    ];
-
-    const protokollen = new ListEditTable(10, "protokoll", "protokollen", columns, EditMode.UPDATE);
-
     async function init() {
       await layout(NavMenu.REF_DATA)
-      .then(() => protokollen.init())
+      .then(() => {
+        const columns = [
+          NAMEN(Editable.ADD, true),
+          BEZEICHNUNG(Editable.UPDATE, true),
+          ABBILDUNG(Editable.UPDATE, false)
+        ];
+
+        const protokollen = new ListEditTable(10, "protokoll", "protokollen", columns, EditMode.UPDATE);
+
+        protokollen.init();
+      })
       .catch(error => reportError("load", error));
     }
   </script>

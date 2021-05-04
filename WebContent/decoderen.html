@@ -12,30 +12,32 @@
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
-    const decoderenColumns = [
-      DECODER(Editable.NEVER, true),
-      DECODER_TYP_SELECT(Editable.NEVER, true),
-      BEZEICHNUNG(Editable.NEVER, false),
-      ARTIKEL_SELECT(Editable.NEVER, false),
-      PROTOKOLL_SELECT(Editable.NEVER, true),
-      DECODER_STATUS_SELECT(Editable.NEVER, true)
-    ];
-   
-    const decoderenActions = [
-      newAction("decoder.html"),
-      editAction("decoder.html"),
-      deleteAction()
-    ];
-
-    const decoderen = new PagedTable(10, "decoder", "decoderen", decoderenColumns, decoderenActions, EditMode.UPDATE);
-
     async function init() {
       await layout(NavMenu.INVENTORY)
       .then(() => initDropDown(DECODER_TYP_DROP))
       .then(() => initDropDown(ARTIKEL_DROP))
       .then(() => initDropDown(PROTOKOLL_DROP))
       .then(() => initDropDown(DECODER_STATUS_DROP))
-      .then(() => decoderen.init())
+      .then(() => {
+        const decoderenColumns = [
+          DECODER(Editable.NEVER, true),
+          DECODER_TYP_SELECT(Editable.NEVER, true),
+          BEZEICHNUNG(Editable.NEVER, false),
+          ARTIKEL_SELECT(Editable.NEVER, false),
+          PROTOKOLL_SELECT(Editable.NEVER, true),
+          DECODER_STATUS_SELECT(Editable.NEVER, true)
+        ];
+       
+        const decoderenActions = [
+          newAction("decoder.html"),
+          editAction("decoder.html"),
+          deleteAction()
+        ];
+
+        const decoderen = new PagedTable(10, "decoder", "decoderen", decoderenColumns, decoderenActions, EditMode.UPDATE);
+
+        decoderen.init();
+      })
       .catch(error => reportError("load", error));
     }
   </script>

@@ -14,21 +14,23 @@
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
-    const columns = [
-      NAMEN(Editable.ADD, true),
-      BEZEICHNUNG(Editable.UPDATE, true),
-      LAND_SELECT(Editable.UPDATE, true),
-      new PhoneColumn("TELEFON", "telefon", fieldGetter, fieldSetter, Editable.UPDATE, false),
-      URL(Editable.UPDATE, true),
-      ABBILDUNG(Editable.UPDATE, false)
-    ];
-
-    const herstellern = new ListEditTable(10, "hersteller", "herstellern", columns, EditMode.UPDATE);
-
     async function init() {
       await layout(NavMenu.REF_DATA)
       .then(() => initDropDown(LAND_DROP))
-      .then(() => herstellern.init())
+      .then(() => {
+        const columns = [
+          NAMEN(Editable.ADD, true),
+          BEZEICHNUNG(Editable.UPDATE, true),
+          LAND_SELECT(Editable.UPDATE, true),
+          new PhoneColumn("TELEFON", "telefon", fieldGetter, fieldSetter, Editable.UPDATE, false),
+          URL(Editable.UPDATE, true),
+          ABBILDUNG(Editable.UPDATE, false)
+        ];
+
+        const herstellern = new ListEditTable(10, "hersteller", "herstellern", columns, EditMode.UPDATE);
+
+        herstellern.init();
+      })
       .catch(error => reportError("load", error));
     }
   </script>

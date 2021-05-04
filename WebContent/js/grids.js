@@ -189,7 +189,7 @@ class ButtonColumn extends VirtualColumn {
 
     let cell = document.createElement("td");
     cell.id = row.id + "_buttons";
-    cell.className = "table-cell-btn";
+    cell.className = row.classPrefix + "-cell-btn";
     row.element.append(cell);
 
     if (column.displayLength()) {
@@ -282,13 +282,14 @@ class ChildColumn extends VirtualColumn {
 }
 
 class RowEntry {
-  constructor(row, editMode, refresh) {
+  constructor(row, editMode, refresh, classPrefix) {
    this.id = row.id;
    this.element = row;
    this.columns =  undefined;
    this.editMode = editMode;
    this.entity = undefined;
    this.refresh = refresh;
+   this.classPrefix = classPrefix;
   }
 
   bind(entity, edtMode) {
@@ -306,7 +307,8 @@ class ItemGrid {
     columns,
     actions,
     editMode = EditMode.VIEW,
-    children = undefined
+    children = undefined,
+    classPrefix = ""
   ) {
     this.currentUrl = fetchUrl;
     this.refresh = async () => this.fetch(this.currentUrl);
@@ -318,6 +320,7 @@ class ItemGrid {
     this.actions = actions;
     this.editMode = editMode;
     this.initialized = false;
+    this.classPrefix = classPrefix;
   }
 
   createCaption() {
@@ -395,7 +398,8 @@ class Form extends ItemGrid {
       columns,
       actions,
       location.search.includes("self=") ? editMode : EditMode.ADD,
-      children
+      children,
+      "form"
     );
   }
 
@@ -410,32 +414,32 @@ class Form extends ItemGrid {
 
     let form = document.createElement("div");
     form.id = grid.tableId;
-    form.className = "table";
+    form.className = grid.classPrefix + "-table";
     place.append(form);
 
     grid.table = form;
 
     let header = document.createElement("div");
     header.id = grid.tableId + "_thead";
-    header.className = "fhead";
+    header.className = grid.classPrefix + "-thead";
     form.append(header);
 
     let headRow = document.createElement("div");
-    headRow.className = "form-head";
     headRow.id = grid.tableId + "Head";
+    headRow.className = grid.classPrefix +"-head";
     header.append(headRow);
 
     let body = document.createElement("div");
     body.id = grid.tableId + "_tbody";
-    body.className = "form-body";
+    body.className = grid.classPrefix +"-tbody";
     form.append(body);
 
     let row = document.createElement("div");
     row.id = getRowId(grid.tableId, 0);
-    row.className = "form-row";
+    row.className = grid.classPrefix +"-row";
     body.append(row);
 
-    let rowEntry = new RowEntry(row, grid.editMode, grid.refresh);
+    let rowEntry = new RowEntry(row, grid.editMode, grid.refresh, grid.classPrefix);
 
     rowEntry.columns = grid.columns
       .map((column) => column.addFormField(rowEntry, maxLabel))
@@ -447,16 +451,16 @@ class Form extends ItemGrid {
 
     let foot = document.createElement("div");
     foot.id = grid.tableId + "_tfoot";
-    foot.className = "ffoot";
+    foot.className = grid.classPrefix +"-tfoot";
     form.append(foot);
 
     let navRow = document.createElement("div");
-    navRow.className = "form-foot";
     navRow.id = grid.tableId + "Foot";
+    navRow.className = grid.classPrefix +"-foot";
     foot.append(navRow);
 
     let footer = document.createElement("div");
-    footer.className = "form-footer";
+    footer.className = grid.classPrefix +"-footer";
     addText(footer, " ");
     navRow.append(footer);
   }
@@ -483,8 +487,8 @@ class Form extends ItemGrid {
 }
 
 class Table extends ItemGrid {
-  constructor(pageSize, apiUrl, tableId, columns, actions, editMode, children) {
-    super(apiUrl, tableId, columns, actions, editMode, children);
+  constructor(pageSize, apiUrl, tableId, columns, actions, editMode, children, classPrefix = "table") {
+    super(apiUrl, tableId, columns, actions, editMode, children, classPrefix);
 
     this.pageSize = pageSize;
     this.rows = [];
@@ -504,10 +508,10 @@ class Table extends ItemGrid {
 
     let row = document.createElement("tr");
     row.id = getRowId(grid.tableId, rows.length);
-    row.className = "table-row";
+    row.className = grid.classPrefix +"-row";
     body.append(row);
 
-    let rowEntry = new RowEntry(row, grid.editMode, grid.refresh);
+    let rowEntry = new RowEntry(row, grid.editMode, grid.refresh, grid.classPrefix);
 
     rowEntry.columns = grid.columns
       .map((column) => column.addTableCell(rowEntry))
@@ -518,28 +522,28 @@ class Table extends ItemGrid {
     return rowEntry;
   }
 
-  addHeader(table, className) {
+  addHeader(table) {
     let grid = this;
 
     let header = document.createElement("thead");
     header.id = grid.tableId + "_thead";
-    header.className = className;
+    header.className = grid.classPrefix + "-thead";
     table.append(header);
 
     let headings = document.createElement("tr");
     headings.id = grid.tableId + "Head";
-    headings.className = "table-head";
+    headings.className = grid.classPrefix +"-head";
     header.append(headings);
 
     grid.columns.forEach((column) => column.addHeading(grid, headings));
   }
 
-  addBody(table, className) {
+  addBody(table) {
     let grid = this;
 
     let body = document.createElement("tbody");
     body.id = grid.tableId + "_tbody";
-    body.className = className;
+    body.className = grid.classPrefix + "-tbody";
     table.append(body);
 
     for (let rowNum = 0; rowNum < grid.pageSize; rowNum++) {
@@ -547,22 +551,22 @@ class Table extends ItemGrid {
     }
   }
 
-  addFooter(table, className) {
+  addFooter(table) {
     let grid = this;
 
     let footer = document.createElement("tfoot");
     footer.id = grid.tableId + "_tfoot";
-    footer.className = className;
+    footer.className = grid.classPrefix + "-tfoot";
     table.append(footer);
 
     let navRow = document.createElement("tr");
     navRow.id = grid.tableId + "Foot";
-    navRow.className = "table-foot";
+    navRow.className = grid.classPrefix +"-foot";
     footer.append(navRow);
 
     grid.columns.forEach((column) => {
       let tf = document.createElement("td");
-      tf.className = "table-footer-thin";
+      tf.className = grid.classPrefix +"-footer";
       navRow.append(tf)
     });
   }
@@ -573,11 +577,12 @@ class Table extends ItemGrid {
     let table = document.createElement("table");
     grid.table = table;
     table.id = grid.tableId;
-    table.class = "table";
+    table.className = grid.classPrefix + "-table";
     setWidths(table, "100%");
     place.append(table);
 
     let group = document.createElement("colgroup");
+    group.className = grid.classPrefix + "-colgroup";
     setWidths(group, "100%");
 
     let totalLength = grid.columns
@@ -588,6 +593,7 @@ class Table extends ItemGrid {
 
     grid.columns.forEach((column) => {
       let col = document.createElement("col");
+      col.className = grid.classPrefix + "-col";
       let width = Math.floor((boxSize(column.displayLength()) * 100) / totalLength) + "%";
       console.log({ total: totalLength, column: column.fieldName, length: column.displayLength(), width: width });
       setWidths(col, width);
@@ -596,11 +602,11 @@ class Table extends ItemGrid {
 
     table.appendChild(group);
 
-    grid.addHeader(table, "thead");
+    grid.addHeader(table);
 
-    grid.addBody(table, "tbody");
+    grid.addBody(table);
 
-    grid.addFooter(table, "tfoot");
+    grid.addFooter(table);
   }
 
   freeRow() {
@@ -664,20 +670,21 @@ class ExpandingTable extends Table {
       columns,
       actions,
       editMode,
-      children
+      children,
+      "expanding"
     );
   }
 
-  addHeader(table, className) {
-    super.addHeader(table, className + " scroll");
+  addHeader(table) {
+    super.addHeader(table);
   }
 
-  addBody(table, className) {
-    super.addBody(table, className + " scroll");
+  addBody(table) {
+    super.addBody(table);
   }
 
-  addFooter(table, className) {
-    super.addFooter(table, className + " scroll");
+  addFooter(table) {
+    super.addFooter(table);
   }
 
   removeRow(row) {
@@ -706,7 +713,7 @@ class ExpandingTable extends Table {
       rowNum++
     ) {
       let row =
-        rowNum < grid.pageSize ? grid.rows[rowNum] : grid.appendTableRow(grid);
+        rowNum < grid.pageSize ? grid.rows[rowNum] : grid.appendTableRow();
       let entity =
         entities.length > 0 && rowNum < entities.length
           ? entities[rowNum]
@@ -733,7 +740,8 @@ class PagedTable extends Table {
       columns,
       actions,
       editMode,
-      children
+      children,
+      "table"
     );
 
     this.prev = undefined;
@@ -786,24 +794,24 @@ class PagedTable extends Table {
     return next;
   }
 
-  addFooter(table, className) {
+  addFooter(table) {
     let grid = this;
 
     let footer = document.createElement("tfoot");
     footer.id = grid.tableId + "_tfoot";
-    footer.className = className;
+    footer.className = grid.classPrefix + "-tfoot";
     table.append(footer);
 
     let navRow = document.createElement("tr");
     navRow.id = grid.tableId + "Foot";
-    navRow.className = "table-foot";
+    navRow.className = grid.classPrefix +"-foot";
     footer.append(navRow);
 
     grid.prev = grid.addPrev(navRow);
 
     for (let i = 0 ; i < grid.columns.length - 2; i++) {
       let tf = document.createElement("td");
-      tf.className = "table-footer";
+      tf.className = grid.classPrefix +"-footer";
       navRow.append(tf)
     }
 

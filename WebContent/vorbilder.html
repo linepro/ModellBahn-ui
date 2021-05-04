@@ -15,31 +15,33 @@
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
-    const columns = [
-      GATTUNG_SELECT(Editable.NEVER, true),
-      UNTER_KATEGORIE_SELECT(Editable.NEVER, true),
-      BAHNVERWALTUNG_SELECT(Editable.NEVER, false),
-      HERSTELLER(Editable.NEVER, false),
-      BAUZEIT(Editable.NEVER, false),
-      AUSSERDIENST(Editable.NEVER, false),
-      MENGE(Editable.NEVER, false),
-      ABBILDUNG(Editable.NEVER, false)
-    ];
-   
-    const actions = [
-      newAction("vorbild.html"),
-      editAction("vorbild.html"),
-      deleteAction()
-    ];
-
-    const vorbilder = new PagedTable(10, "vorbild", "vorbilder", columns, actions, EditMode.UPDATE);
-
     async function init() {
       await layout(NavMenu.INVENTORY)
       .then(() => initDropDown(GATTUNG_DROP))
       .then(() => initDropDown(UNTER_KATEGORIE_DROP))
       .then(() => initDropDown(BAHNVERWALTUNG_DROP))
-      .then(() => vorbilder.init())
+      .then(() => {
+        const columns = [
+          GATTUNG_SELECT(Editable.NEVER, true),
+          UNTER_KATEGORIE_SELECT(Editable.NEVER, true),
+          BAHNVERWALTUNG_SELECT(Editable.NEVER, false),
+          HERSTELLER(Editable.NEVER, false),
+          BAUZEIT(Editable.NEVER, false),
+          AUSSERDIENST(Editable.NEVER, false),
+          MENGE(Editable.NEVER, false),
+          ABBILDUNG(Editable.NEVER, false)
+        ];
+
+        const actions = [
+          newAction("vorbild.html"),
+          editAction("vorbild.html"),
+          deleteAction()
+        ];
+
+        const vorbilder = new PagedTable(10, "vorbild", "vorbilder", columns, actions, EditMode.UPDATE);
+
+        vorbilder.init();
+      })
       .catch(error => reportError("load", error));
     }
   </script>

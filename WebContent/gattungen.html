@@ -14,11 +14,13 @@
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
-    const gattungen = new NamedItemTable("gattung", "gattungen");
-
     async function init() {
       await layout(NavMenu.REF_DATA)
-      .then(() => gattungen.init())
+      .then(() => {
+        const gattungen = new NamedItemTable("gattung", "gattungen");
+
+        gattungen.init();
+      })
       .catch(error => reportError("load", error));
     }
   </script>

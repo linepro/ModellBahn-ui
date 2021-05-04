@@ -12,25 +12,26 @@
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
-    const zugenColumns = [
-      NAMEN(Editable.ADD),
-      ZUG_TYP_SELECT(Editable.ADD),
-      BEZEICHNUNG(Editable.ADD),
-      LANGE(Editable.NEVER)
-    ];
-   
-    const zugenActions = [
-      newAction("zug.html"),
-      editAction("zug.html"),
-      deleteAction()
-    ];
-
-    const zugen = new PagedTable(10, "zug", "zugen", zugenColumns, zugenActions, EditMode.UPDATE);
-
     async function init() {
       await layout(NavMenu.INVENTORY)
       .then(() => initDropDown(ZUG_TYP_DROP))
-      .then(() => zugen.init())
+      .then(() => {
+        const zugenColumns = [
+          NAMEN(Editable.ADD),
+          ZUG_TYP_SELECT(Editable.ADD),
+          BEZEICHNUNG(Editable.ADD),
+          LANGE(Editable.NEVER)
+        ];
+       
+        const zugenActions = [
+          newAction("zug.html"),
+          editAction("zug.html"),
+          deleteAction()
+        ];
+
+        const zugen = new PagedTable(10, "zug", "zugen", zugenColumns, zugenActions, EditMode.UPDATE);
+        zugen.init();
+      })
       .catch(error => reportError("load", error));
     }
   </script>

@@ -14,19 +14,21 @@
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
-    const columns = [
-      NAMEN(Editable.ADD, true),
-      BEZEICHNUNG(Editable.UPDATE, true),
-      LAND_SELECT(Editable.UPDATE, true),
-      ABBILDUNG(Editable.UPDATE, false)
-    ];
-
-    const bahnverwaltungen = new ListEditTable(10, "bahnverwaltung", "bahnverwaltungen", columns, EditMode.UPDATE);
-
     async function init() {
       await layout(NavMenu.REF_DATA)
       .then(() => initDropDown(LAND_DROP))
-      .then(() => bahnverwaltungen.init())
+      .then(() => {
+        const columns = [
+          NAMEN(Editable.ADD, true),
+          BEZEICHNUNG(Editable.UPDATE, true),
+          LAND_SELECT(Editable.UPDATE, true),
+          ABBILDUNG(Editable.UPDATE, false)
+        ];
+
+        const bahnverwaltungen = new ListEditTable(10, "bahnverwaltung", "bahnverwaltungen", columns, EditMode.UPDATE);
+
+        bahnverwaltungen.init();
+      })
       .catch(error => reportError("load", error));
     }
   </script>

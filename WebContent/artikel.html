@@ -17,52 +17,6 @@
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
-    const anderungenColumns = [
-      new NumberColumn("ANDERUNG", "anderungId", fieldGetter, fieldSetter, Editable.NEVER, true),
-      new DropDownColumn("ANDERUNGS_TYP", "anderungsTyp", fieldGetter, fieldSetter, ANDERUNGS_TYP_DROP, Editable.UPDATE, true),
-      new DateColumn("DATUM", "anderungsDatum", dateGetter, dateSetter, Editable.UPDATE, true),
-      BEZEICHNUNG(Editable.UPDATE, true),
-      MENGE(Editable.UPDATE, true)
-    ];
-
-    const anderungActions = [
-      addAction("anderungen"),
-      saveAction(),
-      deleteAction()
-    ];
-
-    const anderungen = new ExpandingTable(5, "anderungen", "anderungen", anderungenColumns, anderungActions, EditMode.UPDATE);
-
-    const artikelColumns = [
-      ARTIKEL(Editable.NEVER, true),
-      PRODUKT_SELECT(Editable.ADD, true),
-      BEZEICHNUNG(Editable.UPDATE, true),
-      KAUFDATUM(Editable.UPDATE, false),
-      WAHRUNG_SELECT(Editable.UPDATE, false),
-      PREIS(Editable.UPDATE, false),
-      MENGE(Editable.UPDATE, true),
-      new NumberColumn("VERBLEIBENDE", "verbleibende", fieldGetter, fieldSetter, Editable.UPDATE, true),
-      STEUERUNG_SELECT(Editable.UPDATE, false),
-      MOTOR_TYP_SELECT(Editable.UPDATE, false),
-      LICHT_SELECT(Editable.UPDATE, false),
-      KUPPLUNG_SELECT(Editable.UPDATE, false),
-      DECODER_SELECT(Editable.UPDATE, false),
-      ANMERKUNG(Editable.UPDATE, false),
-      new TextColumn("BELADUNG", "beladung", fieldGetter, fieldSetter, Editable.UPDATE, false, 30),
-      ABBILDUNG(Editable.UPDATE, false),
-      STATUS_SELECT(Editable.UPDATE, true)
-    ];
-   
-    const artikelActions = [
-      saveAction()
-    ];
-
-    const artikelChildren = [
-      anderungen
-    ];
-
-    const artikel = new Form("artikel", "artikel", artikelColumns, artikelActions, EditMode.UPDATE, artikelChildren);
-
     async function init() {
       await layout(NavMenu.BACK)
       .then(() => initDropDown(ANDERUNGS_TYP_DROP))
@@ -74,7 +28,55 @@
       .then(() => initDropDown(KUPPLUNG_DROP))
       .then(() => initDropDown(DECODER_DROP))
       .then(() => initDropDown(STATUS_DROP))
-      .then(() => artikel.init())
+      .then(() => {
+        const anderungenColumns = [
+          new NumberColumn("ANDERUNG", "anderungId", fieldGetter, fieldSetter, Editable.NEVER, true),
+          new DropDownColumn("ANDERUNGS_TYP", "anderungsTyp", fieldGetter, fieldSetter, ANDERUNGS_TYP_DROP, Editable.UPDATE, true),
+          new DateColumn("DATUM", "anderungsDatum", dateGetter, dateSetter, Editable.UPDATE, true),
+          BEZEICHNUNG(Editable.UPDATE, true),
+          MENGE(Editable.UPDATE, true)
+        ];
+
+        const anderungActions = [
+          addAction("anderungen"),
+          saveAction(),
+          deleteAction()
+        ];
+
+        const anderungen = new ExpandingTable(5, "anderungen", "anderungen", anderungenColumns, anderungActions, EditMode.UPDATE);
+
+        const artikelColumns = [
+          ARTIKEL(Editable.NEVER, true),
+          PRODUKT_SELECT(Editable.ADD, true),
+          BEZEICHNUNG(Editable.UPDATE, true),
+          KAUFDATUM(Editable.UPDATE, false),
+          WAHRUNG_SELECT(Editable.UPDATE, false),
+          PREIS(Editable.UPDATE, false),
+          MENGE(Editable.UPDATE, true),
+          new NumberColumn("VERBLEIBENDE", "verbleibende", fieldGetter, fieldSetter, Editable.UPDATE, true),
+          STEUERUNG_SELECT(Editable.UPDATE, false),
+          MOTOR_TYP_SELECT(Editable.UPDATE, false),
+          LICHT_SELECT(Editable.UPDATE, false),
+          KUPPLUNG_SELECT(Editable.UPDATE, false),
+          DECODER_SELECT(Editable.UPDATE, false),
+          ANMERKUNG(Editable.UPDATE, false),
+          new TextColumn("BELADUNG", "beladung", fieldGetter, fieldSetter, Editable.UPDATE, false, 30),
+          ABBILDUNG(Editable.UPDATE, false),
+          STATUS_SELECT(Editable.UPDATE, true)
+        ];
+       
+        const artikelActions = [
+          saveAction()
+        ];
+
+        const artikelChildren = [
+          anderungen
+        ];
+
+        const artikel = new Form("artikel", "artikel", artikelColumns, artikelActions, EditMode.UPDATE, artikelChildren);
+
+        artikel.init();
+      })
       .catch(error => reportError("load", error));
     }
   </script>

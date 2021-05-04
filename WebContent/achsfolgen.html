@@ -14,11 +14,13 @@
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
-    const achsfolgen = new NamedItemTable("achsfolg", "achsfolgen");
-
     async function init() {
       await layout(NavMenu.REF_DATA)
-      .then(() => achsfolgen.init())
+      .then(() => {
+        const achsfolgen = new NamedItemTable("achsfolg", "achsfolgen");
+
+        achsfolgen.init();
+      })
       .catch(error => reportError("load", error));
     }
   </script>

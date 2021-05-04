@@ -14,23 +14,6 @@
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
-    const produktenColumns = [
-      HERSTELLER_SELECT(Editable.NEVER, true),
-      BESTELL_NR(Editable.NEVER, true),
-      UNTER_KATEGORIE_SELECT(Editable.NEVER, true),
-      MASSSTAB_SELECT(Editable.NEVER, false),
-      SPURWEITE_SELECT(Editable.NEVER, false),
-      BEZEICHNUNG(Editable.NEVER, true)
-    ];
-   
-    const produktenActions = [
-      newAction("produkt.html"),
-      editAction("produkt.html"),
-      deleteAction()
-    ];
-
-    const produkten = new PagedTable(10, "produkt", "produkten", produktenColumns, produktenActions, EditMode.UPDATE);
-
     async function init() {
       await layout(NavMenu.INVENTORY)
       .then(() => initDropDown(HERSTELLER_DROP))
@@ -40,7 +23,26 @@
       .then(() => initDropDown(EPOCH_DROP))
       .then(() => initDropDown(BAHNVERWALTUNG_DROP))
       .then(() => initDropDown(GATTUNG_DROP))
-      .then(() => produkten.init())
+      .then(() => {
+        const produktenColumns = [
+          HERSTELLER_SELECT(Editable.NEVER, true),
+          BESTELL_NR(Editable.NEVER, true),
+          UNTER_KATEGORIE_SELECT(Editable.NEVER, true),
+          MASSSTAB_SELECT(Editable.NEVER, false),
+          SPURWEITE_SELECT(Editable.NEVER, false),
+          BEZEICHNUNG(Editable.NEVER, true)
+        ];
+       
+        const produktenActions = [
+          newAction("produkt.html"),
+          editAction("produkt.html"),
+          deleteAction()
+        ];
+
+        const produkten = new PagedTable(10, "produkt", "produkten", produktenColumns, produktenActions, EditMode.UPDATE);
+
+        produkten.init();
+      })
       .catch(error => reportError("load", error));
     }
   </script>

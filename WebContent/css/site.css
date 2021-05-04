@@ -238,40 +238,12 @@ samp {
   font-size: 1rem;
 }
 
+col.expanding-col {
+  display: inline-block;
+}
+
 dfn {
   font-style: italic;
-}
-
-div.ffoot {
-  background-color: LightSkyBlue;
-  color: white;
-  font-weight: bold;
-  height: fit-content;
-  padding: 0;
-  text-align: center;
-  width: 100%;
-}
-
-div.fhead {
-  background-color: LightSkyBlue;
-  color: white;
-  display: flex;
-  font-weight: bold;
-  height: 3rem;
-  padding: 0;
-  text-align: left;
-  width: 100%;
-}
-
-div.fhead > button.nav-button,
-div.form-heading-btn {
-  height: 3rem;
-  text-align: right;
-  vertical-align: middle;
-}
-
-div.form-body {
-  display: block;
 }
 
 div.form-btn {
@@ -322,6 +294,41 @@ div.form-row {
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: flex-start;
+}
+
+div.form-table {
+}
+
+div.form-tbody {
+  display: block;
+}
+
+div.form-tfoot {
+  background-color: LightSkyBlue;
+  color: white;
+  font-weight: bold;
+  height: fit-content;
+  padding: 0;
+  text-align: center;
+  width: 100%;
+}
+
+div.form-thead {
+  background-color: LightSkyBlue;
+  color: white;
+  display: flex;
+  font-weight: bold;
+  height: 3rem;
+  padding: 0;
+  text-align: left;
+  width: 100%;
+}
+
+div.form-thead > button.nav-button,
+div.form-heading-btn {
+  height: 3rem;
+  text-align: right;
+  vertical-align: middle;
 }
 
 div.home,
@@ -449,6 +456,7 @@ img.form-control,
 img.form-control-select,
 img.table-cell-select {
   max-height: 3rem;
+  max-width: 8rem;
   order: 2;
   writing-mode: vertical-lr;
 }
@@ -570,7 +578,8 @@ textarea[focus] {
 input[type="checkbox"] {
   float: left;
   height: 1rem;
-  margin: 0 0.3rem 0 0.3rem;
+  margin: 0 0.3rem 0 1F.3rem;
+  position: relative;
   width: unset;
   text-align: center;
   vertical-align: middle;
@@ -710,6 +719,11 @@ table {
   width: 100%;
 }
 
+table.expanding-table {
+  display: flex;
+  flex-flow: column;
+}
+
 tbody {
   flex: 2 2 auto;
   height: 31.8rem;
@@ -721,8 +735,17 @@ tbody {
   width: 100%;
 }
 
-tbody.scroll {
+tbody.expanding-tbody {
+  display: block;
+  flex: 2 2 auto;
+  height: 31.8rem;
+  max-height: 31.8rem;
+  overflow-x: hidden;
   overflow-y: scroll;
+  padding: 0;
+  scroll-behavior: auto;
+  scrollbar-width: thin;
+  width: 100%;
 }
 
 tbody::-webkit-scrollbar {
@@ -740,12 +763,13 @@ tbody::-webkit-scrollbar-thumb {
   border: 0.1rem solid lightGrey;
 }
 
-
+td.expanding-cell,
 td.table-cell {
   height: 2.5rem;
   vertical-align: middle;
 }
 
+td.expanding-cell-btn,
 td.table-cell-btn {
   border-right: 1rem;
   height: 2.5rem;
@@ -755,12 +779,12 @@ td.table-cell-btn {
   vertical-align: middle;
 }
 
-td.table-footer {
+td.footer {
   height: 2.5rem;
   text-align: center;
 }
 
-td.table-footer-thin {
+td.expanding-footer {
   height: 0.3rem;
   text-align: center;
 }
@@ -789,8 +813,21 @@ tfoot {
   width: 100%;
 }
 
-tfoot.scroll {
+tfoot.expanding-tfoot {
   width: calc(100% - 0.5rem);
+}
+
+th.expanding-heading {
+  height: 3rem;
+  margin: 1.5rem 1rem 0 0.5rem;
+  text-align: left;
+  vertical-align: middle;
+}
+
+th.expanding-heading-btn {
+  height: 3rem;
+  text-align: right;
+  vertical-align: middle;
 }
 
 th.table-heading {
@@ -816,8 +853,34 @@ thead {
   width: 100%;
 }
 
-thead.scroll {
+thead.expanding-thead {
+  display: table;
+  flex: 0 0 auto;
+  table-layout: fixed;
   width: calc(100% - 0.5rem);
+}
+
+tr.expanding-foot {
+  display: table;
+  font-weight: bold;
+  height: fit-content;
+  table-layout: fixed;
+  width: 100%;
+}
+
+tr.expanding-head {
+  display: table;
+  font-weight: bold;
+  height: 3rem;
+  table-layout: fixed;
+  width: 100%;
+}
+
+tr.expanding-row {
+  display: table;
+  height: 3.1rem;
+  table-layout: fixed;
+  width: 100%;
 }
 
 tr.table-foot {
@@ -837,15 +900,15 @@ tr.table-row {
   width: 100%;
 }
 
-tr.table-row:hover {
+tr:hover {
   background-color: Khaki;
 }
 
-tr.table-row:nth-child(even) {
+tr:nth-child(even) {
   background-color: CornSilk;
 }
 
-tr.table-row:nth-child(even):hover {
+tr:nth-child(even):hover {
   background-color: Khaki;
 }
 
