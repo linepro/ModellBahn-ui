@@ -523,6 +523,7 @@ img.image-select {
 
 img.table-cell {
   order: 2;
+  margin-left: 1rem;
   max-height: 2.25rem;
   max-width: calc(100% - 2.7rem);
   vertical-align: bottom;
@@ -819,8 +820,7 @@ tfoot.expanding-tfoot {
 
 th.expanding-heading {
   height: 3rem;
-  margin: 1.5rem 1rem 0 0.5rem;
-  text-align: left;
+  text-align: center;
   vertical-align: middle;
 }
 
@@ -832,8 +832,7 @@ th.expanding-heading-btn {
 
 th.table-heading {
   height: 3rem;
-  margin: 1.5rem 1rem 0 0.5rem;
-  text-align: left;
+  text-align: center;
   vertical-align: middle;
 }
 
