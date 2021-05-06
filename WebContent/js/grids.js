@@ -137,6 +137,25 @@ const saveAction = (rel = "update") =>
     }
   );
 
+const setAction = (fieldName, rel = "update") =>
+  new ActionButton(
+    false,
+    "save",
+    "save",
+    async (event, grid, row) => {
+      if (row.entity) {
+        let updateUrl = actionLink(row.entity, rel);
+        await setRest(
+          updateUrl,
+          fieldName,
+          row.entity[fieldName],
+          (jsonData) => row.bind(jsonData, EditMode.UPDATE),
+          (error) => reportError("updateRow", error)
+        );
+      }
+    }
+  );
+
 class ButtonColumn extends VirtualColumn {
   constructor(actions = []) {
     super();

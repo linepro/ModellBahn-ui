@@ -35,9 +35,9 @@ const checkResponse = async (response) => {
   }
 };
 
-const headers = (contentType, accept) => {
+const headers = (contentType, accept = "application/json, text/html, application/xhtml+xml, application/xml") => {
   let httpHeaders = {
-    "Accept": accept ? accept : "application/json, text/html, application/xhtml+xml, application/xml",
+    "Accept": accept,
     "Accept-Encoding": "gzip, deflate, br",
     "Accept-Language": localStorage.getItem("language"),
     "Cache-Control": "no-cache"
@@ -77,6 +77,16 @@ const putRest = async (endPoint, data, success, failure) => {
     method: "PUT",
     headers: headers("application/json"),
     body: JSON.stringify(data)
+  })
+  .then(response => checkResponse(response))
+  .then(jsonData => success(jsonData))
+  .catch(error => failure(error));
+};
+
+const setRest = async (endPoint, fieldName, value, success, failure) => {
+  await fetch(endPoint + "?" + fieldName + "=" + value, {
+    method: "PUT",
+    headers: headers()
   })
   .then(response => checkResponse(response))
   .then(jsonData => success(jsonData))

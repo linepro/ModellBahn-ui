@@ -35,7 +35,7 @@
         ];
        
         const adressActions = [
-          saveAction()
+          setAction("adress")
         ];
 
         const adressen = new ExpandingTable(2, undefined, "adressen", adressColumns, adressActions, EditMode.UPDATE);
@@ -48,7 +48,7 @@
         ];
        
         const cvActions = [
-          saveAction()
+          setAction("wert")
         ];
 
         const cvs = new ExpandingTable(10, undefined, "cvs", cvColumns, cvActions, EditMode.UPDATE);
@@ -61,7 +61,7 @@
         ];
        
         const funktionenActions = [
-          saveAction()
+          setAction("funktion")
         ];
 
         const funktionen = new ExpandingTable(10, undefined, "funktionen", funktiononenColumns, funktionenActions, EditMode.UPDATE);
