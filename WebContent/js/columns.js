@@ -54,10 +54,10 @@ const valueAndUnits = (cssSize) => {
   return { value: dims[1], units: dims[2] };
 };
 
-const setWidths = (element, width) => {
+const setWidths = (element, width, minWidth = width, maxWidth = width) => {
   element.style.width = width;
-  element.style.maxWidth = width;
-  element.style.minWidth = width;
+  element.style.maxWidth = minWidth;
+  element.style.minWidth = maxWidth;
 };
 
 class VirtualColumn {
@@ -252,8 +252,11 @@ class BoolColumn extends Column {
   }
 
   initialise(chk) {
+    let column = this;
+
     chk = super.initialise(chk);
     chk.type = "checkbox";
+    chk.classList.add(column.fieldName);
     return chk;
   }
 
@@ -620,10 +623,11 @@ class FileColumn extends Column {
       undefined,
       editable,
       required,
-      14
+      11
     );
 
     this.mask = mask;
+    this.minWidth = "11rem";
   }
 
   createSelector(headerRow) {
@@ -1192,16 +1196,13 @@ class ImageSelectColumn extends PopupColumn {
       fieldGetter,
       fieldSetter,
       editable,
-      required
+      required,
+      14
     );
 
     this.options = dropDown.options; 
     this.dropSize = dropSize;
-  }
-
-  displayLength() {
-    let column = this;
-    return Math.max(14, column.headingLength);
+    this.minWidth = "14rem";
   }
 
   createControl(row, className) {

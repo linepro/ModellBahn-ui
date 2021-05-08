@@ -166,8 +166,9 @@ class ButtonColumn extends VirtualColumn {
         0
       );
     this.rowCount = this.actions.length - this.headingCount;
-    this.length = Math.max(this.headingCount, this.rowCount) * 2.75;
+    this.length = Math.max(this.headingCount, this.rowCount) * 2.2;
     this.grid = undefined;
+    this.minWidth = (Math.max(this.headingCount, this.rowCount) * 2.2)+"rem";
   }
 
   addHeading(grid, headerRow) {
@@ -614,8 +615,7 @@ class Table extends ItemGrid {
       let col = document.createElement("col");
       col.className = grid.classPrefix + "-col";
       let width = Math.floor((boxSize(column.displayLength()) * 100) / totalLength) + "%";
-      console.log({ total: totalLength, column: column.fieldName, length: column.displayLength(), width: width });
-      setWidths(col, width);
+      setWidths(col, column.minWidth ? column.minWidth : width);
       group.append(col);
     });
 

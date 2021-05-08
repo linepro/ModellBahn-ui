@@ -246,6 +246,17 @@ dfn {
   font-style: italic;
 }
 
+div.autoclose-container {
+  background-color: LightYellow;
+  border: 1px solid LightSkyBlue;
+  display: block;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  top: -3.0rem;
+  z-index: 999;
+}
+
 div.form-btn {
   border-right: 1rem;
   height: 2.7rem;
@@ -273,7 +284,7 @@ div.form-footer {
 
 div.form-head {
   font-weight: bold;
-  height: 3rem;
+  height: 2rem;
   width: 100%;
 }
 
@@ -283,8 +294,8 @@ div.form-item {
   flex-direction: row;
   flex-wrap: nowrap;
   height: 3.1rem;
-  margin: 0.1rem 0.1rem 0 0;
-  padding: 0.3rem 0.3rem 0 0;
+  margin: 0.5rem 0.3rem 0 0.3rem;
+  padding: 0;
 }
 
 div.form-row {
@@ -294,6 +305,7 @@ div.form-row {
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: flex-start;
+  margin: 0 0 0.5rem 0;
 }
 
 div.form-table {
@@ -318,7 +330,7 @@ div.form-thead {
   color: white;
   display: flex;
   font-weight: bold;
-  height: 3rem;
+  height: 2.3rem;
   padding: 0;
   text-align: left;
   width: 100%;
@@ -326,7 +338,7 @@ div.form-thead {
 
 div.form-thead > button.nav-button,
 div.form-heading-btn {
-  height: 3rem;
+  height: 2rem;
   text-align: right;
   vertical-align: middle;
 }
@@ -577,13 +589,19 @@ textarea[focus] {
 }
 
 input[type="checkbox"] {
-  float: left;
-  height: 1rem;
-  margin: 0 0.3rem 0 1.3rem;
+  cursor: pointer;
+  display: inline-block;
+  height: 2.1rem;
+  margin-left: 1rem;
   position: relative;
-  width: unset;
   text-align: center;
   vertical-align: middle;
+  width: 2.1rem;
+}
+
+input.gerausch,
+input.programmable {
+  -webkit-appearance: unset;
 }
 
 input[type="date"] {
@@ -592,9 +610,9 @@ input[type="date"] {
   padding: 0;
 }
 
-.form-control-picker[readonly]:enabled {
-  border: 0;
-  background-color: Ivory;
+input.autoselect {
+  margin: 0;
+  width: 95%;
 }
 
 input[type="number"]::-webkit-inner-spin-button,
@@ -633,6 +651,18 @@ legend {
   max-width: 100%;
   padding: 0;
   white-space: normal;
+}
+
+li.autoselect,
+li.image-select {
+  background-color: LightYellow;
+  margin: 0.2rem;
+}
+
+li.autoselect.selected,
+li.image-select.selected {
+  background-color: Ivory;
+  border: 1px dashed LightSkyBlue;
 }
 
 li.nav {
@@ -815,29 +845,29 @@ tfoot {
 }
 
 tfoot.expanding-tfoot {
-  width: calc(100% - 0.5rem);
+  width: 100%;
 }
 
 th.expanding-heading {
-  height: 3rem;
+  height: 2rem;
   text-align: center;
   vertical-align: middle;
 }
 
 th.expanding-heading-btn {
-  height: 3rem;
+  height: 2rem;
   text-align: right;
   vertical-align: middle;
 }
 
 th.table-heading {
-  height: 3rem;
+  height: 2rem;
   text-align: center;
   vertical-align: middle;
 }
 
 th.table-heading-btn {
-  height: 3rem;
+  height: 2rem;
   text-align: right;
   vertical-align: middle;
 }
@@ -846,7 +876,7 @@ thead {
   background-color: LightSkyBlue;
   color: white;
   font-weight: bold;
-  height: 3rem;
+  height: 2.3rem;
   padding: 0;
   text-align: left;
   width: 100%;
@@ -856,7 +886,7 @@ thead.expanding-thead {
   display: table;
   flex: 0 0 auto;
   table-layout: fixed;
-  width: calc(100% - 0.5rem);
+  width: 100%;
 }
 
 tr.expanding-foot {
@@ -870,7 +900,7 @@ tr.expanding-foot {
 tr.expanding-head {
   display: table;
   font-weight: bold;
-  height: 3rem;
+  height: 2rem;
   table-layout: fixed;
   width: 100%;
 }
@@ -890,7 +920,7 @@ tr.table-foot {
 
 tr.table-head {
   font-weight: bold;
-  height: 3rem;
+  height: 2rem;
   width: 100%;
 }
 
@@ -1034,34 +1064,6 @@ ul::-webkit-scrollbar-thumb {
   z-index: 999;
 }
 
-div.autoclose-container {
-  background-color: LightYellow;
-  border: 1px solid LightSkyBlue;
-  display: block;
-  margin: 0;
-  padding: 0;
-  position: relative;
-  top: -3.0rem;
-  z-index: 999;
-}
-
-input.autoselect {
-  margin: 0;
-  width: 95%;
-}
-
-li.autoselect,
-li.image-select {
-  background-color: LightYellow;
-  margin: 0.2rem;
-}
-
-li.autoselect.selected,
-li.image-select.selected {
-  background-color: Ivory;
-  border: 1px dashed LightSkyBlue;
-}
-
 .closebtn {
   cursor: pointer;
   font-weight: bold;
@@ -1101,8 +1103,34 @@ li.image-select.selected {
   order: 2;
 }
 
+.form-control-picker[readonly]:enabled {
+  border: 0;
+  background-color: Ivory;
+}
+
+.gerausch::after,
+.programmable::after {
+  background-size: cover;
+  content: '\0020';
+  display: inline-block;
+  height: 2.1rem;
+  max-height: 2.1rem;
+  max-width: 2.1rem;
+  min-height: 2.1rem;
+  min-width: 2.1rem;
+  position: relative;
+  width: 2.1rem;
+}
+
+.gerausch:checked::after {
+  background-image: url('../img/gerausch.png');
+}
+
+.gerausch:not(:checked)::after { 
+  background-image: url('../img/gerauschlos.png');
+}
+
 .modal {
-  /* background-color: rgb(0, 0, 0); */
   background-color: rgba(0, 0, 0, 0.4);
   display: none;
   height: 100%;
@@ -1131,6 +1159,14 @@ li.image-select.selected {
   position: relative;
   top: 6rem;
   width: fit-content;
+}
+
+.programmable:checked::after {
+  background-image: url('../img/programmierbar.png');
+}
+
+.programmable:not(:checked)::after { 
+  background-image: url('../img/fest.png');
 }
 
 .the-datepicker__container {
