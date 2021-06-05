@@ -394,14 +394,14 @@ const addFooter = () => {
   div.appendChild(ul);
 
   let api = document.createElement("li");
-  api.style = "float: left; position: relative; transform: translate(1rem, 0);";
+  api.style = "float: left; position: relative; transform: translate(1rem, 0)";
   ul.appendChild(api);
 
   let a = addAnchor(api, "API", "/swagger-ui/index.html");
-  a.class = "nav-button";
-  a.style="float: left; position: relative; transform: translate(1rem, -0.5rem);";
+  a.style = "float: left;position: relative;margin-left: 0.5rem";
 
   let co = document.createElement("li");
+  co.style = "float: left; position: relative; transform: translate(1rem, 0);";
   addText(co, translate("COPYRIGHT"));
   ul.appendChild(co);
 };
