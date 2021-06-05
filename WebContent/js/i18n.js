@@ -3,11 +3,25 @@
 
 const DEFAULT_LANGUAGE = "de-DE";
 const ALTERNATE_LANGUAGE = "en-GB";
+const _LANGUAGES = [ DEFAULT_LANGUAGE, ALTERNATE_LANGUAGE ];
 
-const _TRANSLATIONS = {};
+const setLanguage = (language) => {
+  language =_LANGUAGES.includes(language) ? language : DEFAULT_LANGUAGE;
+  sessionStorage.setItem("language", language);
+  console.log("language set to " + language);
+}
 
 const getLanguage = () => {
-  return localStorage.getItem("language") ? localStorage.getItem("language") : DEFAULT_LANGUAGE;
+  if (sessionStorage.getItem("language")) {
+    return sessionStorage.getItem("language");
+  } else {
+    setLanguage(navigator.language);
+    return getLanguage();
+  }
+};
+
+const primaryLanguage = (language) => {
+  return language.split("-")[0];
 };
 
 const _DATE_FORMATTER = new Intl.DateTimeFormat(getLanguage(), { year: "numeric", month: "numeric", day: "numeric", timeZone: "UTC" });
@@ -24,15 +38,6 @@ const _LOCAL_DATE_FORMAT = _TEMPLATE_DATE
   .replace("22","d")
   .replace("11","m")
   .replace("1999","Y");
-
-const setLanguage = (language) => {
-  localStorage.setItem("language", language);
-  console.log("language: %s", language);
-};
-
-const primaryLanguage = (language) => {
-  return language.split("-")[0];
-};
 
 const dateToLocalString = (date) => date ? _DATE_FORMATTER.format(date) : "";
 
@@ -51,9 +56,11 @@ const localStringToDate = (value) => {
   return undefined;
 };
 
+const _TRANSLATIONS = {};
+
 const loadTranslations = async (language) => {
   await download(
-    window.location.origin + "/ModellBahn/modellbahn-ui/_locales/" + primaryLanguage(language) + "/messages.json",
+    fileUrl("_locales/" + primaryLanguage(language) + "/messages.json"),
     (data) => {
       try {
         Object.keys(data)

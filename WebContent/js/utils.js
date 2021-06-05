@@ -1,13 +1,6 @@
 //module "utils.js";
 "use strict";
 
-const apiUrl = (path) => {
-  return window.location.origin + "/ModellBahn/api/" + path;
-};
-const fileUrl = (path) => {
-  return window.location.origin + "/ModellBahn/modellbahn-ui/" + path;
-};
-
 const fetchUrl = (dataType) => {
   let searchParams = new URLSearchParams(location.search);
   if (searchParams.has("self")) {
@@ -30,6 +23,14 @@ const createImage = (source, className) => {
   img.className = className;
   img.src = source ? source : "";
   return img;
+};
+
+const addAnchor = (element, text, url) => {
+  let a = document.createElement("a");
+  a.href = url;
+  addText(a, text);
+  element.appendChild(a);
+  return a;
 };
 
 const addHeading = (element, type, text) => {
@@ -185,40 +186,6 @@ const showModal = content => {
   modal.style.display = "block";
 };
 
-const showAbout = async licenseUrl => {
-  await download(
-    licenseUrl,
-    text => {
-      let about = document.createElement("div");
-      about.className = "about";
-
-      let heading = document.createElement("div");
-      heading.className = "about-header";
-      about.appendChild(heading);
-
-      let h2 = addHeading(heading, "h2", "ABOUT");
-      h2.className = "about-h2";
-
-      let body = document.createElement("div");
-      body.className = "about-body";
-      about.appendChild(body);
-
-      let area = document.createElement("textarea");
-      area.value = text;
-      area.readOnly = true;
-      area.disabled = true;
-      body.appendChild(area);
-
-      let footer = document.createElement("div");
-      footer.className = "about-footer";
-      about.appendChild(footer);
-
-      showModal(about);
-    },
-    error => reportError(licenseUrl, error)
-  );
-};
-
 const setActiveTab = (event, tabName) => {
   let activeLink = tabName.replace("Tab", "Link");
   let tabContents = document.getElementsByClassName("tabContent");
@@ -278,7 +245,6 @@ const addLogo = (element) => {
   logo.src = imageSource("ModellBahn", ".svg");
   logo.className = "logo";
   element.appendChild(logo);
-  logo.addEventListener("click", () => showAbout(fileUrl(translate("LIZENZ"))), false);
   return logo;
 };
 
@@ -327,12 +293,25 @@ const addNavBar = (menuStyle) => {
     heading.className = "title";
 
     let bar = document.createElement("div");
-    bar.style.display = "flex";
-    bar.style.float = "right";
+    bar.className ="dropdown";
     home.appendChild(bar);
 
     addLingo(bar);
-    addLogo(bar);
+
+    let logo = document.createElement("div");
+    logo.className = "logo dropdown";
+    addLogo(logo);
+    bar.appendChild(logo);
+
+    let menu = document.createElement("div");
+    menu.className = "dropdown-content";
+    logo.appendChild(menu);
+
+    if (sessionStorage.getItem("username")) {
+      addAnchor(menu, "PROFILE", "/account/" + sessionStorage.getItem("username"));
+      addAnchor(menu, "LOGOUT", "/logout");
+    }
+    addAnchor(menu, "ABOUT", "/about.html");
 
     addHeading(nav, "H3", "REF_DATA");
 
@@ -377,10 +356,23 @@ const addNavBar = (menuStyle) => {
     let bar = document.createElement("div");
     bar.style.display = "flex";
     bar.style.float = "right";
+    addLingo(bar);
     div.appendChild(bar);
 
-    addLingo(bar);
-    addLogo(bar);
+    let logo = document.createElement("div");
+    logo.className = "logo dropdown";
+    addLogo(logo);
+    bar.appendChild(logo);
+
+    let menu = document.createElement("div");
+    menu.className = "dropdown-content";
+    logo.appendChild(menu);
+    
+    if (sessionStorage.getItem("username")) {
+      addAnchor(menu, "ACCOUNT", "/account/" + sessionStorage.getItem("username"));
+      addAnchor(menu, "LOGOUT", "/logout");
+    }
+    addAnchor(menu, "ABOUT", "/about.html");
   }
 
   addRule(nav);
@@ -401,13 +393,21 @@ const addFooter = () => {
   ul.className = "footer";
   div.appendChild(ul);
 
-  let li = document.createElement("li");
-  addText(li, translate("COPYRIGHT"));
-  ul.appendChild(li);
+  let api = document.createElement("li");
+  api.style = "float: left; position: relative; transform: translate(1rem, 0);";
+  ul.appendChild(api);
+
+  let a = addAnchor(api, "API", "/swagger-ui/index.html");
+  a.class = "nav-button";
+  a.style="float: left; position: relative; transform: translate(1rem, -0.5rem);";
+
+  let co = document.createElement("li");
+  addText(co, translate("COPYRIGHT"));
+  ul.appendChild(co);
 };
 
 const layout = async menuStyle => {
-  setAuthorisation("johng", "password");
+  //setAuthorisation("johng", "password");
   await loadTranslations(getLanguage());
   addNavBar(menuStyle);
   addFooter();

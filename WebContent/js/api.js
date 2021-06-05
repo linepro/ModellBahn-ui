@@ -1,37 +1,47 @@
 // module "api.js"
 "use strict";
 
-const setAuthorisation = (userName, password) =>
-  localStorage.setItem("authorisation", "Basic " + btoa(userName + ":" + password));
+const apiUrl = (path) =>
+  window.location.origin.replace(/\/$/, "") + "/api/" + path;
+
+const fileUrl = (path) =>
+  window.location.origin.replace(/\/$/, "") + "/modellbahn-ui/" + path;
+
+const setAuthorisation = (userName, password) => {
+  sessionStorage.setItem("username", userName);
+  sessionStorage.setItem("authorisation", "Basic " + btoa(userName + ":" + password));
+}
+
+class ApiException {
+  constructor(response) {
+    this.status =  response.status;
+    this.type =  response.type;
+    this.url =  response.url;
+    this.body = response.body;
+    this.redirect =  response.redirect;
+  }
+}
 
 const checkResponse = async (response) => {
-  let clone = response.clone();
-  if (200 <= response.status && response.status <= 202) {
-    let contentType = response.headers.get("content-type");
-    if (contentType) {
-      if (contentType.includes("json")) {
-        return response.json();
-      } else if (contentType.includes("text")) {
-        return response.text();
+  if (response.ok) {
+    if (response.redirected) {
+        window.location.href = response.redirect();
+    } else {
+      let contentType = response.headers.get("content-type");
+      if (contentType) {
+        if (contentType.includes("json")) {
+          return response.json();
+        } else if (contentType.includes("text")) {
+          return response.text();
+        }
+        return response.blob();
       }
-      return response.blob();
+      return { _embedded: [], _links: [] };
     }
+  } else if (response.status === 404) {
     return { _embedded: [], _links: [] };
-  } else if (response.status === 204) {
-    return { _embedded: [], _links: [] };
-  } else if (response.status === 400 || response.status === 500) {
-    let errorMessage = "";
-    try {
-      let jsonData = await response.json();
-      errorMessage = jsonData.error + ": " + jsonData.message;
-    } catch (error) {
-      errorMessage = await clone.text();
-    }
-    console.log(errorMessage);
-    throw new Error(errorMessage);
   } else {
-    console.log(response.statusText);
-    throw new Error(response.statusText);
+    throw new ApiException(response);
   }
 };
 

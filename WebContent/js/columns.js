@@ -129,8 +129,19 @@ class Column extends VirtualColumn {
     headerRow.append(header);
   }
 
+  setTitle(ctl) {
+    let column = this;
+
+    let key = column.fieldName + "_invalid";
+    let title = translate(key);
+    if (title != key) ctl.title = title;
+  }
+
   initialise(ctl) {
+    let column = this;
+
     ctl.autoclose = "off";
+    ctl.name = column.name;
     return ctl;
   }
 
@@ -163,6 +174,7 @@ class Column extends VirtualColumn {
     ctl.addEventListener("change", (event) => column.updateEntity(event, row), false);
     ctl.disabled = true;
     ctl.style.visibility = "hidden";
+    column.setTitle(ctl);
     return ctl;
   }
 
@@ -372,7 +384,7 @@ class TextColumn extends Column {
     txt.type = "text";
     txt.maxLength = column.length;
     if (column.pattern) {
-      txt.pattern = column.pattern
+      txt.pattern = column.pattern;
     }
     return txt;
   }
