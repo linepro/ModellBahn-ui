@@ -639,6 +639,7 @@ label.form-label {
   display: block;
   flex: none;
   font-weight: bold;
+  line-height: 0.7;
   margin: 0.1rem 0 0 0;
   order: 1;
   padding: 0.3rem 0 0 0;
@@ -688,6 +689,10 @@ optgroup {
 
 option {
   background-color: inherit;
+}
+
+p {
+  line-height: 1.5;
 }
 
 progress {
