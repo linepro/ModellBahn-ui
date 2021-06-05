@@ -28,7 +28,7 @@ const createImage = (source, className) => {
 const addAnchor = (element, text, url) => {
   let a = document.createElement("a");
   a.href = url;
-  addText(a, text);
+  addText(a, translate(text));
   element.appendChild(a);
   return a;
 };
@@ -294,18 +294,21 @@ const addNavBar = (menuStyle) => {
 
     let bar = document.createElement("div");
     bar.className ="dropdown";
+    bar.style = "float: right;"
     home.appendChild(bar);
-
-    addLingo(bar);
 
     let logo = document.createElement("div");
     logo.className = "logo dropdown";
-    addLogo(logo);
     bar.appendChild(logo);
+
+    addLogo(logo);
 
     let menu = document.createElement("div");
     menu.className = "dropdown-content";
     logo.appendChild(menu);
+
+    let lingo = addLingo(menu);
+    lingo.style = "float: right;"
 
     if (sessionStorage.getItem("username")) {
       addAnchor(menu, "PROFILE", "/account/" + sessionStorage.getItem("username"));
