@@ -25,9 +25,10 @@ const createImage = (source, className) => {
   return img;
 };
 
-const addAnchor = (element, text, url) => {
+const addAnchor = (element, text, url, newWindow) => {
   let a = document.createElement("a");
   a.href = url;
+  if (newWindow) a.target = "_blank";
   addText(a, translate(text));
   element.appendChild(a);
   return a;
@@ -240,12 +241,39 @@ const addLingo = (element) => {
   return lingo;
 };
 
-const addLogo = (element) => {
-  let logo = document.createElement("img");
-  logo.src = imageSource("ModellBahn", ".svg");
-  logo.className = "logo";
-  element.appendChild(logo);
-  return logo;
+const addLogo = (home) => {
+    let bar = document.createElement("div");
+
+    bar.className ="dropdown";
+    bar.style = "float: right;"
+    home.appendChild(bar);
+
+    let logo = document.createElement("div");
+    logo.className = "logo dropdown";
+    bar.appendChild(logo);
+
+    let logoImg = document.createElement("img");
+    logoImg.src = imageSource("ModellBahn", ".svg");
+    logoImg.className = "logo";
+    logo.appendChild(logoImg);
+
+    let menu = document.createElement("div");
+    menu.className = "dropdown-content";
+    logo.appendChild(menu);
+
+    let lingo = addLingo(menu);
+    lingo.style = "float: right;"
+
+    addAnchor(menu, "HOME", "/");
+
+    if (sessionId()) {
+      addAnchor(menu, "PROFILE", "/account");
+      addAnchor(menu, "LOGOUT", "/logout");
+      addAnchor(menu, "CHANGE", "/password");
+    }
+    addAnchor(menu, "ABOUT", "/about.html", true);
+
+    return bar;
 };
 
 const refData = () => [
@@ -276,7 +304,7 @@ const inventory = () => [
   navLink("VORBILDER", fileUrl("vorbilder.html")),
   navLink("ZUGEN", fileUrl("zugen.html"))
   ];
- 
+
 const addNavBar = (menuStyle) => {
   let header = document.getElementsByTagName("HEADER")[0];
   removeChildren(header);
@@ -292,29 +320,7 @@ const addNavBar = (menuStyle) => {
     let heading = addHeading(home, "H1", "MODELLBAHN");
     heading.className = "title";
 
-    let bar = document.createElement("div");
-    bar.className ="dropdown";
-    bar.style = "float: right;"
-    home.appendChild(bar);
-
-    let logo = document.createElement("div");
-    logo.className = "logo dropdown";
-    bar.appendChild(logo);
-
-    addLogo(logo);
-
-    let menu = document.createElement("div");
-    menu.className = "dropdown-content";
-    logo.appendChild(menu);
-
-    let lingo = addLingo(menu);
-    lingo.style = "float: right;"
-
-    if (sessionStorage.getItem("username")) {
-      addAnchor(menu, "PROFILE", "/account/" + sessionStorage.getItem("username"));
-      addAnchor(menu, "LOGOUT", "/logout");
-    }
-    addAnchor(menu, "ABOUT", "/about.html");
+    addLogo(home);
 
     addHeading(nav, "H3", "REF_DATA");
 
@@ -356,26 +362,7 @@ const addNavBar = (menuStyle) => {
                .forEach((li) => opts.appendChild(li));
     }
 
-    let bar = document.createElement("div");
-    bar.style.display = "flex";
-    bar.style.float = "right";
-    addLingo(bar);
-    div.appendChild(bar);
-
-    let logo = document.createElement("div");
-    logo.className = "logo dropdown";
-    addLogo(logo);
-    bar.appendChild(logo);
-
-    let menu = document.createElement("div");
-    menu.className = "dropdown-content";
-    logo.appendChild(menu);
-    
-    if (sessionStorage.getItem("username")) {
-      addAnchor(menu, "ACCOUNT", "/account/" + sessionStorage.getItem("username"));
-      addAnchor(menu, "LOGOUT", "/logout");
-    }
-    addAnchor(menu, "ABOUT", "/about.html");
+    addLogo(div);
   }
 
   addRule(nav);
@@ -397,14 +384,14 @@ const addFooter = () => {
   div.appendChild(ul);
 
   let api = document.createElement("li");
-  api.style = "float: left; position: relative; transform: translate(1rem, 0)";
+  api.style = "float: left; margin-left: 0.5rem; position: relative;";
   ul.appendChild(api);
 
   let a = addAnchor(api, "API", "/swagger-ui/index.html");
-  a.style = "float: left;position: relative;margin-left: 0.5rem";
+  a.style = "float: left; margin-left: 0.5rem; position: relative;";
 
   let co = document.createElement("li");
-  co.style = "float: left; position: relative; transform: translate(1rem, 0);";
+  co.style = "margin-right: 0.5rem;";
   addText(co, translate("COPYRIGHT"));
   ul.appendChild(co);
 };

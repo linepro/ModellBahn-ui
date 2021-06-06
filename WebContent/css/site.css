@@ -1106,6 +1106,7 @@ ul::-webkit-scrollbar-thumb {
 .dropdown {
   display: inline-block;
   position: relative;
+  z-index: 99;
 }
 
 .dropdown:hover .dropdown-content {
@@ -1118,8 +1119,8 @@ ul::-webkit-scrollbar-thumb {
   display: none;
   min-width: 15rem;
   position: absolute;
-  transform: translate(-9.75rem, 3.5rem);
-  z-index: 1;
+  transform: translate(-9.5rem, 0.25rem);
+  z-index: 99;
 }
 
 .dropdown-content a {

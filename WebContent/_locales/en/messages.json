@@ -1,6 +1,7 @@
 {
   "ABBILDUNG": { "message": "Picture" },
   "ABOUT": { "message": "About" },
+  "ACCOUNT": { "message": "User Profile" },
   "ACHSFOLG": { "message": "Axle Configuration" },
   "ACHSFOLGEN": { "message": "Axle Configurations" },
   "ADD": { "message": "Add" },
@@ -33,6 +34,7 @@
   "BESTELL_NR": { "message": "Part Nr" },
   "BETREIBSNUMMER": { "message": "Service Number" },
   "BEZEICHNUNG": { "message": "Description" },
+  "CHANGE": { "message": "Change Password" },
   "COPYRIGHT": { "message": "Copyright © 2018 - 2021 John & Andrew Goff" },
   "CV": { "message": "CV" },
   "CVS": { "message": "CVS" },

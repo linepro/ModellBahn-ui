@@ -7,10 +7,8 @@ const apiUrl = (path) =>
 const fileUrl = (path) =>
   window.location.origin.replace(/\/$/, "") + "/modellbahn-ui/" + path;
 
-const setAuthorisation = (userName, password) => {
-  sessionStorage.setItem("username", userName);
+const setAuthorisation = (userName, password) =>
   sessionStorage.setItem("authorisation", "Basic " + btoa(userName + ":" + password));
-}
 
 class ApiException {
   constructor(response) {
@@ -45,6 +43,8 @@ const checkResponse = async (response) => {
   }
 };
 
+const sessionId = () => document.cookie.match(/JSESSIONID=[^;]+/);
+
 const headers = (contentType, accept = "application/json, text/html, application/xhtml+xml, application/xml") => {
   let httpHeaders = {
     "Accept": accept,
@@ -52,7 +52,10 @@ const headers = (contentType, accept = "application/json, text/html, application
     "Accept-Language": localStorage.getItem("language"),
     "Cache-Control": "no-cache"
   };
-  if (sessionStorage.getItem("authorisation")) {
+  let jsessionId = sessionId();
+  if (jsessionId) {
+    httpHeaders["Cookie"] = jsessionId;
+  } else if (sessionStorage.getItem("authorisation")) {
     httpHeaders["Authorization"] = sessionStorage.getItem("authorisation");
   }
   if (contentType) {

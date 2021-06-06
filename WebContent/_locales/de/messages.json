@@ -1,6 +1,7 @@
 {
   "ABBILDUNG": { "message": "Abbildung" },
   "ABOUT": { "message": "Über ModellBahn" },
+  "ACCOUNT": { "message": "Benutzerprofil" },
   "ACHSFOLG": { "message": "Achsfolg" },
   "ACHSFOLGEN": { "message": "Achsfolgen" },
   "ADD": { "message": "Hinzufügen" },
@@ -33,6 +34,7 @@
   "BESTELL_NR": { "message": "Bestell Nr" },
   "BETREIBSNUMMER": { "message": "Betreibsnummer" },
   "BEZEICHNUNG": { "message": "Bezeichnung" },
+  "CHANGE": { "message": "Kennwort ändern" },
   "COPYRIGHT": { "message": "Copyright © 2018 - 2021 John & Andrew Goff" },
   "CV": { "message": "CV" },
   "CVS": { "message": "CVS" },
