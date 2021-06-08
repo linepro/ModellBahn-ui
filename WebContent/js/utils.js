@@ -269,7 +269,6 @@ const addLogo = (home) => {
     if (sessionId()) {
       addAnchor(menu, "PROFILE", "/account");
       addAnchor(menu, "LOGOUT", "/logout");
-      addAnchor(menu, "CHANGE", "/password");
     }
     addAnchor(menu, "ABOUT", "/about.html", true);
 
