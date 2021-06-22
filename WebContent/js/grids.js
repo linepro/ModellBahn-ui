@@ -118,7 +118,7 @@ const saveAction = (rel = "update") =>
     async (event, grid, row) => {
       if (row.entity) {
         let updateUrl = actionLink(row.entity, rel);
-        if (updateUrl) {
+        if (updateUrl && row.editMode !== EditMode.ADD) {
           await putRest(
             updateUrl,
             row.entity,
@@ -145,13 +145,22 @@ const setAction = (fieldName, rel = "update") =>
     async (event, grid, row) => {
       if (row.entity) {
         let updateUrl = actionLink(row.entity, rel);
-        await setRest(
-          updateUrl,
-          fieldName,
-          row.entity[fieldName],
-          (jsonData) => row.bind(jsonData, EditMode.UPDATE),
-          (error) => reportError("updateRow", error)
-        );
+        if (updateUrl && row.editMode !== EditMode.ADD) {
+          await setRest(
+            updateUrl,
+            fieldName,
+            row.entity[fieldName],
+            (jsonData) => row.bind(jsonData, EditMode.UPDATE),
+            (error) => reportError("updateRow", error)
+          );
+        } else {
+          await postRest(
+            grid.addUrl,
+            row.entity,
+            (jsonData) => row.bind(jsonData, EditMode.UPDATE),
+            (error) => reportError("saveRow", error)
+          );
+        }
       }
     }
   );
