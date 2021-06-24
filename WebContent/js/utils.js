@@ -264,11 +264,11 @@ const addLogo = (home) => {
     let lingo = addLingo(menu);
     lingo.style = "float: right;"
 
-    addAnchor(menu, "HOME", "/");
-
     if (sessionId()) {
       addAnchor(menu, "PROFILE", "/account");
       addAnchor(menu, "LOGOUT", "/logout");
+    } else {
+      addAnchor(menu, "HOME", "/");
     }
     addAnchor(menu, "ABOUT", "/about.html", true);
 
