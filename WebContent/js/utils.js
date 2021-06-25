@@ -241,11 +241,11 @@ const addLingo = (element) => {
   return lingo;
 };
 
-const addLogo = (home) => {
+const addLogo = (home, offset) => {
     let bar = document.createElement("div");
 
     bar.className ="dropdown";
-    bar.style = "float: right;"
+    bar.style = "float: right; margin-top: 0.5rem; transform: translateX("+offset+"rem);"
     home.appendChild(bar);
 
     let logo = document.createElement("div");
@@ -319,7 +319,7 @@ const addNavBar = (menuStyle) => {
     let heading = addHeading(home, "H1", "MODELLBAHN");
     heading.className = "title";
 
-    addLogo(home);
+    addLogo(home, 2);
 
     addHeading(nav, "H3", "REF_DATA");
 
@@ -361,7 +361,7 @@ const addNavBar = (menuStyle) => {
                .forEach((li) => opts.appendChild(li));
     }
 
-    addLogo(div);
+    addLogo(div, 8);
   }
 
   addRule(nav);
