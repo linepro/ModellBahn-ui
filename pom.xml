@@ -357,6 +357,14 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
+        <repository>
+            <id>github</id>
+            <name>GitHub linepro Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/linepro/*</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
     </repositories>
 
     <pluginRepositories>
