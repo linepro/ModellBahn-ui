@@ -56,6 +56,8 @@ jobs:
       with:
         distribution: 'adopt-hotspot'
         java-version: 11
+        server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
+        settings-path: ${{ github.workspace }} # location for the settings.xml file
 
     - name: Maven build
       run: mvn -B package
