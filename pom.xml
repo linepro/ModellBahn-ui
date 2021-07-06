@@ -12,7 +12,7 @@
 
     <name>ModellBahn UI</name>
     <description>WebJar for ModellBahn UI</description>
-    <url>https://github.com/linepro/ModellBahn-gui</url>
+    <url>https://github.com/linepro/ModellBahn-ui</url>
 
     <inceptionYear>2018</inceptionYear>
 
@@ -88,23 +88,6 @@
         <maven.test.skip>true</maven.test.skip>
 
         <!-- dependency versions -->
-
-        <requirejs>
-            {
-                "paths": {
-                    "font-awesome-jsf": "css/font-awesome-jsf",
-                    "font-awesome-jsf-min": "css/font-awesome.min-jsf",
-                    "font-awesome": "css/font-awesome",
-                    "font-awesome-min": "css/font-awesome.min",
-                    "FontAwesome-otf": "fonts/FontAwesome",
-                    "fontawesome-webfont-eot": "fonts/fontawesome-webfont",
-                    "fontawesome-webfont-svg": "fonts/fontawesome-webfont",
-                    "fontawesome-webfont-ttf": "fonts/fontawesome-webfont",
-                    "fontawesome-webfont-woff": "fonts/fontawesome-webfont",
-                    "fontawesome-webfont-woff2": "fonts/fontawesome-webfont"
-                }
-            }
-        </requirejs>
     </properties>
 
     <dependencies>
