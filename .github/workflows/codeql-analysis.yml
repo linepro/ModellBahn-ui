@@ -21,7 +21,7 @@ on:
     - cron: '29 1 * * 1'
 
 jobs:
-  analyze:
+  setup:
     name: Analyze
     runs-on: ubuntu-latest
     permissions:
@@ -29,28 +29,7 @@ jobs:
       contents: read
       security-events: write
 
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [ 'javascript' ]
-        # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python' ]
-        # Learn more:
-        # https://docs.github.com/en/free-pro-team@latest/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#changing-the-languages-that-are-analyzed
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
-    # Initializes the CodeQL tools for scanning.
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v1
-      with:
-        languages: ${{ matrix.language }}
-        # If you wish to specify custom queries, you can do so here or in a config file.
-        # By default, queries listed here will override any specified in a config file.
-        # Prefix the list here with "+" to use these queries and those in the config file.
-        # queries: ./path/to/local/query, your-org/your-repo/queries@main
-
     - name: Prepare
       uses: actions/setup-java@v2
       with:
@@ -58,6 +37,9 @@ jobs:
         java-version: 11
         server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
         settings-path: ${{ github.workspace }} # location for the settings.xml file
+
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
     - name: Cache Maven packages
       uses: actions/cache@v2
@@ -72,9 +54,28 @@ jobs:
         GITHUB_ACTOR: ${{ github.actor }}
         GITHUB_TOKEN: ${{ github.token }}
 
-    - name: Perform CodeQL Analysis
+  analyze:
+    needs: setup
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'javascript' ]
+        # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python' ]
+        # Learn more:
+        # https://docs.github.com/en/free-pro-team@latest/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#changing-the-languages-that-are-analyzed
+
+    steps:
+    - name: Initialize CodeQL ${{ matrix.language }}
+      uses: github/codeql-action/init@v1
+      with:
+        languages: ${{ matrix.language }}
+
+    - name: Perform CodeQL ${{ matrix.language }} Analysis
       uses: github/codeql-action/analyze@v1
 
+  deploy:
+    needs: analyze
+    steps:
     - name: Publish to GitHub Packages
       run: mvn --batch-mode deploy -s $GITHUB_WORKSPACE/settings.xml
       env:
