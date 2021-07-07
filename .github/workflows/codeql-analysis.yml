@@ -21,7 +21,7 @@ on:
     - cron: '29 1 * * 1'
 
 jobs:
-  setup:
+  analyze:
     name: Analyze
     runs-on: ubuntu-latest
     permissions:
@@ -30,6 +30,14 @@ jobs:
       security-events: write
 
     steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v1
+      with:
+        languages: javascript
+
     - name: Prepare
       uses: actions/setup-java@v2
       with:
@@ -37,9 +45,6 @@ jobs:
         java-version: 11
         server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
         settings-path: ${{ github.workspace }} # location for the settings.xml file
-
-    - name: Checkout repository
-      uses: actions/checkout@v2
 
     - name: Cache Maven packages
       uses: actions/cache@v2
@@ -49,35 +54,16 @@ jobs:
         restore-keys: ${{ runner.os }}-m2
 
     - name: Maven build
-      run: mvn --batch-mode --update-snapshots package -s $GITHUB_WORKSPACE/settings.xml
+      run: mvn --batch-mode --update-snapshots clean package -s $GITHUB_WORKSPACE/settings.xml
       env:
         GITHUB_ACTOR: ${{ github.actor }}
-        GITHUB_TOKEN: ${{ github.token }}
+        GITHUB_TOKEN: ${{ secrets.BUILD_TOKEN }}
 
-  analyze:
-    needs: setup
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [ 'javascript' ]
-        # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python' ]
-        # Learn more:
-        # https://docs.github.com/en/free-pro-team@latest/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#changing-the-languages-that-are-analyzed
-
-    steps:
-    - name: Initialize CodeQL ${{ matrix.language }}
-      uses: github/codeql-action/init@v1
-      with:
-        languages: ${{ matrix.language }}
-
-    - name: Perform CodeQL ${{ matrix.language }} Analysis
+    - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1
 
-  deploy:
-    needs: analyze
-    steps:
     - name: Publish to GitHub Packages
-      run: mvn --batch-mode deploy -s $GITHUB_WORKSPACE/settings.xml
+      run: mvn --batch-mode deploy -Dmaven.test.skip -s $GITHUB_WORKSPACE/settings.xml
       env:
         GITHUB_ACTOR: ${{ github.actor }}
-        GITHUB_TOKEN: ${{ github.token }}
+        GITHUB_TOKEN: ${{ secrets.BUILD_TOKEN }}
