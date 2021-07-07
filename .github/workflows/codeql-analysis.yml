@@ -73,6 +73,6 @@ jobs:
       uses: github/codeql-action/analyze@v1
 
     - name: Publish to GitHub Packages
-      run: mvn --batch-mode deploy:deploy -s $GITHUB_WORKSPACE/settings.xml
+      run: mvn --batch-mode deploy -s $GITHUB_WORKSPACE/settings.xml
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
