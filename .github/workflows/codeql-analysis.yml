@@ -68,6 +68,9 @@ jobs:
 
     - name: Maven build
       run: mvn --batch-mode --update-snapshots package
+      env:
+        GITHUB_ACTOR: ${{ github.actor }}
+        GITHUB_TOKEN: ${{ github.token }}
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1
@@ -75,4 +78,5 @@ jobs:
     - name: Publish to GitHub Packages
       run: mvn --batch-mode deploy -s $GITHUB_WORKSPACE/settings.xml
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_ACTOR: ${{ github.actor }}
+        GITHUB_TOKEN: ${{ github.token }}
