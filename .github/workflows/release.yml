@@ -9,20 +9,15 @@
 # the `language` matrix defined below to confirm you have the correct set of
 # supported CodeQL languages.
 #
-name: "CodeQL"
+name: "Release"
 
 on:
-  push:
+  release:
     branches: [ master ]
-  pull_request:
-    # The branches below must be a subset of the branches above
-    branches: [ master ]
-  schedule:
-    - cron: '29 1 * * 1'
 
 jobs:
   analyze:
-    name: Analyze
+    name: Release
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -61,3 +56,9 @@ jobs:
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1
+
+    - name: Publish to GitHub Packages
+      run: mvn --batch-mode deploy -Dmaven.test.skip -s $GITHUB_WORKSPACE/settings.xml
+      env:
+        GITHUB_ACTOR: ${{ github.actor }}
+        GITHUB_TOKEN: ${{ secrets.BUILD_TOKEN }}
