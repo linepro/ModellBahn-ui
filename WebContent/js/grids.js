@@ -644,7 +644,7 @@ class Table extends ItemGrid {
       (row) => !row.entity || row.editMode === EditMode.ADD
     );
 
-    return free.length ? free[0] : grid.appendTableRow();
+    return free.length ? free[0] : grid.rows[0];
   }
 
   addRow() {
@@ -726,6 +726,16 @@ class ExpandingTable extends Table {
     }
 
     super.removeRow(row);
+  }
+
+  freeRow() {
+    let grid = this;
+
+    let free = grid.rows.filter(
+      (row) => !row.entity || row.editMode === EditMode.ADD
+    );
+
+    return free.length ? free[0] : grid.appendTableRow();
   }
 
   bind(jsonData, fetchUrl) {
@@ -871,16 +881,6 @@ class PagedTable extends Table {
           : undefined;
       row.bind(entity, grid.editMode);
     }
-  }
-
-  freeRow() {
-    let grid = this;
-
-    let free = grid.rows.filter(
-      (row) => !row.entity || row.editMode === EditMode.ADD
-    );
-
-    return free.length ? free[0] : super.freeRow();
   }
 }
 

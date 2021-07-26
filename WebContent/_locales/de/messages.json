@@ -111,6 +111,8 @@
   "MOTORBAUART": { "message": "Motorbauart" },
   "MOTOR_TYP": { "message": "MotorTyp" },
   "MOTOR_TYPEN": { "message": "MotorTypen" },
+  "MOTORTYP": { "message": "MotorTyp" },
+  "MOTORTYPEN": { "message": "MotorTypen" },
   "NACHSTE": { "message": "Nächste" },
   "NAMEN": { "message": "Namen" },
   "NEW": { "message": "Neu" },

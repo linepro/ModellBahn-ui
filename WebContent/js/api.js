@@ -45,6 +45,16 @@ const checkResponse = async (response) => {
 
 const sessionId = () => document.cookie.match(/JSESSIONID=[^;]+/);
 
+const waitCursor = () => {
+  let cursor = document.activeElement.style.cursor;
+  document.activeElement.style.cursor = "wait";
+  return cursor;
+};
+
+const doneCursor = (cursor) => {
+  document.activeElement.style.cursor = cursor;
+};
+
 const headers = (contentType, accept = "application/json, text/html, application/xhtml+xml, application/xml") => {
   let httpHeaders = {
     "Accept": accept,
@@ -65,16 +75,19 @@ const headers = (contentType, accept = "application/json, text/html, application
 };
 
 const getRest = async (endPoint, success, failure) => {
+  let cursor = waitCursor();
   await fetch(endPoint, {
     method: "GET",
     headers: headers(undefined)
   })
   .then(response => checkResponse(response))
   .then(jsonData => success(jsonData))
-  .catch(error => failure(error));
+  .catch(error => failure(error))
+  .finally(() => doneCursor(cursor));
 };
 
 const postRest = async (endPoint, data, success, failure) => {
+  let cursor = waitCursor();
   await fetch(endPoint, {
     method: "POST",
     headers: headers("application/json"),
@@ -82,10 +95,12 @@ const postRest = async (endPoint, data, success, failure) => {
   })
   .then(response => checkResponse(response))
   .then(jsonData => success(jsonData))
-  .catch(error => failure(error));
+  .catch(error => failure(error))
+  .finally(() => doneCursor(cursor));
 };
 
 const putRest = async (endPoint, data, success, failure) => {
+  let cursor = waitCursor();
   await fetch(endPoint, {
     method: "PUT",
     headers: headers("application/json"),
@@ -93,40 +108,48 @@ const putRest = async (endPoint, data, success, failure) => {
   })
   .then(response => checkResponse(response))
   .then(jsonData => success(jsonData))
-  .catch(error => failure(error));
+  .catch(error => failure(error))
+  .finally(() => doneCursor(cursor));
 };
 
 const setRest = async (endPoint, fieldName, value, success, failure) => {
+  let cursor = waitCursor();
   await fetch(endPoint + "?" + fieldName + "=" + value, {
     method: "PUT",
     headers: headers()
   })
   .then(response => checkResponse(response))
   .then(jsonData => success(jsonData))
-  .catch(error => failure(error));
+  .catch(error => failure(error))
+  .finally(() => doneCursor(cursor));
 };
 
 const deleteRest = async (endPoint, success, failure) => {
+  let cursor = waitCursor();
   await fetch(endPoint, {
     method: "DELETE",
     headers: headers()
   })
   .then(response => checkResponse(response))
   .then(jsonData => success(jsonData))
-  .catch(error => failure(error));
+  .catch(error => failure(error))
+  .finally(() => doneCursor(cursor));
 };
 
 const download = async (endPoint, success, failure) => {
+  let cursor = waitCursor();
   await fetch(endPoint, {
     method: "GET",
     headers: headers(undefined, "*/*")
   })
   .then(response => checkResponse(response))
   .then(jsonData => success(jsonData))
-  .catch(error => failure(error));
+  .catch(error => failure(error))
+  .finally(() => doneCursor(cursor));
 };
 
 const upload = async (endPoint, fieldName, fileData, fileName, success, failure) => {
+  let cursor = waitCursor();
   let formData = new FormData();
   formData.append(fieldName, fileData, fileName);
   await fetch(endPoint, {
@@ -136,5 +159,6 @@ const upload = async (endPoint, fieldName, fileData, fileName, success, failure)
   })
   .then(response => checkResponse(response))
   .then(jsonData => success(jsonData))
-  .catch(error => failure(error));
+  .catch(error => failure(error))
+  .finally(() => doneCursor(cursor));
 };
