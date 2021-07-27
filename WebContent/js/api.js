@@ -11,35 +11,44 @@ const setAuthorisation = (userName, password) =>
   sessionStorage.setItem("authorisation", "Basic " + btoa(userName + ":" + password));
 
 class ApiException {
-  constructor(response) {
-    this.status =  response.status;
-    this.type =  response.type;
-    this.url =  response.url;
-    this.body = response.body;
-    this.redirect =  response.redirect;
+  constructor(response, payload) {
+    this.status = response.status;
+    this.type = response.type;
+    this.url = response.url;
+    this.payload = payload;
+    this.redirect = response.redirect;
+  }
+  
+  toString() {
+    return this.payload.error + ": " + this.payload.message;
   }
 }
 
-const checkResponse = async (response) => {
-  if (response.ok) {
-    if (response.redirected) {
-        window.location.href = response.redirect();
-    } else {
-      let contentType = response.headers.get("content-type");
-      if (contentType) {
-        if (contentType.includes("json")) {
-          return response.json();
-        } else if (contentType.includes("text")) {
-          return response.text();
-        }
-        return response.blob();
+const getContent = async (response) => {
+  try {
+    let contentType = response.headers.get("content-type");
+    if (contentType) {
+      if (contentType.includes("json")) {
+        return response.json();
+      } else if (contentType.includes("text")) {
+        return response.text();
       }
-      return { _embedded: [], _links: [] };
+      return response.blob();
     }
-  } else if (response.status === 404) {
-    return { _embedded: [], _links: [] };
+  } catch {
+    // Non readable content
+  }
+  return { _embedded: [], _links: [] };
+};
+
+const checkResponse = async (response) => {
+  if (response.redirected) {
+    window.location.href = response.redirect();
+  } else if (response.ok || response.status === 404) {
+    return getContent(response);
   } else {
-    throw new ApiException(response);
+    let payload = await getContent(response);
+    throw new ApiException(response, payload);
   }
 };
 
@@ -55,7 +64,7 @@ const doneCursor = (cursor) => {
   document.activeElement.style.cursor = cursor;
 };
 
-const headers = (contentType, accept = "application/json, text/html, application/xhtml+xml, application/xml") => {
+const headers = (contentType, accept = "application/json, application/hal+json") => {
   let httpHeaders = {
     "Accept": accept,
     "Accept-Encoding": "gzip, deflate, br",
@@ -140,7 +149,7 @@ const download = async (endPoint, success, failure) => {
   let cursor = waitCursor();
   await fetch(endPoint, {
     method: "GET",
-    headers: headers(undefined, "*/*")
+    headers: headers(undefined)
   })
   .then(response => checkResponse(response))
   .then(jsonData => success(jsonData))
@@ -154,7 +163,7 @@ const upload = async (endPoint, fieldName, fileData, fileName, success, failure)
   formData.append(fieldName, fileData, fileName);
   await fetch(endPoint, {
     method: "PUT",
-    headers: headers(undefined, "*/*"),
+    headers: headers(undefined),
     body: formData
   })
   .then(response => checkResponse(response))
