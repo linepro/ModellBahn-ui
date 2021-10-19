@@ -45,6 +45,20 @@
 
         const anderungen = new ExpandingTable(5, "anderungen", "anderungen", anderungenColumns, anderungActions, EditMode.UPDATE);
 
+        const decoderColumns = [
+          DECODER_SELECT(Editable.UPDATE, false),
+          BEZEICHNUNG(Editable.UPDATE, true),
+          MENGE(Editable.UPDATE, true)
+        ];
+
+        const decoderActions = [
+          addAction("decoderen"),
+          saveAction(),
+          deleteAction()
+        ];
+
+        const decoderen = new ExpandingTable(5, "decoderen", "decoderen", decoderenColumns, decoderenActions, EditMode.UPDATE);
+
         const artikelColumns = [
           ARTIKEL(Editable.NEVER, true),
           PRODUKT_SELECT(Editable.ADD, true),
@@ -58,7 +72,6 @@
           MOTOR_TYP_SELECT(Editable.UPDATE, false),
           LICHT_SELECT(Editable.UPDATE, false),
           KUPPLUNG_SELECT(Editable.UPDATE, false),
-          DECODER_SELECT(Editable.UPDATE, false),
           ANMERKUNG(Editable.UPDATE, false),
           new TextColumn("BELADUNG", "beladung", fieldGetter, fieldSetter, Editable.UPDATE, false, 30),
           ABBILDUNG(Editable.UPDATE, false),
@@ -70,7 +83,8 @@
         ];
 
         const artikelChildren = [
-          anderungen
+          anderungen,
+          decoderen
         ];
 
         const artikel = new Form("artikel", "artikel", artikelColumns, artikelActions, EditMode.UPDATE, artikelChildren);
@@ -91,7 +105,22 @@
     <div id="data">
       <div id="artikel">
       </div>
-      <div id="anderungen">
+
+      <div id="tabbedArea">
+        <div class="tab">
+          <button id="anderungenLink" class="tabLinks" onclick="setActiveTab(event, 'anderungenTab')">Anderungen</button>
+          <button id="decoderenLink" class="tabLinks" onclick="setActiveTab(event, 'decoderenTab')">Decoderen</button>
+        </div>
+        <div class="tabContainer">
+          <div id="anderungenTab" class="tabContent">
+            <div id="anderungen">
+            </div>
+          </div>
+          <div id="decoderenTab" class="tabContent">
+            <div id="decoderen">
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </article>
