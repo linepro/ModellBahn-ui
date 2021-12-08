@@ -115,7 +115,7 @@ const saveAction = (rel = "update") =>
     false,
     "save",
     "save",
-    async (event, grid, row) => {
+    async (event, grid, row) => { 
       if (row.entity) {
         let updateUrl = actionLink(row.entity, rel);
         if (updateUrl && row.editMode !== EditMode.ADD) {
@@ -647,15 +647,15 @@ class Table extends ItemGrid {
     return free.length ? free[0] : grid.rows[0];
   }
 
-  addRow() {
+  addRow(entity = {}) {
     let grid = this;
 
     let row = grid.freeRow();
 
-    let entity = {};
     row.bind(entity, EditMode.ADD);
     row.element.getElementsByTagName("INPUT")[0].focus();
-    // set initial values.
+
+    return row;
   }
 
   async removeRow(row) {

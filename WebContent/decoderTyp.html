@@ -85,7 +85,7 @@
       })
       .catch(error => reportError("load", error));
 
-      setActiveTab(undefined, "adressenTab");
+      setActiveTab(undefined, "funktionenTab");
     }
   </script>
   <title>Decoder Typ</title>
@@ -102,15 +102,10 @@
 
       <div id="tabbedArea">
         <div class="tab">
-          <button id="adressenLink" class="tabLinks" onclick="setActiveTab(event, 'adressenTab')">Adressen</button>
           <button id="cvsLink" class="tabLinks" onclick="setActiveTab(event, 'cvsTab')">CVS</button>
           <button id="funktionenLink" class="tabLinks" onclick="setActiveTab(event, 'funktionenTab')">Funktionen</button>
         </div>
         <div class="tabContainer">
-          <div id="adressenTab" class="tabContent">
-            <div id="adressen">
-            </div>
-          </div>
           <div id="cvsTab" class="tabContent">
             <div id="cvs">
             </div>

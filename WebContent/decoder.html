@@ -60,12 +60,12 @@
           ARTIKEL_SELECT(Editable.NEVER, false),
           PROTOKOLL_SELECT(Editable.UPDATE, true),
           FAHRSTUFE(Editable.UPDATE, false),
-          ADRESS_TYP_SELECT(Editable.UPDATE, false),
+          ADRESS_TYP_SELECT(Editable.NEVER),
           ADRESS(Editable.UPDATE, true),
           GERAUSCH(Editable.NEVER, true),
           I_MAX(Editable.NEVER, true),
           KONFIGURATION_SELECT(Editable.NEVER, true),
-          STECKER_SELECT(Editable.UPDATE, true),
+          STECKER_SELECT(Editable.NEVER, true),
           KAUFDATUM(Editable.UPDATE, true),
           WAHRUNG_SELECT(Editable.UPDATE, true),
           PREIS(Editable.UPDATE, true),
@@ -79,7 +79,6 @@
         ];
 
         const decoderChildren = [
-          adressen,
           cvs,
           funktionen
         ];
@@ -90,7 +89,7 @@
       })
       .catch(error => reportError("load", error));
 
-      setActiveTab(undefined, "adressenTab");
+      setActiveTab(undefined, "funktionenTab");
     }
   </script>
   <title>Decoder</title>
@@ -107,16 +106,10 @@
 
       <div id="tabbedArea">
         <div class="tab">
-          <button id="adressenLink" class="tabLinks" onclick="setActiveTab(event, 'adressenTab')">Adressen</button>
           <button id="cvsLink" class="tabLinks" onclick="setActiveTab(event, 'cvsTab')">CVS</button>
           <button id="funktionenLink" class="tabLinks" onclick="setActiveTab(event, 'funktionenTab')">Funktionen</button>
         </div>
         <div class="tabContainer">
-          <div id="adressenTab" class="tabContent">
-	        <h3>Adressen</h3>
-	        <div id="adressen">
-	        </div>
-	      </div>
 	      <div id="cvsTab" class="tabContent">
 	        <h3>Cvs</h3>
 	        <div id="cvs">
