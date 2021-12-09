@@ -115,7 +115,7 @@ const saveAction = (rel = "update") =>
     false,
     "save",
     "save",
-    async (event, grid, row) => { 
+    async (event, grid, row) => {
       if (row.entity) {
         let updateUrl = actionLink(row.entity, rel);
         if (updateUrl && row.editMode !== EditMode.ADD) {
