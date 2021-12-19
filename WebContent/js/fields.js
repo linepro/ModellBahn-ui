@@ -281,9 +281,6 @@ const PREIS = (editable = Editable.UPDATE, required = false, getter = fieldGette
 const PROGRAMMABLE = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
   new BoolColumn("PROGRAMMABLE", "programmable", getter, setter, editable, required);
 
-const REIHE = (editable = Editable.ADD, required = true, getter = fieldGetter, setter = fieldSetter) =>
-  new NumberColumn("REIHE", "reihe", getter, setter, editable, required, 1, 0);
-
 const SPAN = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
   new NumberColumn("SPAN", "span", getter, setter, editable, required, 16, 1);
 

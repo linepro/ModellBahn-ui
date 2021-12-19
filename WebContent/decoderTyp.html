@@ -24,22 +24,6 @@
       .then(() => initDropDown(ADRESS_TYP_DROP))
       .then(() => initDropDown(STECKER_DROP))
       .then(() => {
-        const adressColumns = [
-          INDEX(Editable.ADD, true),
-          BEZEICHNUNG(Editable.UPDATE, true),
-          ADRESS_TYP_SELECT(Editable.UPDATE, true),
-          SPAN(Editable.UPDATE, true),
-          WERKSEINSTELLUNG(Editable.UPDATE, true)
-        ];
-       
-        const adressActions = [
-          addAction("adressen"),
-          saveAction(),
-          deleteAction()
-        ];
-
-        const adressen = new ExpandingTable(2, "adressen", "adressen", adressColumns, adressActions, EditMode.UPDATE);
-
         const cvColumns = [
           CV(Editable.ADD, true),
           BEZEICHNUNG(Editable.UPDATE, true),
@@ -57,7 +41,6 @@
         const cvs = new ExpandingTable(10, "cvs", "cvs", cvColumns, cvActions, EditMode.UPDATE);
 
         const funktionenColumns = [
-          REIHE(Editable.ADD, true),
           FUNKTION(Editable.ADD, true),
           WERKSEINSTELLUNG(Editable.UPDATE, true),
           PROGRAMMABLE(Editable.UPDATE, true)
@@ -77,6 +60,9 @@
           BEZEICHNUNG(Editable.UPDATE, true),
           PROTOKOLL_SELECT(Editable.UPDATE, true),
           FAHRSTUFE(Editable.UPDATE, true),
+          ADRESS_TYP_SELECT(Editable.UPDATE, true),
+          ADRESS(Editable.UPDATE, true),
+          SPAN(Editable.UPDATE, true),
           GERAUSCH(Editable.UPDATE, true),
           I_MAX(Editable.UPDATE, true),
           KONFIGURATION_SELECT(Editable.UPDATE, true),
@@ -89,7 +75,6 @@
         ];
 
         const decoderTypChildren = [
-          adressen,
           cvs,
           funktionen
         ];
@@ -100,7 +85,7 @@
       })
       .catch(error => reportError("load", error));
 
-      setActiveTab(undefined, "adressenTab");
+      setActiveTab(undefined, "funktionenTab");
     }
   </script>
   <title>Decoder Typ</title>
@@ -117,15 +102,10 @@
 
       <div id="tabbedArea">
         <div class="tab">
-          <button id="adressenLink" class="tabLinks" onclick="setActiveTab(event, 'adressenTab')">Adressen</button>
           <button id="cvsLink" class="tabLinks" onclick="setActiveTab(event, 'cvsTab')">CVS</button>
           <button id="funktionenLink" class="tabLinks" onclick="setActiveTab(event, 'funktionenTab')">Funktionen</button>
         </div>
         <div class="tabContainer">
-          <div id="adressenTab" class="tabContent">
-            <div id="adressen">
-            </div>
-          </div>
           <div id="cvsTab" class="tabContent">
             <div id="cvs">
             </div>

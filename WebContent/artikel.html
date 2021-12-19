@@ -45,6 +45,40 @@
 
         const anderungen = new ExpandingTable(5, "anderungen", "anderungen", anderungenColumns, anderungActions, EditMode.UPDATE);
 
+        const decoderenColumns = [
+          DECODER_SELECT(Editable.UPDATE, false),
+          BEZEICHNUNG(Editable.UPDATE, true),
+          PROTOKOLL_SELECT(Editable.UPDATE, true),
+          FAHRSTUFE(Editable.UPDATE, false),
+          ADRESS_TYP_SELECT(Editable.NEVER),
+          ADRESS(Editable.UPDATE, true),
+          GERAUSCH(Editable.NEVER, true),
+          I_MAX(Editable.NEVER, true),
+          KONFIGURATION_SELECT(Editable.NEVER, true),
+          STECKER_SELECT(Editable.NEVER, true),
+          KAUFDATUM(Editable.UPDATE, true),
+          WAHRUNG_SELECT(Editable.UPDATE, true),
+          PREIS(Editable.UPDATE, true),
+          ANMERKUNG(Editable.UPDATE, true),
+          ANLEITUNGEN(Editable.NEVER)
+        ];
+
+        const decoderenActions = [
+          new ActionButton(
+              true,
+              "add",
+              "add",
+              (event, grid, row) => {
+                let form = document.getELementById("decoderSelect");
+                form.style.display = "block";
+              }
+            ),
+          saveAction(),
+          deleteAction()
+        ];
+
+        const decoderen = new ExpandingTable(5, "decoderen", "decoderen", decoderenColumns, decoderenActions, EditMode.UPDATE);
+
         const artikelColumns = [
           ARTIKEL(Editable.NEVER, true),
           PRODUKT_SELECT(Editable.ADD, true),
@@ -58,7 +92,6 @@
           MOTOR_TYP_SELECT(Editable.UPDATE, false),
           LICHT_SELECT(Editable.UPDATE, false),
           KUPPLUNG_SELECT(Editable.UPDATE, false),
-          DECODER_SELECT(Editable.UPDATE, false),
           ANMERKUNG(Editable.UPDATE, false),
           new TextColumn("BELADUNG", "beladung", fieldGetter, fieldSetter, Editable.UPDATE, false, 30),
           ABBILDUNG(Editable.UPDATE, false),
@@ -70,7 +103,8 @@
         ];
 
         const artikelChildren = [
-          anderungen
+          anderungen,
+          decoderen
         ];
 
         const artikel = new Form("artikel", "artikel", artikelColumns, artikelActions, EditMode.UPDATE, artikelChildren);
@@ -91,7 +125,26 @@
     <div id="data">
       <div id="artikel">
       </div>
-      <div id="anderungen">
+
+      <div id="tabbedArea">
+        <div class="tab">
+          <button id="anderungenLink" class="tabLinks" onclick="setActiveTab(event, 'anderungenTab')">Anderungen</button>
+          <button id="decoderenLink" class="tabLinks" onclick="setActiveTab(event, 'decoderenTab')">Decoderen</button>
+        </div>
+        <div class="tabContainer">
+          <div id="anderungenTab" class="tabContent">
+            <div id="anderungen">
+            </div>
+          </div>
+          <div id="decoderenTab" class="tabContent">
+            <div id="decoderen">
+            </div>
+            <div id="decoderSelect" class="searchForm" style="display:none">
+              <form>
+              </form>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </article>
