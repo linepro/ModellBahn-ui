@@ -8,7 +8,9 @@ const bezeichnungOption = (entity) =>
     entity.name,
     entity.bezeichnung,
     entity.tooltip ? entity.tooltip : entity.bezeichnung,
-    entity.abbildung
+    entity.abbildung,
+    undefined,
+    entity
   );
 
 const artikelOption = (entity) =>
@@ -17,7 +19,8 @@ const artikelOption = (entity) =>
     [ entity.hersteller, entity.bestellNr, entity.gattung, entity.betreibsnummer, entity.bahnverwaltung ].filter(x => x).join(" ") + " (" + entity.artikelId + ")",
     entity.bezeichnung,
     entity.abbildung,
-    translate(entity.kategorie)
+    translate(entity.kategorie),
+    entity
   );
 
 const decoderOption = (entity) =>
@@ -26,7 +29,8 @@ const decoderOption = (entity) =>
     [ entity.hersteller, entity.bestellNr, entity.bezeichnung ].filter(x => x).join(" ") + " (" + entity.decoderId + ")",
     entity.bezeichnung,
     undefined,
-    entity.hersteller
+    entity.hersteller,
+    entity
   );
 
 const kategorieOption = (entity) =>
@@ -35,7 +39,8 @@ const kategorieOption = (entity) =>
     entity.kategorieBezeichnung + " - " + entity.bezeichnung,
     entity.kategorieBezeichnung + " - " + entity.bezeichnung,
     undefined,
-    entity.kategorieBezeichnung
+    entity.kategorieBezeichnung,
+    entity
   );
 
 const produktOption = (entity) =>
@@ -44,7 +49,8 @@ const produktOption = (entity) =>
     entity.hersteller + " - " + entity.bestellNr,
     entity.bezeichnung,
     entity.abbildung,
-    entity.kategorie
+    entity.kategorie,
+    entity
   );
 
 const vorbildOption = (entity) =>
@@ -53,7 +59,8 @@ const vorbildOption = (entity) =>
     entity.bezeichnung,
     entity.bezeichnung,
     entity.abbildung,
-    entity.kategorie
+    entity.kategorie,
+    entity
   );
 
 const unterKategorieExtractor = (jsonData) =>

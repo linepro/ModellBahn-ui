@@ -1188,7 +1188,6 @@ ul::-webkit-scrollbar-thumb {
   animation-name: animatetop;
   background-color: LightSkyBlue;
   border: 0.2rem LightSkyBlue;
-  border-radius: 3rem;
   height: fit-content;
   margin: 0;
   overflow: hidden;

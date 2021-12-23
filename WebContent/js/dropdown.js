@@ -4,13 +4,14 @@
 const utf8decoder = new TextDecoder();
 const utf8encoder = new TextEncoder();
 
-const dropOption = (value, display, tooltip, image, group) => {
+const dropOption = (value, display, tooltip, image, group, entity) => {
   return {
     display: utf8decoder.decode(utf8encoder.encode(display)),
     value: value,
     tooltip: utf8decoder.decode(utf8encoder.encode(tooltip)),
     image: image,
-    group: group
+    group: group,
+    entity: entity
   };
 };
 

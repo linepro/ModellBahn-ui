@@ -16,6 +16,7 @@
   <script type="text/javascript" src="js/columns.js"></script>
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
+  <script type="text/javascript" src="js/filters.js"></script>
   <script type="text/javascript">
     async function init() {
       await layout(NavMenu.BACK)
@@ -46,7 +47,7 @@
         const anderungen = new ExpandingTable(5, "anderungen", "anderungen", anderungenColumns, anderungActions, EditMode.UPDATE);
 
         const decoderenColumns = [
-          DECODER_SELECT(Editable.UPDATE, false),
+          DECODER_SELECT(Editable.NEVER, false),
           BEZEICHNUNG(Editable.UPDATE, true),
           PROTOKOLL_SELECT(Editable.UPDATE, true),
           FAHRSTUFE(Editable.UPDATE, false),
@@ -56,22 +57,36 @@
           I_MAX(Editable.NEVER, true),
           KONFIGURATION_SELECT(Editable.NEVER, true),
           STECKER_SELECT(Editable.NEVER, true),
-          KAUFDATUM(Editable.UPDATE, true),
-          WAHRUNG_SELECT(Editable.UPDATE, true),
-          PREIS(Editable.UPDATE, true),
+          KAUFDATUM(Editable.NEVER, true),
+          WAHRUNG_SELECT(Editable.NEVER, true),
+          PREIS(Editable.NEVER, true),
           ANMERKUNG(Editable.UPDATE, true),
           ANLEITUNGEN(Editable.NEVER)
         ];
+
+        const decoderSelect = new FilterBox(
+          "DECODER",
+          DECODER_DROP, [
+            checkBoxPanel("gerausch", "GERAUSCH"),
+            dropDownPanel("protokoll", "PROTOKOLL", PROTOKOLL_DROP),
+            dropDownPanel("stecker", "STECKER", STECKER_DROP)
+          ], [
+            (e) => !e.artikelId && e.status === 'FREI'
+          ]);
 
         const decoderenActions = [
           new ActionButton(
               true,
               "add",
               "add",
-              (event, grid, row) => {
-                let form = document.getELementById("decoderSelect");
-                form.style.display = "block";
-              }
+              (event, grid, row) => decoderSelect.show(
+                (opt) => postRest(
+                  grid.addUrl,
+                  opt.entity,
+                  (jsonData) => grid.addRow(jsonData, EditMode.UPDATE),
+                  (error) => reportError("addDecoder", error)
+                )
+              )
             ),
           saveAction(),
           deleteAction()
@@ -114,7 +129,7 @@
       .catch(error => reportError("load", error));
     }
   </script>
-  <title>Artikelen</title>
+  <title>Artikel</title>
 </head>
 <body onload="init()">
 <header>
@@ -138,10 +153,6 @@
           </div>
           <div id="decoderenTab" class="tabContent">
             <div id="decoderen">
-            </div>
-            <div id="decoderSelect" class="searchForm" style="display:none">
-              <form>
-              </form>
             </div>
           </div>
         </div>
