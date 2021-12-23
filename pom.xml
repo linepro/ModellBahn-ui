@@ -81,7 +81,7 @@
         <maven-scm-plugin.version>1.12.0</maven-scm-plugin.version>
         <maven-site-plugin.version>3.9.1</maven-site-plugin.version>
         <versions-maven-plugin.version>2.8.1</versions-maven-plugin.version>
-        <wagon-ssh.version>3.4.3</wagon-ssh.version>
+        <wagon-ssh.version>3.5.0</wagon-ssh.version>
 
         <destDir>${project.build.outputDirectory}/META-INF/resources/webjars/${project.artifactId}/${project.version}</destDir>
         <maven.test.skip>true</maven.test.skip>
