@@ -51,7 +51,7 @@ class FilterPanel {
     if (pnl.className) panel.className = pnl.className;
 
     if (pnl.caption) {
-        addHeading(panel, "H3", pnl.caption);
+      addHeading(panel, "H3", pnl.caption);
     }
 
     let opts = document.createElement("div");
@@ -93,6 +93,17 @@ class FilterBox {
     list.options.forEach(o => o.style.display = box.filter(o.entity));
   }
 
+  selected(list) {
+    let box = this;
+    let selected = list.selectedIndex;
+    
+    if (selected === -1) return;
+ 
+    let val = list.options[list.selectedIndex].value;
+
+    return box.dropDown.options.find(o => o.value === val);
+  }
+
   show(action) {
     let box = this;
 
@@ -107,7 +118,6 @@ class FilterBox {
     frm.appendChild(list);
     box.dropDown.options.forEach(o => {
       let opt = createOption(o.value, o.display, o.tooltip, o.image);
-      opt.entity = o.entity;
       list.appendChild(opt);
     });
     list.selectedIndex = -1;
@@ -120,13 +130,16 @@ class FilterBox {
     let modal = addModal();
 
     let add = createButton("add", "add", () => {
-      action(list.options[list.selectedIndex].entity);
-      modal.style.display = "none";
+      let sel = selected(list);
+      if (sel) {
+        action(sel);
+        modal.style.display = "none";
+      }
     });
     add.enabled = false;
 
     frm.appendChild(add);
-    list.addEventListener("select", (e) => add.enabled = e.target.selectedIndex != -1, false);
+    list.addEventListener("select", (e) => add.enabled = e.target.selectedIndex !== -1, false);
     
     let cancel = createButton("cancel", "cancel", () => modal.style.display = "none");
     frm.appendChild(cancel);
