@@ -169,19 +169,21 @@ const reportError = (description, error) => {
   }
 };
 
-const showModal = content => {
+const showModal = (content, withCloser = true) => {
   let modal = addModal();
 
   let contents = document.getElementById("modal-content");
   removeChildren(contents);
 
-  let closer = document.createElement("div");
-  closer.className = "closebtn";
-  closer.onclick = () => {
-    modal.style.display = "none";
-  };
-  addText(closer, translate("CLOSE"));
-  contents.appendChild(closer);
+  if (withCloser) {
+    let closer = document.createElement("div");
+    closer.className = "closebtn";
+    closer.onclick = () => {
+      modal.style.display = "none";
+    };
+    addText(closer, translate("CLOSE"));
+    contents.appendChild(closer);
+  }
 
   contents.appendChild(content);
   modal.style.display = "block";

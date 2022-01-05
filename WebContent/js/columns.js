@@ -54,6 +54,12 @@ const valueAndUnits = (cssSize) => {
   return { value: dims[1], units: dims[2] };
 };
 
+const setHeights = (element, height, minHeight = height, maxHeight = height) => {
+  element.style.height = height;
+  element.style.maxHeight = minHeight;
+  element.style.minHeight = maxHeight;
+};
+
 const setWidths = (element, width, minWidth = width, maxWidth = width) => {
   element.style.width = width;
   element.style.maxWidth = minWidth;
@@ -899,7 +905,7 @@ class PdfColumn extends FileColumn {
 
       viewer.load(pdf);
 
-      showModal(viewer.element, true);
+      showModal(viewer.element);
     }
   }
 }

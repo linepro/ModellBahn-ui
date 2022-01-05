@@ -29,6 +29,8 @@
       .then(() => initDropDown(KUPPLUNG_DROP))
       .then(() => initDropDown(DECODER_DROP))
       .then(() => initDropDown(STATUS_DROP))
+      .then(() => initDropDown(PROTOKOLL_DROP))
+      .then(() => initDropDown(STECKER_DROP))
       .then(() => {
         const anderungenColumns = [
           new NumberColumn("ANDERUNG", "anderungId", fieldGetter, fieldSetter, Editable.NEVER, true),

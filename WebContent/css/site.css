@@ -353,6 +353,44 @@ div.img-button {
   vertical-align: top;
 }
 
+div.popup-filters {
+  align-content: flex-start;
+  align-items: baseline;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  overflow: hidden;
+  width: 100%;
+}
+
+div.popup-filter {
+  align-content: center;
+  align-items: baseline;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  overflow: hidden;
+}
+
+div.popup-item {
+  flex: auto;
+}
+
+label.popup-label {
+  min-width: 12ch;
+}
+
+select.popup-control {
+  height: 20rem;
+  min-width: 50ch;
+}
+
+div.popup-form {
+  display: flow-root;
+}
+
 div.thumb-container {
   align-content: flex-start;
   align-items: baseline;
