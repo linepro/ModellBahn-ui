@@ -30,6 +30,8 @@
       .then(() => initDropDown(DECODER_DROP))
       .then(() => initDropDown(STATUS_DROP))
       .then(() => initDropDown(PROTOKOLL_DROP))
+      .then(() => initDropDown(KONFIGURATION_DROP))
+      .then(() => initDropDown(ADRESS_TYP_DROP))
       .then(() => initDropDown(STECKER_DROP))
       .then(() => {
         const anderungenColumns = [
@@ -49,7 +51,7 @@
         const anderungen = new ExpandingTable(5, "anderungen", "anderungen", anderungenColumns, anderungActions, EditMode.UPDATE);
 
         const decoderenColumns = [
-          DECODER_SELECT(Editable.NEVER, false),
+          DECODER(Editable.NEVER, false),
           BEZEICHNUNG(Editable.UPDATE, true),
           PROTOKOLL_SELECT(Editable.UPDATE, true),
           FAHRSTUFE(Editable.UPDATE, false),
@@ -59,9 +61,6 @@
           I_MAX(Editable.NEVER, true),
           KONFIGURATION_SELECT(Editable.NEVER, true),
           STECKER_SELECT(Editable.NEVER, true),
-          KAUFDATUM(Editable.NEVER, true),
-          WAHRUNG_SELECT(Editable.NEVER, true),
-          PREIS(Editable.NEVER, true),
           ANMERKUNG(Editable.UPDATE, true),
           ANLEITUNGEN(Editable.NEVER)
         ];
@@ -70,6 +69,7 @@
           "DECODER",
           DECODER_DROP, [
             checkBoxPanel("gerausch", "GERAUSCH"),
+            checkBoxPanel("motor", "MOTOR"),
             dropDownPanel("protokoll", "PROTOKOLL", PROTOKOLL_DROP),
             dropDownPanel("stecker", "STECKER", STECKER_DROP)
           ], [
@@ -84,7 +84,7 @@
               (event, grid, row) => decoderSelect.show(
                 (opt) => postRest(
                   grid.addUrl,
-                  opt.entity,
+                  opt,
                   (jsonData) => grid.addRow(jsonData, EditMode.UPDATE),
                   (error) => reportError("addDecoder", error)
                 )
@@ -124,11 +124,13 @@
           decoderen
         ];
 
-        const artikel = new Form("artikel", "artikel", artikelColumns, artikelActions, EditMode.UPDATE, artikelChildren);
+        const artikel = new Form(fetchUrl("artikel"), "artikel", artikelColumns, artikelActions, EditMode.UPDATE, artikelChildren);
 
         artikel.init();
       })
       .catch(error => reportError("load", error));
+
+      setActiveTab(undefined, "decoderenTab");
     }
   </script>
   <title>Artikel</title>
@@ -150,10 +152,12 @@
         </div>
         <div class="tabContainer">
           <div id="anderungenTab" class="tabContent">
+            <h3>Anderungen</h3>
             <div id="anderungen">
             </div>
           </div>
           <div id="decoderenTab" class="tabContent">
+            <h3>Decoderen</h3>
             <div id="decoderen">
             </div>
           </div>

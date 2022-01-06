@@ -136,6 +136,7 @@ button.form-control-del {
   transform: translate(0, -0.9rem);
 }
 
+button.expanding-cell-add,
 button.table-cell-add {
   align-content: center;
   display: grid;
@@ -150,6 +151,7 @@ button.table-cell-add {
   position: relative;
 }
 
+button.expanding-cell-del,
 button.table-cell-del {
   align-content: center;
   display: grid;
@@ -502,6 +504,7 @@ img {
   text-align: center;
 }
 
+img.expanding-cell-select,
 img.form-control,
 img.form-control-select,
 img.table-cell-select {
@@ -511,6 +514,7 @@ img.table-cell-select {
   writing-mode: vertical-lr;
 }
 
+img.expanding-cell-select[data-disabled="false"],
 img.form-control-select[data-disabled="false"],
 img.table-cell-select[data-disabled="false"] {
   background-color: White;
@@ -571,6 +575,7 @@ img.image-select {
   max-width: 3rem;
 }
 
+img.expanding-cell,
 img.table-cell {
   order: 2;
   margin-left: 1rem;

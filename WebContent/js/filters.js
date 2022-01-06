@@ -7,19 +7,22 @@ class FilterOption {
     option
   ) {
     this.id = id;
-    this.option = option;
+    this.display = option.display;
+    this.value = option.value;
+    this.chk = undefined;
   }
 
-  active() {
+  isChecked() {
     let opt = this;
 
-    return document.getElementById(opt.id).checked;
+    return opt.chk.checked;
   }
 
   filter(val) {
     let opt = this;
-    console.log({ opt: opt.option.value, val: val});
-    return opt.option.value === val;
+    let inc = opt.value === val;
+    console.log({ opt: opt.value, inc: inc, val: val});
+    return inc;
   }
 
   init(updated) {
@@ -29,7 +32,7 @@ class FilterOption {
     div.className = "popup-item";
 
     let lbl = document.createElement("label");
-    lbl.appendChild(document.createTextNode(translate(opt.option.display)));
+    lbl.appendChild(document.createTextNode(translate(opt.display)));
     lbl.className = "popup-label";
     div.appendChild(lbl);
 
@@ -42,12 +45,14 @@ class FilterOption {
     lbl.htmlFor = chk.id;
     div.appendChild(chk);
 
+    opt.chk = chk;
+
     return div;
   }
 }
 
-const checkBoxPanel = (fieldName, caption) => new FilterPanel(fieldName, caption, [ new FilterOption({ display: caption, value: true })]);
-const dropDownPanel = (fieldName, caption, dropDown) => new FilterPanel(fieldName, caption, dropDown.options.map(o => new FilterOption(o)));
+const checkBoxPanel = (fieldName, caption) => new FilterPanel(fieldName, caption, [ new FilterOption(getFieldId(fieldName, caption), { display: caption, value: true })]);
+const dropDownPanel = (fieldName, caption, dropDown) => new FilterPanel(fieldName, caption, dropDown.options.map(o => new FilterOption(getFieldId(fieldName, o.display), o)));
 
 class FilterPanel {
   constructor (
@@ -58,21 +63,20 @@ class FilterPanel {
     this.fieldName = fieldName;
     this.caption = caption;
     this.options = options;
+    this.displayed = [];
   }
 
   filter(val) {
     let pnl = this;
-    let chk = pnl.options
-                 .filter(o => o.active);
+    let chk = pnl.displayed
+                 .filter(o => o.isChecked());
 
     if (!chk.length) return true;
 
     let fld = val[pnl.fieldName];
 
     let inc = chk.map(c => c.filter(fld))
-              .reduce((p,c) => p || c, false);
-
-    console.log({ fld: pnl.fieldName, inc: inc, val: val });
+                 .reduce((p, c) => p || c, false);
 
     return inc;
   }
@@ -83,15 +87,21 @@ class FilterPanel {
                        .filter((v, i, a) => a.indexOf(v) === i);
 
     if (fldVals.length > 1) {
-      let vals = pnl.options
-                    .filter(o => fldVals.find(i => i === o.value));
+      let vals = pnl.options;
 
-      if (vals.length > 1) {
-        let opts = document.createElement("div");
-        opts.className = "popup-filter";
-        vals.forEach((o, i) => opts.appendChild(o.init(getFieldId("popup_" + pnl.fieldName, i), updated)));
-        row.appendChild(opts);
+      if (pnl.options.length > 1) {
+        vals = pnl.options
+                  .filter(o => fldVals.find(i => i === o.value));
+
+        if (vals.length <= 1) return;
       }
+
+      let opts = document.createElement("div");
+      opts.className = "popup-filter";
+      vals.forEach(o => opts.appendChild(o.init(updated)));
+      row.appendChild(opts);
+
+      pnl.displayed = vals;
     }
 
     return row;
@@ -122,7 +132,7 @@ class FilterBox {
 
     let vis = box.panels
                  .map(p => p.filter(val))
-                 .reduce((p,c) => p && c, false)
+                 .reduce((p,c) => p && c, true);
 
     return vis ? "block" : "none";
   }
@@ -132,6 +142,14 @@ class FilterBox {
 
     Array.from(list.options)
          .forEach(o => o.style.display = box.visible(box.entity(o.value)));
+  }
+
+  filter(item) {
+    let filters = this.filters;
+
+    if (!filters || filters.length == 0) return true;
+
+    return filters.reduce((p, c) => p || c(item.entity), false);
   }
 
   selected(list) {
@@ -167,7 +185,7 @@ class FilterBox {
 
     let items = box.dropDown
                    .options
-                   .filter(o => box.filters && !box.filters.reduce((p, c) => p || !c(o.entity), false));
+                   .filter(o => box.filter(o), false);
 
     items.forEach(o => {
           let opt = createOption(o.value, o.display, o.tooltip, o.image);

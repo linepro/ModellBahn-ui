@@ -110,6 +110,7 @@
   "MINIMAL": { "message": "Minimum" },
   "MITTELWAGEN": { "message": "Middle Cars" },
   "MODELLBAHN": { "message": "ModellBahn" },
+  "MOTOR": { "message": "Loco Decoder" },
   "MOTORBAUART": { "message": "Motor Type" },
   "MOTOR_TYP": { "message": "Motor Type" },
   "MOTOR_TYPEN": { "message": "Motor Types" },

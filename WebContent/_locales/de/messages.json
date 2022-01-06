@@ -110,6 +110,7 @@
   "MINIMAL": { "message": "Minimal" },
   "MITTELWAGEN": { "message": "Mittelwagen" },
   "MODELLBAHN": { "message": "ModellBahn" },
+  "MOTOR": { "message": "Lokdecoder" },
   "MOTORBAUART": { "message": "Motorbauart" },
   "MOTOR_TYP": { "message": "MotorTyp" },
   "MOTOR_TYPEN": { "message": "MotorTypen" },
