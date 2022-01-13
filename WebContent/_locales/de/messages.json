@@ -81,6 +81,7 @@
   "HERSTELLERN": { "message": "Herstellern" },
   "HOME": { "message": "Start" },
   "I_MAX": { "message": "I Max" },
+  "IMPORT_ERROR": { "message": "Fehler beim Importieren" },
   "INDEX": { "message": "Index" },
   "INVENTORY": { "message": "Bestand" },
   "KAPAZITAT": { "message": "Kapazität" },

@@ -38,6 +38,8 @@ const getRowId = (tableId, i) => [tableId, i].join("_");
 
 const getFieldId = (rowId, fieldName) => [rowId, fieldName].join("_");
 
+const getCellId = (rowId, fieldName) => getFieldId(rowId, fieldName) + "_field";
+
 const isEditable = (column) => (column.editable !== Editable.NEVER);
 
 const shouldDisable = (editable, editMode, entity) => {
@@ -135,12 +137,12 @@ class Column extends VirtualColumn {
     headerRow.append(header);
   }
 
-  setTitle(ctl) {
+  setTooltip(ctl) {
     let column = this;
 
-    let key = column.fieldName + "_invalid";
-    let title = translate(key);
-    if (title != key) ctl.title = title;
+    let key = column.fieldName + "_tooltip";
+    let tooltip = translate(key);
+    if (tooltip && tooltip != key) ctl.title = tooltip;
   }
 
   initialise(ctl) {
@@ -180,7 +182,7 @@ class Column extends VirtualColumn {
     ctl.addEventListener("change", (event) => column.updateEntity(event, row), false);
     ctl.disabled = true;
     ctl.style.visibility = "hidden";
-    column.setTitle(ctl);
+    column.setTooltip(ctl);
     return ctl;
   }
 
@@ -188,6 +190,7 @@ class Column extends VirtualColumn {
     let column = this;
 
     let cell = document.createElement("div");
+    cell.id = getCellId(row.id, column.fieldName);
     cell.className = row.classPrefix + "-item";
     setWidths(cell, (labelWidth + column.displayLength()) + "ch");
     row.element.append(cell);
@@ -229,6 +232,7 @@ class Column extends VirtualColumn {
 
   setControlValue(ctl, value) {
     ctl.value = value ? value : "";
+    ctl.dispatchEvent(new Event("input"));
   }
 
   bind(row) {
@@ -243,7 +247,7 @@ class Column extends VirtualColumn {
       }
       column.setControlValue(ctl, value);
       ctl.disabled = shouldDisable(column.editable, row.editMode, row.entity);
-      ctl.style.visibility = row.entity ? "visible" : "hidden";
+      ctl.style.visibility = row.entity ? ctl.parentElement.style.visibility : "hidden";
     }
     return ctl;
   }
@@ -284,6 +288,7 @@ class BoolColumn extends Column {
 
   setControlValue(chk, value) {
     chk.checked = value;
+    chk.dispatchEvent(new Event("input"));
   }
 }
 
@@ -338,6 +343,7 @@ class NumberColumn extends Column {
     } else {
       num.value =  "";
     }
+    num.dispatchEvent(new Event("input"));
   }
 }
 
@@ -526,7 +532,7 @@ class DateColumn extends PopupColumn {
       datepicker.options.setShowCloseButton(true);
       datepicker.options.setShowDeselectButton(false);
       datepicker.options.setShowResetButton(true);
-      datepicker.options.setTitle(translate(column.heading));
+      datepicker.options.setTooltip(translate(column.heading));
       datepicker.options.setToggleSelection(false);
       datepicker.options.setYearAsDropdown(true);
 
@@ -612,6 +618,7 @@ class DateColumn extends PopupColumn {
 
   setControlValue(dte, value) {
     dte.value = dateToLocalString(value);
+    dte.dispatchEvent(new Event("input"));
   }
 
   bind(row) {
@@ -871,6 +878,7 @@ class ImageColumn extends FileColumn {
 
   setControlValue(img, value) {
     img.src = value ? value : imageSource("add-picture");
+    img.dispatchEvent(new Event("input"));
   }
 }
 
@@ -894,6 +902,7 @@ class PdfColumn extends FileColumn {
 
   setControlValue(img, value) {
     img.src = value ? imageSource("pdf") : imageSource("add-document");
+    img.dispatchEvent(new Event("input"));
   }
 
   showContent(event, row) {
@@ -913,7 +922,7 @@ class PdfColumn extends FileColumn {
 const nichtBenotigt = (required, options) =>
   required ?
     options :
-    [dropOption(undefined, translate("NICHT_BENOTIGT"), undefined, "")].concat(options);
+    [dropOption(undefined, translate("NICHT_BENOTIGT"), translate("NICHT_BENOTIGT"), undefined, undefined, undefined)].concat(options);
 
 class DropDownColumn extends Column {
   constructor(
@@ -1019,6 +1028,7 @@ class DropDownColumn extends Column {
         }
       }
       sel.value = "";
+      sel.dispatchEvent(new Event("change"));
     }
   }
 }
@@ -1061,6 +1071,7 @@ class AutoSelectColumn extends PopupColumn {
         if (option.value === value) {
           sel.value = option.display;
           sel.dataset["value"] = value;
+          sel.dispatchEvent(new Event("input"));
           return;
         }
       }
@@ -1068,6 +1079,7 @@ class AutoSelectColumn extends PopupColumn {
 
     sel.value = "";
     sel.dataset["value"] = "";
+    sel.dispatchEvent(new Event("input"));
   }
 
   selected(event, row, option) {

@@ -157,12 +157,12 @@ const download = async (endPoint, success, failure) => {
   .finally(() => doneCursor(cursor));
 };
 
-const upload = async (endPoint, fieldName, fileData, fileName, success, failure) => {
+const upload = async (endPoint, fieldName, fileData, fileName, success, failure, method = "PUT") => {
   let cursor = waitCursor();
   let formData = new FormData();
   formData.append(fieldName, fileData, fileName);
   await fetch(endPoint, {
-    method: "PUT",
+    method: method,
     headers: headers(undefined),
     body: formData
   })

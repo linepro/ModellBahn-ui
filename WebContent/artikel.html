@@ -77,24 +77,33 @@
           ]);
 
         const decoderenActions = [
-          new ActionButton(
-              true,
-              "add",
-              "add",
-              (event, grid, row) => decoderSelect.show(
+          addAction("add", (event, grid, row) => decoderSelect.show(
                 (opt) => postRest(
                   grid.addUrl,
                   opt,
-                  (jsonData) => grid.addRow(jsonData, EditMode.UPDATE),
+                  (jsonData) => grid.refresh(),
                   (error) => reportError("addDecoder", error)
                 )
               )
             ),
-          saveAction(),
-          deleteAction()
+          saveAction("update", (event, grid, row) => grid.refresh()),
+          deleteAction("delete", (event, grid, row) => grid.refresh())
         ];
 
         const decoderen = new ExpandingTable(5, "decoderen", "decoderen", decoderenColumns, decoderenActions, EditMode.UPDATE);
+
+        const funktionenColumns = [
+          DECODER(Editable.NEVER, true),
+          ADRESS(Editable.NEVER, true),
+          FUNKTION(Editable.NEVER, true),
+          BEZEICHNUNG(Editable.UPDATE, true)
+        ];
+
+        const funktionenActions = [
+          saveAction()
+        ];
+
+        const funktionen = new ExpandingTable(5, "funktionen", "funktionen", funktionenColumns, funktionenActions, EditMode.UPDATE);
 
         const artikelColumns = [
           ARTIKEL(Editable.NEVER, true),
@@ -116,12 +125,27 @@
         ];
        
         const artikelActions = [
+          new ActionButton(
+              true,
+              "produkt",
+              "produkt",
+              (event, grid, row) => window.location.href = "produkt.html?self=" + actionLink(row.entity, "produkt"),
+              "produkt"
+            ),
+          new ActionButton(
+              true,
+              "vorbild",
+              "vorbild",
+              (event, grid, row) => window.location.href = "vorbild.html?self=" + actionLink(row.entity, "vorbild"),
+              "vorbild"
+            ),
           saveAction()
         ];
 
         const artikelChildren = [
           anderungen,
-          decoderen
+          decoderen, 
+          funktionen
         ];
 
         const artikel = new Form(fetchUrl("artikel"), "artikel", artikelColumns, artikelActions, EditMode.UPDATE, artikelChildren);
@@ -149,6 +173,7 @@
         <div class="tab">
           <button id="anderungenLink" class="tabLinks" onclick="setActiveTab(event, 'anderungenTab')">Anderungen</button>
           <button id="decoderenLink" class="tabLinks" onclick="setActiveTab(event, 'decoderenTab')">Decoderen</button>
+          <button id="funktionenLink" class="tabLinks" onclick="setActiveTab(event, 'funktionenTab')">Funktionen</button>
         </div>
         <div class="tabContainer">
           <div id="anderungenTab" class="tabContent">
@@ -159,6 +184,11 @@
           <div id="decoderenTab" class="tabContent">
             <h3>Decoderen</h3>
             <div id="decoderen">
+            </div>
+          </div>
+          <div id="funktionenTab" class="tabContent">
+            <h3>Funktionen</h3>
+            <div id="funktionen">
             </div>
           </div>
         </div>

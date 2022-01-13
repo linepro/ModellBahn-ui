@@ -81,6 +81,7 @@
   "HERSTELLERN": { "message": "Manufacturers" },
   "HOME": { "message": "Home" },
   "I_MAX": { "message": "I Max" },
+  "IMPORT_ERROR": { "message": "Error importing" },
   "INDEX": { "message": "Index" },
   "INVENTORY": { "message": "Inventory" },
   "KAPAZITAT": { "message": "Capacity" },

@@ -15,105 +15,6 @@
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
   <script type="text/javascript">
-    class VorbildForm extends Form {
-      constructor() {
-        super(
-          "vorbild",
-          "vorbild", 
-          [
-            GATTUNG_SELECT(Editable.ADD, true),
-            UNTER_KATEGORIE_SELECT(Editable.UPDATE),
-            BAHNVERWALTUNG_SELECT(Editable.UPDATE),
-            HERSTELLER(Editable.UPDATE),
-            BAUZEIT(Editable.UPDATE),
-            MENGE(Editable.UPDATE),
-            BETREIBSNUMMER(Editable.UPDATE),
-            new DropDownColumn("ANTRIEB", "antrieb", fieldGetter, fieldSetter, ANTRIEB_DROP, Editable.UPDATE, false),
-            ACHSFOLG_SELECT(Editable.UPDATE),
-            new NumberColumn("ANFAHRZUGKRAFT", "anfahrzugkraft", fieldGetter, fieldSetter, Editable.UPDATE, false, 300000, 1),
-            new NumberColumn("LEISTUNG", "leistung", fieldGetter, fieldSetter, Editable.UPDATE, false, 10000, 0, 2),
-            new NumberColumn("DIENSTGEWICHT", "dienstgewicht", fieldGetter, fieldSetter, Editable.UPDATE, false, 999, 1),
-            new NumberColumn("GESCHWINDIGKEIT", "geschwindigkeit", fieldGetter, fieldSetter, Editable.UPDATE, false, 300, 1),
-            LANGE(Editable.UPDATE),
-            AUSSERDIENST(Editable.UPDATE),
-            new NumberColumn("DM_TREIBRAD", "dmTreibrad", fieldGetter, fieldSetter, Editable.UPDATE, false, 3000, 1),
-            new NumberColumn("DM_LAUFRAD_VORN", "dmLaufradVorn", fieldGetter, fieldSetter, Editable.UPDATE, false, 3000, 1),
-            new NumberColumn("DM_LAUFRAD_HINTEN", "dmLaufradHinten", fieldGetter, fieldSetter, Editable.UPDATE, false, 3000, 1),
-            new NumberColumn("ZYLINDER", "zylinder", fieldGetter, fieldSetter, Editable.UPDATE, false, 100, 1),
-            new NumberColumn("DM_ZYLINDER", "dmZylinder", fieldGetter, fieldSetter, Editable.UPDATE, false, 3000, 1),
-            new NumberColumn("KOLBENHUB", "kolbenhub", fieldGetter, fieldSetter, Editable.UPDATE, false, 3000, 1, 2),
-            new NumberColumn("KESSELUBERDRUCK", "kesseluberdruck", fieldGetter, fieldSetter, Editable.UPDATE, false, 3000, 0, 2),
-            new NumberColumn("ROSTFLACHE", "rostflache", fieldGetter, fieldSetter, Editable.UPDATE, false, 3000, 0, 2),
-            new NumberColumn("UBERHITZERFLACHE", "uberhitzerflache", fieldGetter, fieldSetter, Editable.UPDATE, false, 3000, 0, 2),
-            new NumberColumn("WASSERVORRAT", "wasservorrat", fieldGetter, fieldSetter, Editable.UPDATE, false, 3000, 0, 2),
-            new NumberColumn("VERDAMPFUNG", "verdampfung", fieldGetter, fieldSetter, Editable.UPDATE, false, 3000, 0, 2),
-            new NumberColumn("FAHRMOTOREN", "fahrmotoren", fieldGetter, fieldSetter, Editable.UPDATE, false, 5, 1),
-            new TextColumn("MOTORBAUART", "motorbauart", fieldGetter, fieldSetter, Editable.UPDATE, false, 30),
-            new DropDownColumn("LEISTUNGSUBERTRAGUNG", "leistungsubertragung", fieldGetter, fieldSetter, LEISTUNGSUBERTRAGUNG_DROP, Editable.UPDATE, false),
-            new NumberColumn("REICHWEITE", "reichweite", fieldGetter, fieldSetter, Editable.UPDATE, false, 3000, 0),
-            new NumberColumn("KAPAZITAT", "kapazitat", fieldGetter, fieldSetter, Editable.UPDATE, false, 3000, 1, 2),
-            new NumberColumn("KLASSE", "klasse", fieldGetter, fieldSetter, Editable.UPDATE, false, 4, 0),
-            new NumberColumn("SITZPLATZE_KL1", "sitzplatzeKL1", fieldGetter, fieldSetter, Editable.UPDATE, false, 300, 0),
-            new NumberColumn("SITZPLATZE_KL2", "sitzplatzeKL2", fieldGetter, fieldSetter, Editable.UPDATE, false, 300, 0),
-            new NumberColumn("SITZPLATZE_KL3", "sitzplatzeKL3", fieldGetter, fieldSetter, Editable.UPDATE, false, 300, 0),
-            new NumberColumn("SITZPLATZE_KL4", "sitzplatzeKL4", fieldGetter, fieldSetter, Editable.UPDATE, false, 300, 0),
-            new TextColumn("AUFBAU", "aufbau", fieldGetter, fieldSetter, Editable.UPDATE, false, 50),
-            new NumberColumn("TRIEBKOPFE", "triebkopf", fieldGetter, fieldSetter, Editable.UPDATE, false, 2, 0),
-            new NumberColumn("MITTELWAGEN", "mittelwagen", fieldGetter, fieldSetter, Editable.UPDATE, false, 30, 0),
-            new TextColumn("DREHGESTELLBAUART", "drehgestellBauart", fieldGetter, fieldSetter, Editable.UPDATE, false, 30),
-            ABBILDUNG(Editable.NEVER)
-        ],
-        [
-          saveAction()
-        ],
-        EditMode.UPDATE);
-      }
-
-      configure(row) {
-        let grid = this;
-
-        let kategorie = document.getElementById(getFieldName(row.id, "unterKategorie"));
-        let antrieb = document.getElementById(getFieldName(row.id, "antrieb"));
-
-        // hide / reveal appropriate fields
-        // Lokomotive
-        // [ "anfahrzugkraft", "leistung", "dmTreibrad", "dmLaufradVorn", "dmLaufradHinten" ]
-        // Dampf antrieb
-        // [ "zylinder", "dmZylinder", "kolbenhub", "kesseluberdruck", "rostflache", "uberhitzerflache", "wasservorrat", "verdampfung" ];
-        // Diesel
-        // [ "zylinder", "dmZylinder", "kolbenhub", "fahrmotoren", "motorbauart", "reichweite", "kapazitat" ];
-        // Diesel, Elektro, Druckluft
-        // [ "leistungsubertragung" ];
-        // Personen wagen, triebwagen
-        // [ "klasse", "sitzplatzeKL1", "sitzplatzeKL2", "sitzplatzeKL3", "sitzplatzeKL4" ];
-        // triebwagen
-        // [ "triebkopf", "mittelwagen" ];
-        // wagen
-        // [ "drehgestellBauart" ];
-      }
-
-      draw(place) {
-        let grid = this;
-
-        super.draw(place);
-
-        let row = grid.row;
-        let kategorie = document.getElementById(getFieldName(row.id, "unterKategorie"));
-        kategorie.addEventListener("changed", (event) => grid.configure(row), false);
-
-        let antrieb = document.getElementById(getFieldName(row.id, "antrieb"));
-        antrieb.addEventListener("changed", (event) => grid.configure(row), false);
-      }
-
-      bind(jsonData, fetchUrl) {
-        let grid = this;
-
-        super.bind(jsonData, fetchUrl);
-
-        grid.configure(grid.row);
-      }
-    };
-
     async function init() {
       await layout(NavMenu.BACK)
       .then(() => initDropDown(GATTUNG_DROP))
@@ -123,9 +24,238 @@
       .then(() => initDropDown(ACHSFOLG_DROP))
       .then(() => initDropDown(LEISTUNGSUBERTRAGUNG_DROP))
       .then(() => {
-        const vorbild = new VorbildForm();
-        vorbild.init();
-        })
+        const ANTRIEB_SELECT = new DropDownColumn("ANTRIEB", "antrieb", fieldGetter, fieldSetter, ANTRIEB_DROP, Editable.UPDATE, false);
+        const ANFAHRZUGKRAFT = new NumberColumn("ANFAHRZUGKRAFT", "anfahrzugkraft", fieldGetter, fieldSetter, Editable.UPDATE, false, 300000, 1);
+        const LEISTUNG = new NumberColumn("LEISTUNG", "leistung", fieldGetter, fieldSetter, Editable.UPDATE, false, 10000, 0, 2);
+        const DIENSTGEWICHT = new NumberColumn("DIENSTGEWICHT", "dienstgewicht", fieldGetter, fieldSetter, Editable.UPDATE, false, 999, 1);
+        const GESCHWINDIGKEIT = new NumberColumn("GESCHWINDIGKEIT", "geschwindigkeit", fieldGetter, fieldSetter, Editable.UPDATE, false, 300, 1);
+        const DM_TREIBRAD = new NumberColumn("DM_TREIBRAD", "dmTreibrad", fieldGetter, fieldSetter, Editable.UPDATE, false, 3000, 1);
+        const DM_LAUFRAD_VORN = new NumberColumn("DM_LAUFRAD_VORN", "dmLaufradVorn", fieldGetter, fieldSetter, Editable.UPDATE, false, 3000, 1);
+        const DM_LAUFRAD_HINTEN = new NumberColumn("DM_LAUFRAD_HINTEN", "dmLaufradHinten", fieldGetter, fieldSetter, Editable.UPDATE, false, 3000, 1);
+        const ZYLINDER = new NumberColumn("ZYLINDER", "zylinder", fieldGetter, fieldSetter, Editable.UPDATE, false, 100, 1);
+        const DM_ZYLINDER = new NumberColumn("DM_ZYLINDER", "dmZylinder", fieldGetter, fieldSetter, Editable.UPDATE, false, 3000, 1);
+        const KOLBENHUB = new NumberColumn("KOLBENHUB", "kolbenhub", fieldGetter, fieldSetter, Editable.UPDATE, false, 3000, 1, 2);
+        const KESSELUBERDRUCK = new NumberColumn("KESSELUBERDRUCK", "kesseluberdruck", fieldGetter, fieldSetter, Editable.UPDATE, false, 3000, 0, 2);
+        const ROSTFLACHE = new NumberColumn("ROSTFLACHE", "rostflache", fieldGetter, fieldSetter, Editable.UPDATE, false, 3000, 0, 2);
+        const UBERHITZERFLACHE = new NumberColumn("UBERHITZERFLACHE", "uberhitzerflache", fieldGetter, fieldSetter, Editable.UPDATE, false, 3000, 0, 2);
+        const WASSERVORRAT = new NumberColumn("WASSERVORRAT", "wasservorrat", fieldGetter, fieldSetter, Editable.UPDATE, false, 3000, 0, 2);
+        const VERDAMPFUNG = new NumberColumn("VERDAMPFUNG", "verdampfung", fieldGetter, fieldSetter, Editable.UPDATE, false, 3000, 0, 2);
+        const FAHRMOTOREN = new NumberColumn("FAHRMOTOREN", "fahrmotoren", fieldGetter, fieldSetter, Editable.UPDATE, false, 5, 1);
+        const MOTORBAUART = new TextColumn("MOTORBAUART", "motorbauart", fieldGetter, fieldSetter, Editable.UPDATE, false, 30);
+        const LEISTUNGSUBERTRAGUNG = new DropDownColumn("LEISTUNGSUBERTRAGUNG", "leistungsubertragung", fieldGetter, fieldSetter, LEISTUNGSUBERTRAGUNG_DROP, Editable.UPDATE, false);
+        const REICHWEITE = new NumberColumn("REICHWEITE", "reichweite", fieldGetter, fieldSetter, Editable.UPDATE, false, 3000, 0);
+        const KAPAZITAT = new NumberColumn("KAPAZITAT", "kapazitat", fieldGetter, fieldSetter, Editable.UPDATE, false, 3000, 1, 2);
+        const KLASSE = new NumberColumn("KLASSE", "klasse", fieldGetter, fieldSetter, Editable.UPDATE, false, 4, 0);
+        const SITZPLATZE_KL1 = new NumberColumn("SITZPLATZE_KL1", "sitzplatzeKL1", fieldGetter, fieldSetter, Editable.UPDATE, false, 300, 0);
+        const SITZPLATZE_KL2 = new NumberColumn("SITZPLATZE_KL2", "sitzplatzeKL2", fieldGetter, fieldSetter, Editable.UPDATE, false, 300, 0);
+        const SITZPLATZE_KL3 = new NumberColumn("SITZPLATZE_KL3", "sitzplatzeKL3", fieldGetter, fieldSetter, Editable.UPDATE, false, 300, 0);
+        const SITZPLATZE_KL4 = new NumberColumn("SITZPLATZE_KL4", "sitzplatzeKL4", fieldGetter, fieldSetter, Editable.UPDATE, false, 300, 0);
+        const AUFBAU = new TextColumn("AUFBAU", "aufbau", fieldGetter, fieldSetter, Editable.UPDATE, false, 50);
+        const TRIEBKOPFE = new NumberColumn("TRIEBKOPFE", "triebkopf", fieldGetter, fieldSetter, Editable.UPDATE, false, 2, 0);
+        const MITTELWAGEN = new NumberColumn("MITTELWAGEN", "mittelwagen", fieldGetter, fieldSetter, Editable.UPDATE, false, 30, 0);
+        const DREHGESTELLBAUART = new TextColumn("DREHGESTELLBAUART", "drehgestellBauart", fieldGetter, fieldSetter, Editable.UPDATE, false, 30);
+
+        const vorbildColumns = [
+          NAMEN(Editable.NEVER, true),
+          GATTUNG_SELECT(Editable.ADD, true),
+          UNTER_KATEGORIE_SELECT(Editable.UPDATE),
+          BAHNVERWALTUNG_SELECT(Editable.UPDATE),
+          HERSTELLER(Editable.UPDATE),
+          BAUZEIT(Editable.UPDATE),
+          MENGE(Editable.UPDATE),
+          BETREIBSNUMMER(Editable.UPDATE),
+          ANTRIEB_SELECT,
+          ACHSFOLG_SELECT(Editable.UPDATE),
+          ANFAHRZUGKRAFT,
+          LEISTUNG,
+          DIENSTGEWICHT,
+          GESCHWINDIGKEIT,
+          LANGE(Editable.UPDATE),
+          AUSSERDIENST(Editable.UPDATE),
+          DM_TREIBRAD,
+          DM_LAUFRAD_VORN,
+          DM_LAUFRAD_HINTEN,
+          ZYLINDER,
+          DM_ZYLINDER,
+          KOLBENHUB,
+          KESSELUBERDRUCK,
+          ROSTFLACHE,
+          UBERHITZERFLACHE,
+          WASSERVORRAT,
+          VERDAMPFUNG,
+          FAHRMOTOREN,
+          MOTORBAUART,
+          LEISTUNGSUBERTRAGUNG,
+          REICHWEITE,
+          KAPAZITAT,
+          KLASSE,
+          SITZPLATZE_KL1,
+          SITZPLATZE_KL2,
+          SITZPLATZE_KL3,
+          SITZPLATZE_KL4,
+          AUFBAU,
+          TRIEBKOPFE,
+          MITTELWAGEN,
+          DREHGESTELLBAUART,
+          ABBILDUNG(Editable.NEVER)
+        ];
+
+        const DAMPF_COLUMNS = [ ZYLINDER, DM_ZYLINDER, KOLBENHUB, KESSELUBERDRUCK, ROSTFLACHE, UBERHITZERFLACHE, WASSERVORRAT, VERDAMPFUNG ];
+
+        const DIESEL_COLUMNS = [ ZYLINDER, DM_ZYLINDER, KOLBENHUB, FAHRMOTOREN, MOTORBAUART, REICHWEITE, KAPAZITAT, LEISTUNGSUBERTRAGUNG ];
+
+        const ELEKTRO_COLUMNS = [ LEISTUNGSUBERTRAGUNG ];
+
+        const DRUCKLUFT_COLUMNS = [ LEISTUNGSUBERTRAGUNG ];
+
+        const LOKOMOTIV_COLUMNS = [ ANFAHRZUGKRAFT, LEISTUNG, DM_TREIBRAD, DM_LAUFRAD_VORN, DM_LAUFRAD_HINTEN ];
+
+        const BAHNDIENSTWAGEN_COLUMNS = [ DREHGESTELLBAUART ];
+
+        const GUTERNWAGEN_COLUMNS = [ DREHGESTELLBAUART ];
+
+        const PERSONENWAGEN_COLUMNS = [ KLASSE, SITZPLATZE_KL1, SITZPLATZE_KL2, SITZPLATZE_KL3, SITZPLATZE_KL4, DREHGESTELLBAUART ];
+
+        const TRIEBWAGEN_COLUMNS = [ TRIEBKOPFE, MITTELWAGEN, KLASSE, SITZPLATZE_KL1, SITZPLATZE_KL2, SITZPLATZE_KL3, SITZPLATZE_KL4, DREHGESTELLBAUART ];
+
+        const vorbildActions = [
+          saveAction()
+        ];
+
+        const vorbild = new Form(fetchUrl("vorbild"), "vorbild", vorbildColumns, vorbildActions, EditMode.UPDATE);
+
+        vorbild.initialize();
+
+        const show = (rowId, columns) => {
+          columns.forEach(c => {
+            let cell = document.getElementById(getCellId(rowId, c.fieldName));
+            if (cell) {
+              cell.style.display = "flex";
+            }
+          });
+        };
+        const hide = (rowId, columns) => {
+          columns.forEach(c => {
+            let cell = document.getElementById(getCellId(rowId, c.fieldName));
+            if (cell) {
+              cell.style.display = "none";
+            }
+          });
+        };
+
+        let rowId = getRowId(vorbild.tableId, 0);
+        let unterKategorie_sel = document.getElementById(getFieldId(rowId, "unterKategorie"));
+        let antrieb_sel = document.getElementById(getFieldId(rowId, "antrieb"));
+
+        const configure = () => {
+          let kategorie = unterKategorie_sel.value.split('/')[0];
+          let antrieb = antrieb_sel.value;
+
+          console.debug({kategorie: kategorie, antrieb: antrieb});
+
+          switch (kategorie) {
+            case "LOKOMOTIV":
+              hide(rowId, BAHNDIENSTWAGEN_COLUMNS);
+              hide(rowId, GUTERNWAGEN_COLUMNS);
+              hide(rowId, PERSONENWAGEN_COLUMNS);
+              hide(rowId, TRIEBWAGEN_COLUMNS);
+
+              show(rowId, LOKOMOTIV_COLUMNS);
+              break;
+
+            case "TRIEBWAGEN":
+              hide(rowId, LOKOMOTIV_COLUMNS);
+              hide(rowId, BAHNDIENSTWAGEN_COLUMNS);
+              hide(rowId, GUTERNWAGEN_COLUMNS);
+              hide(rowId, PERSONENWAGEN_COLUMNS);
+
+              show(rowId, TRIEBWAGEN_COLUMNS);
+              break;
+
+            case "GUTERNWAGEN":
+              hide(rowId, LOKOMOTIV_COLUMNS);
+              hide(rowId, BAHNDIENSTWAGEN_COLUMNS);
+              hide(rowId, PERSONENWAGEN_COLUMNS);
+              hide(rowId, TRIEBWAGEN_COLUMNS);
+
+              show(rowId, GUTERNWAGEN_COLUMNS);
+              break;
+
+            case "PERSONENWAGEN":
+              hide(rowId, LOKOMOTIV_COLUMNS);
+              hide(rowId, BAHNDIENSTWAGEN_COLUMNS);
+              hide(rowId, GUTERNWAGEN_COLUMNS);
+              hide(rowId, TRIEBWAGEN_COLUMNS);
+
+              show(rowId, PERSONENWAGEN_COLUMNS);
+              break;
+
+            case "BAHNDIENSTWAGEN":
+              hide(rowId, LOKOMOTIV_COLUMNS);
+              hide(rowId, GUTERNWAGEN_COLUMNS);
+              hide(rowId, PERSONENWAGEN_COLUMNS);
+              hide(rowId, TRIEBWAGEN_COLUMNS);
+
+              show(rowId, BAHNDIENSTWAGEN_COLUMNS);
+              break;
+
+            default:
+              hide(rowId, LOKOMOTIV_COLUMNS);
+              hide(rowId, BAHNDIENSTWAGEN_COLUMNS);
+              hide(rowId, GUTERNWAGEN_COLUMNS);
+              hide(rowId, PERSONENWAGEN_COLUMNS);
+              hide(rowId, TRIEBWAGEN_COLUMNS);
+              break;
+          }
+
+          switch (antrieb) {
+            case "DAMPF":
+              hide(rowId, DIESEL_COLUMNS);
+              hide(rowId, DRUCKLUFT_COLUMNS);
+              hide(rowId, ELEKTRO_COLUMNS);
+
+              show(rowId, DAMPF_COLUMNS);
+              break;
+
+            case "DIESEL":
+              hide(rowId, DAMPF_COLUMNS);
+              hide(rowId, DRUCKLUFT_COLUMNS);
+              hide(rowId, ELEKTRO_COLUMNS);
+
+              show(rowId, DIESEL_COLUMNS);
+              break;
+
+            case "DRUCKLUFT":
+              hide(rowId, DAMPF_COLUMNS);
+              hide(rowId, DIESEL_COLUMNS);
+              hide(rowId, ELEKTRO_COLUMNS);
+
+              show(rowId, DRUCKLUFT_COLUMNS);
+              break;
+
+            case "ELEKTRO":
+              hide(rowId, DAMPF_COLUMNS);
+              hide(rowId, DIESEL_COLUMNS);
+              hide(rowId, DRUCKLUFT_COLUMNS);
+
+              show(rowId, ELEKTRO_COLUMNS);
+              break;
+
+            default:
+              hide(rowId, DAMPF_COLUMNS);
+              hide(rowId, DIESEL_COLUMNS);
+              hide(rowId, DRUCKLUFT_COLUMNS);
+              hide(rowId, ELEKTRO_COLUMNS);
+              break;
+          }
+        };
+
+        unterKategorie_sel.addEventListener("change", (event) => configure(), false);
+        antrieb_sel.addEventListener("change", (event) => configure(), false);
+        document.getElementById(vorbild.tableId).addEventListener("refresh", (event) => configure(), false);
+
+        vorbild.fetch();
+      })
       .catch(error => reportError("load", error));
     }
   </script>

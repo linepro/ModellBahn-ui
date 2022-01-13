@@ -255,26 +255,23 @@ const GERAUSCH = (editable = Editable.UPDATE, required = false, getter = fieldGe
 const HERSTELLER = (editable = Editable.ADD, required = true, getter = fieldGetter, setter = fieldSetter) =>
   new TextColumn("HERSTELLER", "hersteller", getter, setter, editable, required, 3);
 
-const INDEX = (editable = Editable.ADD, required = true, getter = fieldGetter, setter = fieldSetter) =>
-  new NumberColumn("INDEX", "index", getter, setter, editable, required, 3, 0);
-
 const I_MAX = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new NumberColumn("I_MAX", "iMax", getter, setter, editable, required, 1000, 1);
+  new NumberColumn("I_MAX", "iMax", getter, setter, editable, required, 5000, 1);
 
 const KAUFDATUM = (editable = Editable.UPDATE, required = false, getter = dateGetter, setter = dateSetter) =>
   new DateColumn("KAUFDATUM", "kaufdatum", getter, setter, editable, required);
 
 const LANGE = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new NumberColumn("LANGE", "lange", getter, setter, editable, required, 50, 1, true, 2);
+  new NumberColumn("LANGE", "lange", getter, setter, editable, required, 100, 0, 2, true);
 
 const MAXIMAL = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new NumberColumn("MAXIMAL", "maximal", getter, setter, editable, required, 30);
+  new NumberColumn("MAXIMAL", "maximal", getter, setter, editable, required, 255, 0);
 
 const MENGE = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
   new NumberColumn("MENGE", "menge", getter, setter, editable, required, 100000, 1);
 
 const MINIMAL = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new NumberColumn("MINIMAL", "minimal", getter, setter, editable, required, 30);
+  new NumberColumn("MINIMAL", "minimal", getter, setter, editable, required, 255, 0);
 
 const NAMEN = (editable = Editable.ADD, required = true, getter = fieldGetter, setter = fieldSetter) =>
   new TextColumn("NAMEN", "name", getter, setter, editable, required, 30, "^[A-Z0-9.-]+$");

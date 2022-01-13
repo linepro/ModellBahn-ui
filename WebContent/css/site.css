@@ -259,6 +259,12 @@ div.autoclose-container {
   z-index: 999;
 }
 
+div.error-body {
+}
+
+div.error-head {
+}
+
 div.form-btn {
   border-right: 1rem;
   height: 2.7rem;
@@ -341,6 +347,7 @@ div.form-thead {
 div.form-thead > button.nav-button,
 div.form-heading-btn {
   height: 2rem;
+  min-width: fit-content;
   text-align: right;
   vertical-align: middle;
 }
@@ -882,6 +889,15 @@ textarea {
   overflow: auto;
 }
 
+textarea.error-body  {
+  box-sizing: border-box;
+  height: 40rem;
+  line-height: 1.75rem;
+  overflow-y: auto;
+  padding: 1rem;
+  width: 100rem;
+}
+
 tfoot {
   background-color: LightSkyBlue;
   color: white;
@@ -1054,46 +1070,6 @@ ul::-webkit-scrollbar-thumb {
   background-color: lightGrey;
   border-radius: 0.3rem;
   border: 0.1rem solid lightGrey;
-}
-
-.about {
-  padding: 1rem;
-}
-
-.about-body {
-  background-color: LightSkyBlue;
-  color: white;
-  overflow: hidden;
-}
-
-.about-body textarea {
-  background-color: LightSkyBlue;
-  border: none;
-  box-sizing: border-box;
-  color: white;
-  height: 30rem;
-  line-height: 1.2rem;
-  overflow: auto;
-  padding: 1rem;
-  width: 80rem;
-}
-
-.about-body textarea[focus] {
-  border: none;
-}
-
-.about-footer {
-  background-color: LightSkyBlue;
-  color: White;
-  height: 2rem;
-  width: 100%;
-}
-
-.about-header {
-  background-color: LightSkyBlue;
-  color: white;
-  height: 5rem;
-  width: 100%;
 }
 
 .alert {

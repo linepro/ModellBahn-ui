@@ -8,11 +8,12 @@ const Paged = {
 };
 
 class ActionButton {
-  constructor(form, caption, image, execute, className = "nav-button") {
+  constructor(form, caption, image, execute, rel, className = "nav-button") {
     this.form = form;
     this.caption = caption;
     this.image = image;
     this.execute = execute;
+    this.rel = rel;
     this.className = className;
   }
 
@@ -59,8 +60,11 @@ class ActionButton {
   bind(row) {
     let btn = document.getElementById(getFieldId(row.id, this.caption));
     if (btn) {
+      let action = this;
+
+      let lnk = !action.rel || actionLink(row.entity, action.rel);
       btn.disabled = shouldDisable(row.editMode, row.editMode, row.entity);
-      btn.style.visibility = row.entity ? "visible" : "hidden";
+      btn.style.visibility = row.entity && lnk ? "visible" : "hidden";
     }
   }
 }
@@ -68,7 +72,7 @@ class ActionButton {
 const newAction = (editForm) =>
   new ActionButton(
     true,
-    "add",
+    "Add",
     "add",
     (event, grid, row) => window.location.href = editForm
   );
@@ -76,23 +80,24 @@ const newAction = (editForm) =>
 const editAction = (editForm) =>
   new ActionButton(
     false,
+    "Edit",
     "edit",
-    "edit",
-    (event, grid, row) => window.location.href = editForm + "?self=" + actionLink(row.entity, "self")
+    (event, grid, row) => window.location.href = editForm + "?self=" + actionLink(row.entity, "self"),
+    "self"
   );
 
-const addAction = (rel = "add") =>
+const addAction = (rel = "add", completed = undefined) =>
   new ActionButton(
     true,
+    "Add",
     "add",
-    "add",
-    (event, grid, row) => grid.addRow()
+    (event, grid, row) => completed ? completed(event, grid, row) : grid.addRow()
   );
 
-const deleteAction = (rel = "delete") =>
+const deleteAction = (rel = "delete", completed = undefined) =>
   new ActionButton(
     false,
-    "delete",
+    "Delete",
     "delete",
     async (event, grid, row) => {
       if (row.entity) {
@@ -100,20 +105,21 @@ const deleteAction = (rel = "delete") =>
         if (deleteUrl) {
           await deleteRest(
             deleteUrl,
-            () => grid.removeRow(row),
+            () => completed ? completed(event, grid, row) : grid.removeRow(row),
             (error) => reportError("deleteRow", error)
           );
         } else {
           grid.removeRow(row);
         }
       }
-    }
+    },
+    rel
   );
 
-const saveAction = (rel = "update") =>
+const saveAction = (rel = "update", completed = undefined) =>
   new ActionButton(
     false,
-    "save",
+    "Save",
     "save",
     async (event, grid, row) => {
       if (row.entity) {
@@ -122,25 +128,26 @@ const saveAction = (rel = "update") =>
           await putRest(
             updateUrl,
             row.entity,
-            (jsonData) => row.bind(jsonData, row.editMode),
+            (jsonData) => completed ? completed(event, grid, row) : row.bind(jsonData, row.editMode),
             (error) => reportError("updateRow", error)
           );
         } else {
           await postRest(
             grid.addUrl,
             row.entity,
-            (jsonData) => row.bind(jsonData, EditMode.UPDATE),
+            (jsonData) => completed ? completed(event, grid, row) : row.bind(jsonData, EditMode.UPDATE),
             (error) => reportError("saveRow", error)
           );
         }
       }
-    }
+    },
+    "update"
   );
 
 const setAction = (fieldName, rel = "update") =>
   new ActionButton(
     false,
-    "save",
+    "Save",
     "save",
     async (event, grid, row) => {
       if (row.entity) {
@@ -162,7 +169,98 @@ const setAction = (fieldName, rel = "update") =>
           );
         }
       }
+    },
+    "update"
+  );
+
+const uploadAction = (entity = undefined, mask = "text/csv") =>
+  new ActionButton(
+    true,
+    "Upload",
+    "upload",
+    async (event, grid, row) => {
+      let selector = document.createElement("input");
+      selector.type = "file";
+      selector.style.display = "none";
+      selector.accept = mask;
+      selector.defaultValue = (entity ? entity : grid.tableId) + ".csv";
+      selector.multiple = false;
+      selector.required = true;
+      selector.addEventListener(
+        "change",
+        (change) => {
+          let uploadUrl = apiUrl("data/" + (entity ? entity : grid.tableId));
+          if (selector.files[0]) {
+            upload(
+              uploadUrl,
+              "data",
+              selector.files[0],
+              selector.files[0].name,
+              (data) => {
+                selector.parentElement.removeChild(selector);
+                alert("Upload complete");
+              },
+              (error) => {
+                selector.parentElement.removeChild(selector);
+
+                let container = document.createElement("div");
+                container.className = "display-pdf-container";
+                
+                let head = document.createElement("div");
+                head.className = "error-head";
+                container.appendChild(head);
+
+                let err = translate("IMPORT_ERROR");
+
+                let heading = addHeading(head, "H1", err);
+                heading.className = "error-head";
+                heading.className = "title";
+
+                let body = document.createElement("div");
+                body.className = "error-body";
+                container.appendChild(body);
+
+                let txt = document.createElement("TEXTAREA");
+                txt.className = "error-body";
+                body.appendChild(txt);
+
+                let parts = error.split(err);
+                txt.value = parts.size > 1 ? parts[1] : error; 
+
+                showModal(container);
+              }, 
+              "POST"
+            );
+          }
+        },
+        false
+        );
+      addToEnd(selector);
+      selector.click();
     }
+  );
+
+const downloadAction = (entity = undefined) =>
+  new ActionButton(
+    true,
+    "Download",
+    "download",
+    async (event, grid, row) => {
+      let downloadUrl = apiUrl("data/" + (entity ? entity : grid.tableId)); 
+      download(
+        downloadUrl,
+        (data) => {},
+        (error) => reportError(downloadUrl, error)
+      );
+    }
+  );
+
+const searchAction = () =>
+  new ActionButton(
+    true,
+    "Search",
+    "search",
+    async (event, grid, row) => {}
   );
 
 class ButtonColumn extends VirtualColumn {
@@ -175,9 +273,9 @@ class ButtonColumn extends VirtualColumn {
         0
       );
     this.rowCount = this.actions.length - this.headingCount;
-    this.length = Math.max(this.headingCount, this.rowCount) * 2.2;
+    this.length = Math.max(this.headingCount, this.rowCount) * 2.75;
     this.grid = undefined;
-    this.minWidth = (Math.max(this.headingCount, this.rowCount) * 2.2)+"rem";
+    this.minWidth = this.length+"rem";
   }
 
   addHeading(grid, headerRow) {
@@ -356,8 +454,9 @@ class ItemGrid {
     return document.createElement("h3");
   }
 
-  initialize() {
+  initialize(parent = undefined) {
     let grid = this;
+    grid.parent = parent;
 
     if (!grid.initialized) {
       let h1 = document.getElementById("heading");
@@ -380,7 +479,7 @@ class ItemGrid {
       grid.draw(place);
 
       if (grid.children) {
-        grid.children.forEach((child) => child.initialize());
+        grid.children.forEach((child) => child.initialize(grid));
       }
     }
 
@@ -396,15 +495,20 @@ class ItemGrid {
 
   async fetch(fetchUrl) {
     let grid = this;
+    let place = document.getElementById(grid.tableId);
 
     if (fetchUrl) {
       await getRest(
         fetchUrl,
-        (jsonData) => grid.bind(jsonData, fetchUrl),
+        (jsonData) => {
+          grid.bind(jsonData, fetchUrl);
+          place.dispatchEvent(new CustomEvent("refresh", {data: jsonData, url: fetchUrl}));
+        },
         (error) => reportError(fetchUrl, error)
       );
     } else {
       grid.bind(undefined, undefined);
+      place.dispatchEvent(new CustomEvent("refresh", {data: undefined, url: undefined}));
     }
   }
 
@@ -647,12 +751,12 @@ class Table extends ItemGrid {
     return free.length ? free[0] : grid.rows[0];
   }
 
-  addRow(entity = {}) {
+  addRow(entity = {}, editMode = EditMode.ADD) {
     let grid = this;
 
     let row = grid.freeRow();
 
-    row.bind(entity, EditMode.ADD);
+    row.bind(entity, editMode);
     row.element.getElementsByTagName("INPUT")[0].focus();
 
     return row;
@@ -892,6 +996,9 @@ class ListEditTable extends PagedTable {
       elementName,
       columns,
       [
+        uploadAction(),
+        downloadAction(),
+        searchAction(),
         addAction(),
         saveAction(),
         deleteAction()
