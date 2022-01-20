@@ -18,50 +18,55 @@ const addToEnd = (element) => {
   docBody.appendChild(element);
 };
 
-const createImage = (source, className) => {
+const createImage = (parent, className, source, alt) => {
   let img = document.createElement("img");
   img.className = className;
   img.src = source ? source : "";
+  img.alt = alt ? alt : img.src;
+  if (parent) parent.appendChild(img);
   return img;
 };
 
-const addAnchor = (element, text, url, newWindow) => {
+const addAnchor = (parent, text, url, newWindow) => {
   let a = document.createElement("a");
   a.href = url;
   if (newWindow) a.target = "_blank";
-  addText(a, translate(text));
-  element.appendChild(a);
+  addText(a, text);
+  parent.appendChild(a);
   return a;
 };
 
-const addHeading = (element, type, text) => {
-  let h = document.createElement(type);
-  addText(h, translate(text));
-  element.appendChild(h);
-  return h;
+const createTextElement = (type, parent, text, className) => {
+  let c = document.createElement(type);
+  if (className) c.className = className;
+  if (text) addText(c, text);
+  if (parent) parent.appendChild(c);
+  return c;
 };
 
-const addRule = (element) => {
+const addRule = (parent, className = "highlight") => {
   let hr = document.createElement("hr");
-  hr.className = "highlight";
-  element.appendChild(hr);
+  hr.className = className;
+  parent.appendChild(hr);
   return hr;
+};
+
+const createDiv = (parent, className, id) => {
+  let d = document.createElement("div");
+  if (id) d.id = id;
+  if (className) d.className = className;
+  if (parent) parent.appendChild(d);
+  return d;
 };
 
 const addModal = () => {
   let modal = document.getElementById("modal");
 
   if (!modal) {
-    modal = document.createElement("div");
-    modal.id = "modal";
-    modal.className = "modal";
-
-    let content = document.createElement("div");
-    content.id = "modal-content";
-    content.className = "modal-content";
-
-    modal.appendChild(content);
+    modal = createDiv(undefined, "modal", "modal");
     addToEnd(modal);
+
+    createDiv(modal, "modal-content", "modal-content");
 
     window.addEventListener(
       "click",
@@ -77,23 +82,25 @@ const addModal = () => {
   return modal;
 };
 
-const createButton = (caption, imageName, action = undefined, className = "nav-button") => {
+const createButton = (parent, caption, imageName, action = undefined, className = "nav-button", id = undefined) => {
   let btn = document.createElement("button");
+  if (id) btn.id = id;
+  btn.className = className;
   btn.value = translate(caption);
   if (action) {
     btn.addEventListener("click", action, false);
   }
-  btn.className = className;
-  let img = document.createElement("img");
-  img.className = className;
-  img.alt = imageName;
-  img.src = imageSource(imageName);
-  btn.appendChild(img);
+  if (imageName) {
+    createImage(btn, className, imageSource(imageName), btn.value);
+  } else {
+    addText(btn, btn.value);
+  }
+  if (parent) parent.appendChild(btn);
   return btn;
 };
 
 const addText = (cell, text) => {
-  let txt = document.createTextNode(text);
+  let txt = document.createTextNode(translate(text));
   if (cell.firstChild) {
     cell.insertBefore(txt, cell.firstChild);
   } else {
@@ -133,23 +140,149 @@ const createOption = (value, text, tooltip, abbildung) => {
   return opt;
 };
 
+const createSpan = (parent, className, id) => {
+  let spn = document.createElement("span");
+  if (id) spn.id = id;
+  spn.className = className;
+  if (parent) parent.appendChild(spn);
+  return spn;
+};
+
+const createInput = (type, parent, className, id) => {
+  let inp = document.createElement("input");
+  inp.type = type;
+  if (id) inp.id = id;
+  inp.className = className;
+  if (parent) parent.appendChild(inp);
+  return inp;
+};
+
+const createUl = (parent, className, id) => {
+  let ul = document.createElement("ul");
+  if (id) ul.id = id;
+  ul.className = className;
+  if (parent) parent.appendChild(ul);
+  return ul;
+};
+
+const createLi = (parent, className, text, id) => {
+  let li = document.createElement("li");
+  if (id) li.id = id;
+  li.className = className;
+  if (text) addText(li, text);
+  if (parent) parent.appendChild(li);
+  return li;
+};
+
+const createTh = (parent, className, id) => {
+  let th = document.createElement("th");
+  if (id) ul.id = id;
+  th.className = className;
+  if (parent) parent.appendChild(th);
+  return th;
+};
+
+const createTd = (parent, className, id) => {
+  let td = document.createElement("td");
+  if (id) td.id = id;
+  td.className = className;
+  if (parent) parent.appendChild(td);
+  return td;
+};
+
+const createTr = (parent, className, id) => {
+  let tr = document.createElement("tr");
+  if (id) tr.id = id;
+  tr.className = className;
+  if (parent) parent.appendChild(tr);
+  return tr;
+};
+
+const createTextarea = (parent, className, id) => {
+  let ta = document.createElement("textarea");
+  if (id) ta.id = id;
+  ta.className = className;
+  if (parent) parent.appendChild(ta);
+  return ta;
+};
+
+const createSelect = (parent, className, size, id) => {
+  let sel = document.createElement("select");
+  if (id) sel.id = id;
+  sel.className = className;
+  sel.multiple = false;
+  sel.size = size;
+  if (parent) parent.appendChild(sel);
+  return sel;
+};
+
+const createThead = (parent, className, id) => {
+  let th = document.createElement("thead");
+  if (id) th.id = id;
+  th.className = className;
+  if (parent) parent.appendChild(th);
+  return th;
+};
+
+const createTbody = (parent, className, id) => {
+  let tb = document.createElement("tbody");
+  if (id) tb.id = id;
+  tb.className = className;
+  if (parent) parent.appendChild(tb);
+  return tb;
+};
+
+const createTfoot = (parent, className, id) => {
+  let tf = document.createElement("tfoot");
+  if (id) tf.id = id;
+  tf.className = className;
+  if (parent) parent.appendChild(tf);
+  return tf;
+};
+
+const createTable = (parent, className, id) => {
+  let c = document.createElement("table");
+  if (id) c.id = id;
+  c.className = className;
+  if (parent) parent.appendChild(c);
+  return c;
+};
+
+const createColgroup = (parent, className, id) => {
+  let g = document.createElement("colgroup");
+  if (id) g.id = id;
+  g.className = className;
+  if (parent) parent.appendChild(g);
+  return g;
+};
+
+const createCol = (parent, className, id) => {
+  let c = document.createElement("col");
+  if (id) c.id = id;
+  c.className = className;
+  if (parent) parent.appendChild(c);
+  return c;
+};
+
+const createCanvas = (parent, className, id) => {
+  let c = document.createElement("canvas");
+  if (id) c.id = id;
+  c.className = className;
+  if (parent) parent.appendChild(c);
+  return c;
+};
+
 const reportError = (description, error) => {
   console.trace("%s: %o", description, error);
   let alertBox = document.getElementById("alert-box");
   if (!alertBox) {
-    alertBox = document.createElement("div");
-    alertBox.id = "alert-box";
-    alertBox.className = "alert";
-    let closer = document.createElement("span");
-    closer.className = "closebtn";
+    alertBox = createDiv(undefined, "alert", "alert-box");
+    let closer = createSpan(alertBox, "closebtn");
     closer.onclick = () => {
       alertBox.style.display = "none";
     };
-    addText(closer, translate("CLOSE"));
-    alertBox.appendChild(closer);
-    let messageSpan = document.createElement("span");
-    messageSpan.id = "alert-message";
-    alertBox.appendChild(messageSpan);
+    addText(closer, "CLOSE");
+    createSpan(alertBox, undefined, "alert-message");
     let body = document.getElementsByTagName("BODY")[0];
     if (body) {
       if (body.firstChild) {
@@ -175,17 +308,16 @@ const showModal = (content, withCloser = true) => {
   let contents = document.getElementById("modal-content");
   removeChildren(contents);
 
+  contents.appendChild(content);
+
   if (withCloser) {
-    let closer = document.createElement("div");
-    closer.className = "closebtn";
+    let closer = createDiv(contents, "closebtn");
     closer.onclick = () => {
       modal.style.display = "none";
     };
-    addText(closer, translate("CLOSE"));
-    contents.appendChild(closer);
+    addText(closer, "CLOSE");
   }
 
-  contents.appendChild(content);
   modal.style.display = "block";
 };
 
@@ -201,20 +333,13 @@ const setActiveTab = (event, tabName) => {
   }
 };
 
-const navLink = (title, href, action, id) => {
-  let li = document.createElement("li");
-  let a = document.createElement("a");
-  if (id) {
-    a.id = id;
-  }
+const navLink = (title, href, action, id, className = "nav-button") => {
+  let li = createLi(undefined, className, undefined, id);
+  let a = addAnchor(li, title, href);
   a.className = "nav-button";
-  a.href = href;
   if (action) {
     a.addEventListener("click", action, false);
   }
-  addText(a, translate(title));
-  li.appendChild(a);
-
   return li;
 };
 
@@ -234,34 +359,21 @@ const NavMenu = {
   HOME: 3,
 };
 
-const addLingo = (element) => {
-  let lingo = document.createElement("img");
-  lingo.src = fileUrl(translate("FLAG"));
-  lingo.className = "lingo";
-  element.appendChild(lingo);
+const addLingo = (parent) => {
+  let lingo = createImage(parent, "lingo", fileUrl(translate("FLAG")));
   lingo.addEventListener("click", () => toggleLanguage(), false);
   return lingo;
 };
 
 const addLogo = (home, offset) => {
-    let bar = document.createElement("div");
-
-    bar.className ="dropdown";
+    let bar = createDiv(home, "dropdown");
     bar.style = "float: right; margin-top: 0.5rem; transform: translateX("+offset+"rem);"
-    home.appendChild(bar);
 
-    let logo = document.createElement("div");
-    logo.className = "logo dropdown";
-    bar.appendChild(logo);
+    let logo = createDiv(bar, "logo dropdown");
 
-    let logoImg = document.createElement("img");
-    logoImg.src = imageSource("ModellBahn", ".svg");
-    logoImg.className = "logo";
-    logo.appendChild(logoImg);
-
-    let menu = document.createElement("div");
-    menu.className = "dropdown-content";
-    logo.appendChild(menu);
+    let logoImg = createImage(logo, "logo", imageSource("ModellBahn", ".svg"));
+    
+    let menu = createDiv(logo, "dropdown-content");
 
     let lingo = addLingo(menu);
     lingo.style = "float: right;"
@@ -314,42 +426,32 @@ const addNavBar = (menuStyle) => {
   header.appendChild(nav);
 
   if (menuStyle === NavMenu.HOME) {
-    let home = document.createElement("div");
-    home.className = "home";
-    nav.appendChild(home);
+    let home = createDiv(nav, "home");
 
-    let heading = addHeading(home, "H1", "MODELLBAHN");
-    heading.className = "title";
+    createTextElement("h1", home, "MODELLBAHN", "title");
 
     addLogo(home, 2);
 
-    addHeading(nav, "H3", "REF_DATA");
+    createTextElement("h3", nav, "REF_DATA");
 
-    let ref = document.createElement("ul");
-    ref.className = "nav";
-    nav.appendChild(ref);
+    let ref = createUl(nav, "nav");
 
     refData().filter((li) => document.location.href !== li.firstChild.href)
              .sort((a, b) => a.innerText.localeCompare(b.innerText))
              .forEach((li) => ref.appendChild(li));
 
-    addHeading(nav, "H3", "INVENTORY");
+    createTextElement("h3", nav, "INVENTORY");
 
-    let inv = document.createElement("ul");
-    inv.className = "nav";
-    nav.appendChild(inv);
+    let inv = createUl(nav, "nav");
 
     inventory().filter((li) => document.location.href !== li.firstChild.href)
                .sort((a, b) => a.innerText.localeCompare(b.innerText))
                .forEach((li) => inv.appendChild(li));
   } else {
-    let div = document.createElement("div");
+    let div = createDiv(nav);
     div.style.display = "flex";
-    nav.appendChild(div);
 
-    let opts = document.createElement("ul");
-    opts.className = "nav";
-    div.appendChild(opts);
+    let opts = createUl(div, "nav");
 
     addHomeBack(opts);
 
@@ -376,25 +478,17 @@ const addFooter = () => {
   let div = document.getElementsByTagName("FOOTER")[0];
   removeChildren(div);
 
-  let hr = document.createElement("hr");
-  hr.className = "highlight";
-  div.appendChild(hr);
+  addRule(div);
 
-  let ul = document.createElement("ul");
-  ul.className = "footer";
-  div.appendChild(ul);
+  let ul = createUl(div, "footer");
 
-  let api = document.createElement("li");
+  let api = createLi(ul);
   api.style = "float: left; margin-left: 0.5rem; position: relative;";
-  ul.appendChild(api);
-
   let a = addAnchor(api, "API", "/swagger-ui/index.html");
-  a.style = "float: left; margin-left: 0.5rem; position: relative;";
+  a.style = api.style;
 
-  let co = document.createElement("li");
+  let co = createLi(ul, undefined, "COPYRIGHT");
   co.style = "margin-right: 0.5rem;";
-  addText(co, translate("COPYRIGHT"));
-  ul.appendChild(co);
 };
 
 const layout = async menuStyle => {
@@ -404,20 +498,22 @@ const layout = async menuStyle => {
   addFooter();
 };
 
-window.onerror = (message, path, lineNo, columnNo, error) => {
-  if (message.toLowerCase().includes("script error")) {
+const errorHandler = (error) => {
+  if (error.message.toLowerCase().includes("script error")) {
     reportError("Script Error: See Browser Console for Detail", error);
   } else {
     reportError(
       translate("ERROR_DETAIL", {
-        msg: message,
-        url: path,
-        lineNo: lineNo,
-        columnNo: columnNo,
-        error: error.toString(),
+        msg: error.message,
+        url: error.path,
+        lineNo: error.lineNo,
+        columnNo: error.columnNo,
+        error: error.error.toString(),
       }),
-      error
+      error.error
     );
   }
   return false;
 };
+
+window.addEventListener("error", errorHandler);

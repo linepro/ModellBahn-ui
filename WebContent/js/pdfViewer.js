@@ -2,26 +2,19 @@
 "use strict";
 
 const pdfViewer = () => {
-  let container = document.createElement("div");
-  container.className = "display-pdf-container";
+  let container = createDiv(undefined, "display-pdf-container");
 
-  let canvas = document.createElement("canvas");
-  canvas.className = "display-pdf-canvas";
-  container.appendChild(canvas);
+  let canvas = createCanvas(container, "canvas", "display-pdf-canvas");
 
-  let bar = document.createElement("div");
-  bar.className = "display-pdf-bar";
-  container.appendChild(bar);
+  let bar = createDiv(container, "display-pdf-bar");
 
-  let prev = createButton("vorig", "prev", undefined, "table-prev");
+  let prev = createButton(bar, "vorig", "prev", undefined, "table-prev");
   prev.disabled = true;
   prev.style.visible = "hidden";
-  bar.appendChild(prev);
 
-  let next = createButton("nachste", "next", undefined, "table-next");
+  let next = createButton(bar, "nachste", "next", undefined, "table-next");
   next.disabled = true;
   next.style.visible = "hidden";
-  bar.appendChild(next);
 
   let pageNum = 1;
 

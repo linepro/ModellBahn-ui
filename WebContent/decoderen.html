@@ -30,8 +30,8 @@
         ];
        
         const decoderenActions = [
-          uploadAction(),
-          downloadAction(),
+          uploadAction(["decoder","decoderCv","decoderFunktion"]),
+          downloadAction(["decoder","decoderCv","decoderFunktion"]),
           searchAction(),
           newAction("decoder.html"),
           editAction("decoder.html"),

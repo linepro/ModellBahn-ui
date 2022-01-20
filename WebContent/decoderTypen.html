@@ -29,8 +29,8 @@
         ];
        
         const actions = [
-          uploadAction(),
-          downloadAction(),
+          uploadActions(["decoderTyp","decoderTypCv","decoderTypFunktion"]),
+          downloadActions(["decoderTyp","decoderTypCv","decoderTypFunktion"]),
           searchAction(),
           newAction("decoderTyp.html"),
           editAction("decoderTyp.html"),

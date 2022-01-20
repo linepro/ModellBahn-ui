@@ -20,14 +20,7 @@ class ActionButton {
   addButton(grid, row, cell) {
     let action = this;
 
-    let btn = createButton(
-      action.caption,
-      action.image,
-      (event) => action.execute(event, grid, row),
-      action.className
-    );
-    cell.append(btn);
-    return btn;
+    return createButton(cell, action.caption, action.image, (event) => action.execute(event, grid, row), action.className);
   }
  
   addHeading(grid, headerRow) {
@@ -173,86 +166,20 @@ const setAction = (fieldName, rel = "update") =>
     "update"
   );
 
-const uploadAction = (entity = undefined, mask = "text/csv") =>
+const uploadActions = (entities, complete) =>
   new ActionButton(
     true,
     "Upload",
     "upload",
-    async (event, grid, row) => {
-      let selector = document.createElement("input");
-      selector.type = "file";
-      selector.style.display = "none";
-      selector.accept = mask;
-      selector.defaultValue = (entity ? entity : grid.tableId) + ".csv";
-      selector.multiple = false;
-      selector.required = true;
-      selector.addEventListener(
-        "change",
-        (change) => {
-          let uploadUrl = apiUrl("data/" + (entity ? entity : grid.tableId));
-          if (selector.files[0]) {
-            upload(
-              uploadUrl,
-              "data",
-              selector.files[0],
-              selector.files[0].name,
-              (data) => {
-                selector.parentElement.removeChild(selector);
-                alert("Upload complete");
-              },
-              (error) => {
-                selector.parentElement.removeChild(selector);
-
-                let container = document.createElement("div");
-                container.className = "display-pdf-container";
-                
-                let head = document.createElement("div");
-                head.className = "error-head";
-                container.appendChild(head);
-
-                let err = translate("IMPORT_ERROR");
-
-                let heading = addHeading(head, "H1", err);
-                heading.className = "error-head";
-                heading.className = "title";
-
-                let body = document.createElement("div");
-                body.className = "error-body";
-                container.appendChild(body);
-
-                let txt = document.createElement("TEXTAREA");
-                txt.className = "error-body";
-                body.appendChild(txt);
-
-                let parts = error.split(err);
-                txt.value = parts.size > 1 ? parts[1] : error; 
-
-                showModal(container);
-              }, 
-              "POST"
-            );
-          }
-        },
-        false
-        );
-      addToEnd(selector);
-      selector.click();
-    }
+    () => IMPORT_DATA(entities, complete)
   );
 
-const downloadAction = (entity = undefined) =>
+const downloadActions = (entities, complete) =>
   new ActionButton(
     true,
     "Download",
     "download",
-    async (event, grid, row) => {
-      let downloadUrl = apiUrl("data/" + (entity ? entity : grid.tableId)); 
-      download(
-        downloadUrl,
-        (data) => {},
-        (error) => reportError(downloadUrl, error)
-      );
-    }
+    () => EXPORT_DATA(entities, complete)
   );
 
 const searchAction = () =>
@@ -260,7 +187,7 @@ const searchAction = () =>
     true,
     "Search",
     "search",
-    async (event, grid, row) => {}
+    async (event, grid, row) => grid.search()
   );
 
 class ButtonColumn extends VirtualColumn {
@@ -283,9 +210,7 @@ class ButtonColumn extends VirtualColumn {
 
     column.grid = grid;
 
-    let bar = document.createElement("th");
-    bar.className = "table-heading-btn";
-    headerRow.append(bar);
+    let bar = createTh(headerRow, "table-heading-btn");
 
     if (column.displayLength()) {
       column.actions
@@ -299,9 +224,7 @@ class ButtonColumn extends VirtualColumn {
 
     column.grid = grid;
 
-    let header = document.createElement("div");
-    header.className = "form-heading-btn";
-    headerRow.append(header);
+    let header = createDiv(headerRow, "form-heading-btn");
 
     if (column.displayLength()) {
       column.actions
@@ -314,10 +237,7 @@ class ButtonColumn extends VirtualColumn {
   addTableCell(row) {
     let column = this;
 
-    let cell = document.createElement("td");
-    cell.id = row.id + "_buttons";
-    cell.className = row.classPrefix + "-cell-btn";
-    row.element.append(cell);
+    let cell = createTd(row.element, row.classPrefix + "-cell-btn", row.id + "_buttons");
 
     if (column.displayLength()) {
       column.actions
@@ -451,7 +371,7 @@ class ItemGrid {
   }
 
   createCaption() {
-    return document.createElement("h3");
+    return createTextElement("h3");
   }
 
   initialize(parent = undefined) {
@@ -519,6 +439,10 @@ class ItemGrid {
 
     await grid.fetch(grid.currentUrl);
   }
+
+  async search() {
+    return Promise.resolve();
+  }
 }
 
 class Form extends ItemGrid {
@@ -539,63 +463,34 @@ class Form extends ItemGrid {
   draw(place) {
     let grid = this;
 
-    let maxLabel = grid.columns
-      .reduce(
-        (length, column) => Math.max(boxSize(column.headingLength), length),
-        10
-      );
-
-    let form = document.createElement("div");
-    form.id = grid.tableId;
-    form.className = grid.classPrefix + "-table";
-    place.append(form);
+    let form = createDiv(place, grid.classPrefix + "-table", grid.tableId);
 
     grid.table = form;
 
-    let header = document.createElement("div");
-    header.id = grid.tableId + "_thead";
-    header.className = grid.classPrefix + "-thead";
-    form.append(header);
+    let header = createDiv(form, grid.classPrefix + "-thead", grid.tableId + "_thead");
 
-    let headRow = document.createElement("div");
-    headRow.id = grid.tableId + "Head";
-    headRow.className = grid.classPrefix +"-head";
-    header.append(headRow);
+    let headRow = createDiv(header, grid.classPrefix +"-head", grid.tableId + "_head");
 
-    let body = document.createElement("div");
-    body.id = grid.tableId + "_tbody";
-    body.className = grid.classPrefix +"-tbody";
-    form.append(body);
+    let body = createDiv(form, grid.classPrefix +"-tbody", grid.tableId + "_tbody");
 
-    let row = document.createElement("div");
-    row.id = getRowId(grid.tableId, 0);
-    row.className = grid.classPrefix +"-row";
-    body.append(row);
+    let row = createDiv(body, grid.classPrefix +"-row", getRowId(grid.tableId, 0));
 
     let rowEntry = new RowEntry(row, grid.editMode, grid.refresh, grid.classPrefix);
 
     rowEntry.columns = grid.columns
-      .map((column) => column.addFormField(rowEntry, maxLabel))
+      .map((column) => column.addFormField(rowEntry))
       .filter((column) => column);
 
     grid.row = rowEntry;
 
     grid.columns.forEach((column) => column.addFormHeading(grid, grid.row, header));
 
-    let foot = document.createElement("div");
-    foot.id = grid.tableId + "_tfoot";
-    foot.className = grid.classPrefix +"-tfoot";
-    form.append(foot);
+    let foot = createDiv(form, grid.classPrefix +"-tfoot", grid.tableId + "_tfoot");
 
-    let navRow = document.createElement("div");
-    navRow.id = grid.tableId + "Foot";
-    navRow.className = grid.classPrefix +"-foot";
-    foot.append(navRow);
+    let navRow = createDiv(foot, grid.classPrefix +"-foot", grid.tableId + "_foot");
 
-    let footer = document.createElement("div");
-    footer.className = grid.classPrefix +"-footer";
+    let footer = createDiv(navRow, grid.classPrefix +"-footer");
     addText(footer, " ");
-    navRow.append(footer);
   }
 
   bind(jsonData, fetchUrl) {
@@ -639,10 +534,7 @@ class Table extends ItemGrid {
     let body = document.getElementById(grid.tableId + "_tbody");
     let rows = body.getElementsByTagName("TR");
 
-    let row = document.createElement("tr");
-    row.id = getRowId(grid.tableId, rows.length);
-    row.className = grid.classPrefix +"-row";
-    body.append(row);
+    let row = createTr(body, grid.classPrefix +"-row", getRowId(grid.tableId, rows.length));
 
     let rowEntry = new RowEntry(row, grid.editMode, grid.refresh, grid.classPrefix);
 
@@ -658,15 +550,9 @@ class Table extends ItemGrid {
   addHeader(table) {
     let grid = this;
 
-    let header = document.createElement("thead");
-    header.id = grid.tableId + "_thead";
-    header.className = grid.classPrefix + "-thead";
-    table.append(header);
+    let header = createThead(table, grid.classPrefix + "-thead", grid.tableId + "_thead");
 
-    let headings = document.createElement("tr");
-    headings.id = grid.tableId + "Head";
-    headings.className = grid.classPrefix +"-head";
-    header.append(headings);
+    let headings = createTr(header, grid.classPrefix +"-head", grid.tableId + "_head");
 
     grid.columns.forEach((column) => column.addHeading(grid, headings));
   }
@@ -674,10 +560,7 @@ class Table extends ItemGrid {
   addBody(table) {
     let grid = this;
 
-    let body = document.createElement("tbody");
-    body.id = grid.tableId + "_tbody";
-    body.className = grid.classPrefix + "-tbody";
-    table.append(body);
+    let body = createTbody(table, grid.classPrefix + "-tbody", grid.tableId + "_tbody");
 
     for (let rowNum = 0; rowNum < grid.pageSize; rowNum++) {
       grid.appendTableRow();
@@ -687,52 +570,36 @@ class Table extends ItemGrid {
   addFooter(table) {
     let grid = this;
 
-    let footer = document.createElement("tfoot");
-    footer.id = grid.tableId + "_tfoot";
-    footer.className = grid.classPrefix + "-tfoot";
-    table.append(footer);
+    let footer = createTfoot(table, grid.classPrefix + "-tfoot", grid.tableId + "_tfoot");
 
-    let navRow = document.createElement("tr");
-    navRow.id = grid.tableId + "Foot";
-    navRow.className = grid.classPrefix +"-foot";
-    footer.append(navRow);
+    let navRow = createTr(footer, grid.classPrefix +"-foot", grid.tableId + "_foot");
 
     grid.columns.forEach((column) => {
-      let tf = document.createElement("td");
-      tf.className = grid.classPrefix +"-footer";
-      navRow.append(tf)
+      createTd(navRow, grid.classPrefix +"-footer");
     });
   }
 
   draw(place) {
     let grid = this;
 
-    let table = document.createElement("table");
-    grid.table = table;
-    table.id = grid.tableId;
-    table.className = grid.classPrefix + "-table";
-    setWidths(table, "100%");
-    place.append(table);
-
-    let group = document.createElement("colgroup");
-    group.className = grid.classPrefix + "-colgroup";
-    setWidths(group, "100%");
-
     let totalLength = grid.columns
       .reduce(
-        (length, column) => length + boxSize(column.displayLength()),
+        (length, column) => length + column.displayLength(2),
         0
       );
 
-    grid.columns.forEach((column) => {
-      let col = document.createElement("col");
-      col.className = grid.classPrefix + "-col";
-      let width = Math.floor((boxSize(column.displayLength()) * 100) / totalLength) + "%";
-      setWidths(col, column.minWidth ? column.minWidth : width);
-      group.append(col);
-    });
+    let table = createTable(place, grid.classPrefix + "-table", grid.tableId);
+    setWidths(table, "100%");
+    grid.table = table;
 
-    table.appendChild(group);
+    let group = createColgroup(table, grid.classPrefix + "-colgroup");
+    setWidths(group, "100%");
+
+    grid.columns.forEach((column) => {
+      let col = createCol(group, grid.classPrefix + "-col");
+      let width = Math.floor((column.displayLength(2) * 100) / totalLength) + "%";
+      setWidths(col, column.minWidth ? column.minWidth : width);
+    });
 
     grid.addHeader(table);
 
@@ -907,54 +774,36 @@ class PagedTable extends Table {
   addPrev(navRow) {
     let grid = this;
 
-    let prevCell = document.createElement("td");
-    prevCell.className = "table-prev";
-    navRow.append(prevCell);
+    let prevCell = createTd(navRow, "table-prev");
 
-    let prev = createButton("vorige", "prev");
-    prev.id = grid.tableId + "Prev";
+    let prev = createButton(prevCell, "vorige", "prev", () => grid.fetchPrev(), "nav-button", grid.tableId + "Prev");
     prev.disabled = true;
     prev.style.visibility = "hidden";
-    prev.addEventListener("click", () => grid.fetchPrev(), false);
-    prevCell.appendChild(prev);
     return prev;
   }
 
   addNext(navRow) {
     let grid = this;
 
-    let nextCell = document.createElement("td");
-    nextCell.className = "table-next";
-    navRow.append(nextCell);
+    let nextCell = createTd(navRow, "table-next");
 
-    let next = createButton("nachste", "next");
-    next.id = grid.tableId + "Next";
+    let next = createButton(nextCell, "nachste", "next", () => grid.fetchNext(), "nav-button", grid.tableId + "Next");
     next.disabled = true;
     next.style.visibility = "hidden";
-    next.addEventListener("click", () => grid.fetchNext(), false);
-    nextCell.appendChild(next);
     return next;
   }
 
   addFooter(table) {
     let grid = this;
 
-    let footer = document.createElement("tfoot");
-    footer.id = grid.tableId + "_tfoot";
-    footer.className = grid.classPrefix + "-tfoot";
-    table.append(footer);
+    let footer = createTfoot(table, grid.classPrefix + "-tfoot", grid.tableId + "_tfoot");
 
-    let navRow = document.createElement("tr");
-    navRow.id = grid.tableId + "Foot";
-    navRow.className = grid.classPrefix +"-foot";
-    footer.append(navRow);
+    let navRow = createTr(footer, grid.classPrefix +"-foot",  grid.tableId + "_foot");
 
     grid.prev = grid.addPrev(navRow);
 
     for (let i = 0 ; i < grid.columns.length - 2; i++) {
-      let tf = document.createElement("td");
-      tf.className = grid.classPrefix +"-footer";
-      navRow.append(tf)
+      createTd(navRow, grid.classPrefix +"-footer");
     }
 
     grid.next = grid.addNext(navRow);
@@ -996,8 +845,8 @@ class ListEditTable extends PagedTable {
       elementName,
       columns,
       [
-        uploadAction(),
-        downloadAction(),
+        uploadActions([dataType]),
+        downloadActions([dataType]),
         searchAction(),
         addAction(),
         saveAction(),

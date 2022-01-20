@@ -64,7 +64,7 @@ const doneCursor = (cursor) => {
   document.activeElement.style.cursor = cursor;
 };
 
-const headers = (contentType, accept = "application/json, application/hal+json") => {
+const headers = (contentType, accept = "application/json, application/hal+json", contentEncoding) => {
   let httpHeaders = {
     "Accept": accept,
     "Accept-Encoding": "gzip, deflate, br",
@@ -79,6 +79,9 @@ const headers = (contentType, accept = "application/json, application/hal+json")
   }
   if (contentType) {
     httpHeaders["Content-Type"] = contentType;
+  }
+  if (contentEncoding) {
+    httpHeaders["Content-Encoding"] = contentEncoding;
   }
   return httpHeaders;
 };
@@ -149,7 +152,7 @@ const download = async (endPoint, success, failure) => {
   let cursor = waitCursor();
   await fetch(endPoint, {
     method: "GET",
-    headers: headers(undefined)
+    headers: headers(undefined, "text/csv")
   })
   .then(response => checkResponse(response))
   .then(jsonData => success(jsonData))
@@ -157,13 +160,13 @@ const download = async (endPoint, success, failure) => {
   .finally(() => doneCursor(cursor));
 };
 
-const upload = async (endPoint, fieldName, fileData, fileName, success, failure, method = "PUT") => {
+const upload = async (endPoint, fieldName, fileData, fileName, success, failure, method = "PUT", encoding) => {
   let cursor = waitCursor();
   let formData = new FormData();
   formData.append(fieldName, fileData, fileName);
   await fetch(endPoint, {
     method: method,
-    headers: headers(undefined),
+    headers: headers(undefined, "*/*", encoding),
     body: formData
   })
   .then(response => checkResponse(response))

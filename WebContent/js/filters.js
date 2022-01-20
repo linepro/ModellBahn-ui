@@ -28,22 +28,12 @@ class FilterOption {
   init(updated) {
     let opt = this;
 
-    let div = document.createElement("div");
-    div.className = "popup-item";
+    let div = createDiv(undefined, "popup-field");
+    let lbl = createTextElement("label", div, opt.display,  "popup-label");
+    lbl.htmlFor = opt.id;
 
-    let lbl = document.createElement("label");
-    lbl.appendChild(document.createTextNode(translate(opt.display)));
-    lbl.className = "popup-label";
-    div.appendChild(lbl);
-
-    let chk = document.createElement("input");
-    chk.id = opt.id;
-    chk.type = "checkbox";
-    chk.className = "popup-control";
-    chk.style.order = 2;
+    let chk = createInput("checkbox", div, opt.id, "popup-control");
     chk.addEventListener("change", (event) => updated(event), false);
-    lbl.htmlFor = chk.id;
-    div.appendChild(chk);
 
     opt.chk = chk;
 
@@ -75,10 +65,8 @@ class FilterPanel {
 
     let fld = val[pnl.fieldName];
 
-    let inc = chk.map(c => c.filter(fld))
-                 .reduce((p, c) => p || c, false);
-
-    return inc;
+    return chk.map(c => c.filter(fld))
+              .reduce((p, c) => p || c, false);
   }
 
   init(row, items, updated) {
@@ -96,10 +84,8 @@ class FilterPanel {
         if (vals.length <= 1) return;
       }
 
-      let opts = document.createElement("div");
-      opts.className = "popup-filter";
+      let opts = createDiv(row, "popup-filter");
       vals.forEach(o => opts.appendChild(o.init(updated)));
-      row.appendChild(opts);
 
       pnl.displayed = vals;
     }
@@ -164,60 +150,41 @@ class FilterBox {
   show(action) {
     let box = this;
 
-    let frm = document.createElement("div");
-    frm.className = "popup-form";
-    let h = addHeading(frm, "H3", box.heading);
-    h.className = "popup-heading";
+    let frm = createDiv(undefined, "popup-form");
+    createTextElement("h3", frm, box.heading, "popup-heading");
 
-    let fil = document.createElement("div");
-    fil.className = "popup-filters";
-    frm.appendChild(fil);
+    let fil = createDiv(frm, "popup-section");
 
-    let sel = document.createElement("div");
-    sel.className = "popup-item";
-    frm.appendChild(sel);
-
-    let list = document.createElement("select");
-    list.className = "popup-control";
-    list.selectedIndex = -1;
-    list.size = 10;
-    sel.appendChild(list);
+    let sel = createDiv(frm, "popup-control");
 
     let items = box.dropDown
                    .options
                    .filter(o => box.filter(o), false);
 
-    items.forEach(o => {
-          let opt = createOption(o.value, o.display, o.tooltip, o.image);
-          list.appendChild(opt);
-        });
+    let list = createSelect(sel, "popup-control", 10);
+    items.forEach(o => list.appendChild(createOption(o.value, o.display, o.tooltip, o.image)));
+    list.selectedIndex = -1;
 
     if (box.panels.length) {
       box.panels.forEach(p => p.init(fil, items, () => box.filterList(list)));
     }
 
-    let foot = document.createElement("div");
-    foot.className="popup-foot";
-    frm.appendChild(foot);
+    let foot = createDiv(frm, "popup-foot");
 
     let modal = addModal();
 
-    let add = createButton("add", "add", () => {
+    let add = createButton(foot, "add", "add", () => {
       let val = box.selected(list);
       if (val) {
         action(val);
         modal.style.display = "none";
       }
     });
-    add.className = "nav-button";
     add.enabled = false;
-    foot.appendChild(add);
 
     list.addEventListener("select", (e, btn) => btn.enabled = e.target.selectedIndex !== -1, false);
 
-    let cancel = createButton("cancel", "cancel", () => modal.style.display = "none");
-    cancel.className = "nav-button";
-    foot.appendChild(cancel);
+    createButton(foot, "cancel", "cancel", () => modal.style.display = "none");
 
     showModal(frm, false);
   }

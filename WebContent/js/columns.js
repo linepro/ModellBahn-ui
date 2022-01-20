@@ -18,7 +18,7 @@ const actionLink = (entity, rel) =>
     ? entity._links[rel][0].href
     : undefined;
 
-const boxSize = (length) => Math.ceil(length / 2) * 2;
+const boxSize = (length, unit) => Math.ceil(length / unit) * unit;
 
 let _AUTO_CLOSURES = [];
 const addAutoClose = (closer) => {
@@ -69,15 +69,30 @@ const setWidths = (element, width, minWidth = width, maxWidth = width) => {
 };
 
 class VirtualColumn {
-  constructor(fieldName) {
+  constructor(fieldName, heading = "", length = 0) {
+    this.heading = heading;
     this.fieldName = fieldName;
-    this.length = 0;
-    this.headingLength = 0;
+    this.length = length;
   }
 
-  displayLength() {
+  inputLength(unit = 1) {
     let column = this;
-    return column.length;
+    return boxSize(column.length, unit);
+  }
+
+  labelLength(unit = 1) {
+    let column = this;
+    return boxSize(translate(column.heading).length + 1, unit);
+  }
+
+  fieldLength(unit = 1) {
+    let column = this;
+    return boxSize(column.labelLength(unit) + column.inputLength(unit), unit);
+  }
+
+  displayLength(unit = 1) {
+    let column = this;
+    return Math.max(column.labelLength(unit), column.inputLength(unit));
   }
 
   addHeading(grid, headerRow) {}
@@ -113,28 +128,23 @@ class Column extends VirtualColumn {
     fieldName,
     fieldGetter,
     fieldSetter,
-    editable = Editable.NEVER,
-    required = false,
-    length = heading.length
+    editable,
+    required,
+    length
   ) {
-    super(fieldName);
-    this.heading = heading;
-    this.headingLength = heading.length;
+    super(fieldName, heading, length ? length : heading.length);
     this.fieldName = fieldName;
     this.fieldGetter = fieldGetter;
     this.fieldSetter = fieldSetter;
-    this.editable = editable;
+    this.editable = editable ? editable : Editable.NEVER;
     this.required = required;
-    this.length = Math.max(length, heading.length + 1);
   }
 
   addHeading(grid, headerRow) {
     let column = this;
 
-    let header = document.createElement("th");
-    header.className = grid.classPrefix + "-heading";
-    header.appendChild(document.createTextNode(translate(column.heading)));
-    headerRow.append(header);
+    let header = createTh(headerRow, grid.classPrefix + "-heading");
+    addText(header, column.heading);
   }
 
   setTooltip(ctl) {
@@ -173,9 +183,7 @@ class Column extends VirtualColumn {
   createControl(row, className) {
     let column = this;
 
-    let ctl = document.createElement("input");
-    ctl.id = getFieldId(row.id, column.fieldName);
-    ctl.className = className;
+    let ctl = createInput("text", undefined, className, getFieldId(row.id, column.fieldName));
     ctl = column.initialise(ctl);
     ctl.readOnly = column.editable === Editable.NEVER || row.editMode === EditMode.VIEW;
     ctl.required = column.required;
@@ -186,20 +194,14 @@ class Column extends VirtualColumn {
     return ctl;
   }
 
-  addFormField(row, labelWidth) {
+  addFormField(row, unit = 5) {
     let column = this;
+    let c = column.fieldLength(unit);
+    let cell = createDiv(row.element, row.classPrefix + "-item", getCellId(row.id, column.fieldName));
+    setWidths(cell, c + "ch");
 
-    let cell = document.createElement("div");
-    cell.id = getCellId(row.id, column.fieldName);
-    cell.className = row.classPrefix + "-item";
-    setWidths(cell, (labelWidth + column.displayLength()) + "ch");
-    row.element.append(cell);
-
-    let label = document.createElement("label");
-    label.className = row.classPrefix + "-label";
-    label.appendChild(document.createTextNode(translate(column.heading)));
-    setWidths(label, labelWidth + "ch");
-    cell.append(label);
+    let label = createTextElement("label", cell, column.heading, row.classPrefix + "-label");
+    setWidths(label, (c - column.length) + "ch");
 
     let ctl = column.createControl(row, row.classPrefix + "-control");
     label.for = ctl.id;
@@ -216,9 +218,7 @@ class Column extends VirtualColumn {
   addTableCell(row) {
     let column = this;
 
-    let cell = document.createElement("td");
-    cell.className = row.classPrefix + "-cell";
-    row.element.append(cell);
+    let cell = createTd(row.element, row.classPrefix + "-cell");
 
     let ctl = column.createControl(row, row.classPrefix + "-cell");
     cell.append(ctl);
@@ -312,7 +312,7 @@ class NumberColumn extends Column {
       fieldSetter,
       editable,
       required,
-      Math.max(max.toString().length, heading.length)
+      Math.max((max.toFixed(places).length * 1.5) + (editable ? 2 : 0), 10)
     );
     this.max = max;
     this.min = min;
@@ -478,8 +478,7 @@ class PopupColumn extends TextColumn {
     ctl.addEventListener("input", (event) => column.popup(event, row, ctl), false);
     ctl.addEventListener("keydown", (event) => column.popup(event, row, ctl), false);
 
-    let wrapper = document.createElement("div");
-    wrapper.className = className;
+    let wrapper = createDiv(undefined, className);
     wrapper.style.order = 2;
     wrapper.appendChild(ctl);
     return wrapper;
@@ -502,7 +501,7 @@ class DateColumn extends PopupColumn {
       fieldSetter,
       editable,
       required,
-      12
+      14
     );
   }
 
@@ -532,7 +531,7 @@ class DateColumn extends PopupColumn {
       datepicker.options.setShowCloseButton(true);
       datepicker.options.setShowDeselectButton(false);
       datepicker.options.setShowResetButton(true);
-      datepicker.options.setTooltip(translate(column.heading));
+      datepicker.options.setTitle(translate(column.heading));
       datepicker.options.setToggleSelection(false);
       datepicker.options.setYearAsDropdown(true);
 
@@ -618,7 +617,7 @@ class DateColumn extends PopupColumn {
 
   setControlValue(dte, value) {
     dte.value = dateToLocalString(value);
-    dte.dispatchEvent(new Event("input"));
+    dte.dispatchEvent(new Event("change"));
   }
 
   bind(row) {
@@ -658,9 +657,7 @@ class FileColumn extends Column {
   createSelector(headerRow) {
     let column = this;
 
-    let selector = document.createElement("input");
-    selector.id = getFieldId(headerRow.id, column.fieldName);
-    selector.type = "file";
+    let selector = createInput("file", undefined, undefined, getFieldId(headerRow.id, column.fieldName));
     selector.style.display = "none";
     selector.accept = column.mask;
     selector.multiple = false;
@@ -688,50 +685,36 @@ class FileColumn extends Column {
     let column = this;
 
     if (isEditable(column.editable)) {
-      let add = createButton("add", "add", undefined, "img-button");
-      add.id = img.id + "_add";
-      add.className = img.className + "-add";
+      let add = createButton(cell, "add", "add", (event) => column.updateFile(event, row), img.className + "-add", img.id + "_add");
       add.disabled = true;
       add.style.visibility = "hidden";
-      add.addEventListener("click", (event) => column.updateFile(event, row), false);
-      cell.appendChild(add);
 
-      let del = createButton("delete", "delete", undefined, "img-button");
-      del.id = img.id + "_delete";
-      del.className = img.className + "-del";
+      let del = createButton(cell, "delete", "delete", (event) => column.removeFile(event, row), img.className + "-del", img.id + "_delete");
       del.disabled = true;
       del.style.visibility = "hidden";
-      del.addEventListener("click", (event) => column.removeFile(event, row), false);
-      cell.appendChild(del);
     }
   }
    
   createControl(row, className) {
     let column = this;
 
-    let img = document.createElement("img");
+    let img = createImage(undefined, className);
     img.id = getFieldId(row.id, column.fieldName);
-    img.className = className;
     img.addEventListener("click", (event) => column.showContent(event, row), false);
     return img;
   }
 
-  addFormField(row, labelWidth) {
+  addFormField(row, unit = 5) {
     let column = this;
 
-    let cell = document.createElement("div");
-    cell.className = "form-item";
-    row.element.append(cell);
+    let cell = createDiv(row.entity, "form-item");
+    setWidths(cell, column.fieldLength(unit) + "ch");
 
-    let label = document.createElement("label");
-    label.className = "form-label";
-    label.appendChild(document.createTextNode(translate(column.heading)));
-    setWidths(label, labelWidth + "ch");
-    cell.append(label);
+    let label = createTextElement("label", cell, column.heading, "form-label");
+    setWidths(label, column.labelLength(unit) + "ch");
 
-    let img = column.createControl(row, "form-control");
+    let img = column.createControl(cell, row, "form-control");
     label.for = img.id;
-    cell.append(img);
 
     column.addButtons(row, cell, img);
 
@@ -745,9 +728,7 @@ class FileColumn extends Column {
   addTableCell(row) {
     let column = this;
 
-    let cell = document.createElement("td");
-    cell.className = row.classPrefix + "-cell";
-    row.element.append(cell);
+    let cell = createTd(row.element, row.classPrefix + "-cell");
 
     let img = column.createControl(row, row.classPrefix + "-cell");
     cell.append(img);
@@ -869,9 +850,7 @@ class ImageColumn extends FileColumn {
 
     let img = document.getElementById(getFieldId(row.id, column.fieldName));
     if (img && img.src) {
-      let xl = document.createElement("img");
-      xl.className = "display-img";
-      xl.src = img.src;
+      let xl = createImage(undefined, "display-img", img.src);
       showModal(xl);
     }
   }
@@ -919,10 +898,7 @@ class PdfColumn extends FileColumn {
   }
 }
 
-const nichtBenotigt = (required, options) =>
-  required ?
-    options :
-    [dropOption(undefined, translate("NICHT_BENOTIGT"), translate("NICHT_BENOTIGT"), undefined, undefined, undefined)].concat(options);
+const nichtBenotigt = (required, options) => required ? options : [dropOption(undefined, translate("NICHT_BENOTIGT"), translate("NICHT_BENOTIGT"), imageSource("na"))].concat(options);
 
 class DropDownColumn extends Column {
   constructor(
@@ -960,11 +936,7 @@ class DropDownColumn extends Column {
       return inp;
     }
 
-    let sel = document.createElement("select");
-    sel.id = inp.id;
-    sel.className = inp.className;
-    sel.multiple = false;
-    sel.size = 1;
+    let sel = createSelect(undefined, inp.className, 1, inp.id);
 
     if (column.grouped.length) {
       nichtBenotigt(column.required, [])
@@ -1107,8 +1079,7 @@ class AutoSelectColumn extends PopupColumn {
         .filter((opt) => opt.display.toLowerCase().includes(select.value.toLowerCase()))
           .slice(0, column.dropSize)
           .forEach((opt) => {
-            let item = document.createElement("li");
-            item.className = "autoselect";
+            let item = createLi(list, "autoselect");
             item.dataset["text"] = opt.display;
             item.dataset["value"] = opt.value;
             item.addEventListener("click", (event) => column.selected(event, row, item), false);
@@ -1117,11 +1088,9 @@ class AutoSelectColumn extends PopupColumn {
             } else {
                item.classList.remove("selected");
             }
-            list.appendChild(item);
 
             if (opt.image) {
-              let ico = createImage(opt.image)
-              item.appendChild(ico);
+              createImage(item, "autoselect", opt.image);
             }
             addText(item, opt.display);
             addTooltip(item, opt.tooltip);
@@ -1180,26 +1149,15 @@ class AutoSelectColumn extends PopupColumn {
       super.popup(event, row, inp);
 
       let column = this;
-      let div = inp.parentElement;
 
-      let container = document.createElement("div");
-      container.id = inp.id + "_popup"; 
-      container.className = "autoclose-container";
-      div.appendChild(container);
+      let container = createDiv(inp.parentElement, "autoclose-container", inp.id + "_popup"); 
 
       addAutoClose(() => div.removeChild(container));
 
-      let select = document.createElement("input");
-      select.id = inp.id + "_select";
-      select.className = "autoselect";
+      let select = createInput("text", container, "autoselect", inp.id + "_select");
       select.value = inp.value;
-      select.type = "text";
-      container.appendChild(select);
 
-      let list = document.createElement("ul");
-      list.id = select.id + "_list";
-      list.className = "autoselect";
-      container.appendChild(list);
+      let list = createUl(container, "autoselect", select.id + "_list");
       select.addEventListener("keydown", (e) => column.input(e, row, select, list), false);
       select.addEventListener("input", () => column.addOptions(row, select, list), false);
 
@@ -1238,9 +1196,12 @@ class ImageSelectColumn extends PopupColumn {
   createControl(row, className) {
     let column = this;
 
-    let img = document.createElement("img");
+    let wrapper = createDiv(undefined, className);
+    wrapper.classList.add("image-select");
+    wrapper.style.order = 2;
+
+    let img = createImage(wrapper, className + "-select");
     img.id = getFieldId(row.id, column.fieldName);
-    img.className = className + "-select";
     img.classList.add("popup");
     img.readOnly = true;
     img.required = column.required;
@@ -1250,11 +1211,6 @@ class ImageSelectColumn extends PopupColumn {
     img.addEventListener("input", (event) => column.popup(event, row, img), false);
     img.addEventListener("keydown", (event) => column.popup(event, row, img), false);
 
-    let wrapper = document.createElement("div");
-    wrapper.className = className;
-    wrapper.classList.add("image-select");
-    wrapper.style.order = 2;
-    wrapper.appendChild(img);
     return wrapper;
   }
 
@@ -1317,12 +1273,10 @@ class ImageSelectColumn extends PopupColumn {
 
     nichtBenotigt(column.required, column.options) 
         .forEach((opt) => {
-          let item = document.createElement("li");
-          item.className = "image-select";
+          let item = createLi(list, "image-select");
           item.dataset["src"] = opt.image;
           item.dataset["value"] = opt.value;
           item.dataset["tool"] = opt.display;
-          list.appendChild(item);
 
           item.addEventListener("click", (event) => column.selected(event, row, item), false);
           if (img.dataset["value"] === item.dataset["value"]) {
@@ -1332,9 +1286,7 @@ class ImageSelectColumn extends PopupColumn {
             item.classList.remove("selected");
            }
 
-          let ico = createImage(opt.image, "image-select");
-          ico.alt = opt.value;
-          item.appendChild(ico);
+          if (opt.image) createImage(item, "image-select", opt.image, opt.value);
         });
   }
   
@@ -1395,22 +1347,15 @@ class ImageSelectColumn extends PopupColumn {
       addTooltip(img.parentElement, undefined);
 
       let column = this;
-      let div = img.parentElement;
 
-      let container = document.createElement("div");
-      container.id = img.id + "_popup"; 
-      container.className = "autoclose-container";
-      div.appendChild(container);
+      let container = createDiv(img.parentElement, "autoclose-container", img.id + "_popup"); 
 
-      let list = document.createElement("ul");
-      list.id = img.id + "_list";
-      list.className = "image-select";
-      container.appendChild(list);
+      let list = createUl(container, "image-select", img.id + "_list");
 
       document.addEventListener("keydown", (event) => column.input(event, row, list), false);
 
       addAutoClose(() => {
-        div.removeChild(container);
+        img.parentElement.removeChild(container);
         document.removeEventListener("keydown", (event) => column.input(event, row, list), false);
         });
 
@@ -1438,21 +1383,18 @@ class ThumbColumn extends VirtualColumn {
     this.fieldName = fieldName;
     this.fieldGetter = fieldGetter;
     this.count = count;
+    this.thumbWidth = (100 / count) + "%";
   }
 
   addHeading(grid, headerRow) {
     let column = this;
-    let place = document.getElementById(column.thumbLocation);
+    let parent = document.getElementById(column.thumbLocation);
 
-    if (place) {
-      removeChildren(place);
+    if (parent) {
+      removeChildren(parent);
 
-      let container = document.createElement("div");
-      container.id = getFieldId(column.thumbLocation, column.fieldName);
-      container.className = "thumb-container";
-      place.appendChild(container);
+      createDiv(parent, "thumb-container", getFieldId(column.thumbLocation, column.fieldName));
 
-      column.thumbWidth = (100 / column.count)+"%";
       column.finalRow = getRowId(grid.tableId, column.count);
     }
   }
@@ -1463,15 +1405,11 @@ class ThumbColumn extends VirtualColumn {
     if (row.id < column.finalRow) {
       let container = document.getElementById(getFieldId(column.thumbLocation, column.fieldName));
 
-      let cell = document.createElement("div");
-      cell.class = "thumb-item";
+      let cell = createDiv(container, "thumb-item");
       setWidths(cell, column.thumbWidth);
-      container.appendChild(cell);
 
-      let img = createImage("");
+      let img = createImage(cell, "thumb-display");
       img.id = getFieldId(row.id, column.fieldName);
-      img.className = "thumb-display";
-      cell.appendChild(img);
 
       return img;
     }

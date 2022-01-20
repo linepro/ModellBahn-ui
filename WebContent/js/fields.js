@@ -280,7 +280,7 @@ const POSITION = (editable = Editable.UPDATE, required = false, getter = fieldGe
   new NumberColumn("POSITION", "position", getter, setter, editable, required, 30, 0);
 
 const PREIS = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new NumberColumn("PREIS", "preis", getter, setter, editable, required, noOpSetter, 0, 2);
+  new NumberColumn("PREIS", "preis", getter, setter, editable, required, 9000, 0, 2);
 
 const PROGRAMMABLE = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
   new BoolColumn("PROGRAMMABLE", "programmable", getter, setter, editable, required);
@@ -300,3 +300,110 @@ const WERKSEINSTELLUNG = (editable = Editable.UPDATE, required = false, getter =
 const ZUG = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
   new TextColumn("ZUG", "zug", getter, setter, editable, required, 30);
 
+const IMPORT_DATA = (entities, complete = (entity) => alert(entity + " " + translate("UPLOAD_COMPLETE"))) => {
+
+  let frm = createDiv(undefined, "popup-form");
+
+  let head = createDiv(frm, "popup-head");
+  createTextElement("h3", head, "IMPORT", "popup-head");
+
+  let inp = createDiv(frm, "popup-section");
+
+  let fil = createDiv(inp, "popup-field");
+
+  let entz = createDiv(frm, "popup-section");
+
+  let lbl = createTextElement("label", fil, "FILE", "popup-label");
+  lbl.htmlFor = "importFile";
+  lbl.addEventListener("click", () => sel.click());
+  fil.appendChild(lbl);
+
+  let sel = createInput("file", fil, "popup-control", "importFile");
+  sel.accept = "text/csv";
+  sel.multiple = false;
+  sel.required = true;
+  sel.addEventListener(
+    "change",
+    () => Array.from(entz.getElementsByTagName("button"))
+                         .forEach(b => b.disabled = !sel.files[0])
+  );
+
+  let enc = createSelect(fil, "popup-contol", "importEncoding", 3);
+  enc.add(createOption("WINDOWS-1251", "WINDOWS-1251"));
+  enc.add(createOption("ISO-8859-1", "ISO-8859-1"));
+  enc.add(createOption("UTF-8", "UTF-8"));
+  enc.selectedIndex = 0;
+
+  let errh = createDiv(frm, "popup-head");
+  let eh = createDiv(errh, "error-head");
+  createTextElement("h3", eh, "IMPORT_ERRORS", "form-head");
+
+  let errb = createDiv(frm, "popup-section");
+  let eb = createDiv(errb, "error-body");
+
+  let txt = createTextarea(eb, "error-body");
+
+  entities.forEach(e => {
+    let btn = createButton(entz, e, undefined, () => {
+          txt.value = "";
+
+          upload(
+            apiUrl("data/" + e),
+            "data",
+            sel.files[0],
+            sel.files[0].name,
+            (data) => complete(translate(e)),
+            (errors) => {
+              txt.value = errors;
+            },
+            "POST",
+            enc.value
+          );
+        },
+        "popup-button"
+      );
+    btn.disabled = true;
+    }
+  );
+
+  let foot = createDiv(frm, "form-foot");
+
+  createButton(foot, "close", "close", () => modal.style.display = "none");
+
+  showModal(frm, false);
+}
+
+const EXPORT_DATA = (entities, complete = (entity) => alert(entity + " " + translate("DOWNLOAD_COMPLETE"))) => {
+
+  let frm = createDiv("popup-form");
+
+  let head = createDiv(frm, "popup-head");
+  createTextElement("h3", head, "EXPORT", "popup-head");
+
+  let entz = createDiv(frm, "popup-section");
+
+  entities.forEach(e => createButton(entz, e, () => download(
+     apiUrl("data/" + e),
+     (data) => {
+       let blobData = new Blob([data], {type: "text/csv"});
+       let url = window.URL.createObjectURL(blobData);
+       let a = addAnchor(document.body, e, url);
+       a.style = "display: none";
+       a.download = entity + ".csv";
+       a.click();
+       window.URL.revokeObjectURL(url);
+       a.remove();
+       complete(translate(e));
+     },
+     (error) => reportError(apiUrl("data/" + e), error)
+   ),
+   "popup-button"
+    )
+  );
+
+  let foot = createDiv(frm, "form-foot");
+
+  createButton(foot, "close", "close", () => modal.style.display = "none");
+
+  showModal(frm, false);
+}

@@ -41,14 +41,11 @@ a:hover {
   outline-width: 0
 }
 
-a.nav-button,
-button.tabLinks {
+a.nav-button {
   padding: 0.3rem;
 }
 
-a.nav-button,
-button.nav-button,
-button.tabLinks {
+a.nav-button {
   background-color: LightSkyBlue;
   border: 0.1rem solid LightSkyBlue;
   border-radius: 0.3rem;
@@ -104,6 +101,10 @@ button {
   color: white;
   font-size: 1rem;
   padding: 0.3rem 0.3rem;
+}
+
+button[disabled] {
+  background-color: graytext;
 }
 
 button.form-control-add {
@@ -186,6 +187,25 @@ button.img-button:disabled {
   color: White;
 }
 
+button.nav-button,
+button.popup-button,
+button.tabLinks {
+  background-color: LightSkyBlue;
+  border: 0.1rem solid LightSkyBlue;
+  border-radius: 0.3rem;
+  color: white;
+  font-size: 1rem;
+  height: 2.1rem;
+  margin-left: 0.1rem;
+  margin-right: 0.1rem;
+  margin-top: 0.1rem;
+  vertical-align: middle;
+}
+
+button.popup-button {
+  align-self: center;
+}
+
 button.selection {
   background-color: LightSkyBlue;
   border: 0.1rem solid LightSkyBlue;
@@ -197,6 +217,10 @@ button.selection {
   text-align: right;
   vertical-align: top;
   width: 0.1rem;
+}
+
+button.tabLinks {
+  padding: 0.3rem;
 }
 
 button.tabLinks[active] {
@@ -302,7 +326,7 @@ div.form-item {
   flex-direction: row;
   flex-wrap: nowrap;
   height: 3.1rem;
-  margin: 0.5rem 0.3rem 0 0.3rem;
+  margin: 0.3rem 0.5rem 0 0.3rem;
   padding: 0;
 }
 
@@ -362,15 +386,10 @@ div.img-button {
   vertical-align: top;
 }
 
-div.popup-filters {
-  align-content: flex-start;
+div.popup-field {
   align-items: baseline;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  justify-content: flex-start;
-  overflow: hidden;
-  width: 100%;
+  display: inline-flex;
+  flex: auto;
 }
 
 div.popup-filter {
@@ -383,21 +402,23 @@ div.popup-filter {
   overflow: hidden;
 }
 
-div.popup-item {
-  flex: auto;
-}
-
-label.popup-label {
-  min-width: 12ch;
-}
-
-select.popup-control {
-  height: 20rem;
-  min-width: 50ch;
-}
-
 div.popup-form {
   display: flow-root;
+}
+
+div.popup-section {
+  align-content: flex-start;
+  align-items: baseline;
+  background-color: ivory;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  min-height: 3rem;
+  min-width: 20rem;
+  overflow: hidden;
+  padding-top: 0.5rem;
+  width: 100%;
 }
 
 div.thumb-container {
@@ -613,6 +634,23 @@ textarea {
   width: 100%;
 }
 
+input.autoselect {
+  margin: 0;
+  width: 95%;
+}
+
+input.gerausch,
+input.programmable {
+  -webkit-appearance: unset;
+}
+
+input.popup-control,
+select.popup-control {
+  display: flex;
+  min-width: 50ch;
+  order: 2;
+}
+
 input:invalid {
   border: red 1px dot-dot-dash;
 }
@@ -649,20 +687,14 @@ input[type="checkbox"] {
   width: 2.1rem;
 }
 
-input.gerausch,
-input.programmable {
-  -webkit-appearance: unset;
-}
-
 input[type="date"] {
   border: 0;
   margin: 0;
   padding: 0;
 }
 
-input.autoselect {
-  margin: 0;
-  width: 95%;
+input[type="file"].popup-control {
+  text-indent: -80px;
 }
 
 input[type="number"]::-webkit-inner-spin-button,
@@ -690,10 +722,16 @@ label.form-label {
   flex: none;
   font-weight: bold;
   line-height: 0.7;
-  margin: 0.1rem 0 0 0;
+  margin: 0 0.1rem 0 0;
   order: 1;
-  padding: 0.3rem 0 0 0;
+  padding: 0;
   text-align: left;
+}
+
+label.popup-label {
+  display: flex;
+  min-width: 12ch;
+  order: 1;
 }
 
 legend {
@@ -1258,6 +1296,11 @@ ul::-webkit-scrollbar-thumb {
 
 .the-datepicker__main .the-datepicker__body {
   margin-top: 1rem;
+}
+
+.the-datepicker__main .the-datepicker__calendar-body {
+  height: 14rem;
+  max-height: 14rem;
 }
 
 .the-datepicker__main th.the-datepicker__week-day {
