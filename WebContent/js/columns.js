@@ -82,15 +82,15 @@ class VirtualColumn {
 
   labelLength(unit = 1) {
     let column = this;
-    return boxSize(translate(column.heading).length + 1, unit);
+    return boxSize(translate(column.heading).length, unit);
   }
 
   fieldLength(unit = 1) {
     let column = this;
-    return boxSize(column.labelLength(unit) + column.inputLength(unit), unit);
+    return boxSize(column.labelLength(unit) + column.inputLength(unit) + 1, unit);
   }
 
-  displayLength(unit = 1) {
+  displayLength(unit = 2) {
     let column = this;
     return Math.max(column.labelLength(unit), column.inputLength(unit));
   }
@@ -99,7 +99,7 @@ class VirtualColumn {
 
   addFormHeading(grid, row, headerRow) {}
 
-  addFormField(row, width) {
+  addFormField(row, unit) {
     let column = this;
 
     return {
@@ -194,18 +194,17 @@ class Column extends VirtualColumn {
     return ctl;
   }
 
-  addFormField(row, unit = 5) {
+  addFormField(row, unit) {
     let column = this;
     let c = column.fieldLength(unit);
     let cell = createDiv(row.element, row.classPrefix + "-item", getCellId(row.id, column.fieldName));
-    setWidths(cell, c + "ch");
+    setWidths(cell, c + "em");
 
     let label = createTextElement("label", cell, column.heading, row.classPrefix + "-label");
-    setWidths(label, (c - column.length) + "ch");
+    label.for = row.classPrefix + "-control";
+    setWidths(label, (c - column.inputLength(unit)) + "em");
 
     let ctl = column.createControl(row, row.classPrefix + "-control");
-    label.for = ctl.id;
-    ctl.style.order = 2;
     cell.append(ctl);
 
     return {
@@ -271,6 +270,7 @@ class BoolColumn extends Column {
       required,
       2
     );
+    this.type = "bool";
   }
 
   initialise(chk) {
@@ -318,6 +318,7 @@ class NumberColumn extends Column {
     this.min = min;
     this.places = places;
     this.localize = localize;
+    this.type = "number";
   }
 
   initialise(num) {
@@ -356,7 +357,15 @@ class PhoneColumn extends Column {
     editable,
     required
   ) {
-    super(heading, fieldName, fieldGetter, fieldSetter, editable, required, 10);
+    super(
+      heading,
+      fieldName,
+      fieldGetter,
+      fieldSetter,
+      editable,
+      required,
+      10);
+    this.type = "phone";
   }
 
   initialise(tel) {
@@ -387,6 +396,7 @@ class TextColumn extends Column {
       length
     );
     this.pattern = pattern;
+    this.type = "text";
   }
 
   initialise(txt) {
@@ -424,6 +434,7 @@ class UrlColumn extends TextColumn {
       60,
       URL_PATTERN
     );
+    this.type = "url";
   }
 
   initialise(rul) {
@@ -503,6 +514,7 @@ class DateColumn extends PopupColumn {
       required,
       14
     );
+    this.type = "date";
   }
 
   popup(event, row, dte) {
@@ -652,6 +664,7 @@ class FileColumn extends Column {
 
     this.mask = mask;
     this.minWidth = "11rem";
+    this.type = "file";
   }
 
   createSelector(headerRow) {
@@ -685,11 +698,15 @@ class FileColumn extends Column {
     let column = this;
 
     if (isEditable(column.editable)) {
-      let add = createButton(cell, "add", "add", (event) => column.updateFile(event, row), img.className + "-add", img.id + "_add");
+      // button shares class with image so need to sort it out
+      let add = createButton(cell, "add", "add", (event) => column.updateFile(event, row), "img-button", img.id + "_add");
+      add.className = img.className + "-add";
       add.disabled = true;
       add.style.visibility = "hidden";
 
-      let del = createButton(cell, "delete", "delete", (event) => column.removeFile(event, row), img.className + "-del", img.id + "_delete");
+      // button shares class with image so need to sort it out
+      let del = createButton(cell, "delete", "delete", (event) => column.removeFile(event, row), "img-button", img.id + "_delete");
+      del.className = img.className + "-del";
       del.disabled = true;
       del.style.visibility = "hidden";
     }
@@ -704,17 +721,18 @@ class FileColumn extends Column {
     return img;
   }
 
-  addFormField(row, unit = 5) {
+  addFormField(row, unit) {
     let column = this;
 
-    let cell = createDiv(row.entity, "form-item");
-    setWidths(cell, column.fieldLength(unit) + "ch");
+    let cell = createDiv(row.element, "form-item");
+    setWidths(cell, column.fieldLength(unit) + "em");
 
     let label = createTextElement("label", cell, column.heading, "form-label");
-    setWidths(label, column.labelLength(unit) + "ch");
+    setWidths(label, column.labelLength(unit) + "em");
 
-    let img = column.createControl(cell, row, "form-control");
+    let img = column.createControl(row, "form-control");
     label.for = img.id;
+    cell.append(img);
 
     column.addButtons(row, cell, img);
 
@@ -843,6 +861,8 @@ class ImageColumn extends FileColumn {
       editable,
       required
     );
+
+    this.type = "image";
   }
 
   showContent(event, row) {
@@ -877,6 +897,8 @@ class PdfColumn extends FileColumn {
       editable,
       required
     );
+
+    this.type = "pdf";
   }
 
   setControlValue(img, value) {
@@ -924,6 +946,7 @@ class DropDownColumn extends Column {
     this.options = dropDown.options;
     this.grouped = dropDown.grouped;
     this.dropSize = (editable === Editable.NEVER) ? 1 : dropSize;
+    this.type = "dropDown";
   }
 
   initialise(inp) {
@@ -1028,6 +1051,7 @@ class AutoSelectColumn extends PopupColumn {
 
     this.options = dropDown.options; 
     this.dropSize = dropSize;
+    this.type = "autoselect";
   }
 
   getControlValue(sel) {
@@ -1152,7 +1176,7 @@ class AutoSelectColumn extends PopupColumn {
 
       let container = createDiv(inp.parentElement, "autoclose-container", inp.id + "_popup"); 
 
-      addAutoClose(() => div.removeChild(container));
+      addAutoClose(() => inp.parentElement.removeChild(container));
 
       let select = createInput("text", container, "autoselect", inp.id + "_select");
       select.value = inp.value;
@@ -1185,20 +1209,20 @@ class ImageSelectColumn extends PopupColumn {
       fieldSetter,
       editable,
       required,
-      14
+      12
     );
 
     this.options = dropDown.options; 
     this.dropSize = dropSize;
     this.minWidth = "14rem";
+    this.type = "imageSelect";
   }
 
   createControl(row, className) {
     let column = this;
 
-    let wrapper = createDiv(undefined, className);
+    let wrapper = createDiv(row.element, className);
     wrapper.classList.add("image-select");
-    wrapper.style.order = 2;
 
     let img = createImage(wrapper, className + "-select");
     img.id = getFieldId(row.id, column.fieldName);
@@ -1384,6 +1408,7 @@ class ThumbColumn extends VirtualColumn {
     this.fieldGetter = fieldGetter;
     this.count = count;
     this.thumbWidth = (100 / count) + "%";
+    this.type = "thumb";
   }
 
   addHeading(grid, headerRow) {

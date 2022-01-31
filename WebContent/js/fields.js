@@ -387,7 +387,7 @@ const EXPORT_DATA = (entities, complete = (entity) => alert(entity + " " + trans
      (data) => {
        let blobData = new Blob([data], {type: "text/csv"});
        let url = window.URL.createObjectURL(blobData);
-       let a = addAnchor(document.body, e, url);
+       let a = createAnchor(document.body, "nav-button", e, url);
        a.style = "display: none";
        a.download = entity + ".csv";
        a.click();

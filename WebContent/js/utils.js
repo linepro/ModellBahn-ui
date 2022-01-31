@@ -18,46 +18,142 @@ const addToEnd = (element) => {
   docBody.appendChild(element);
 };
 
+const addText = (cell, text) => {
+  if (text) {
+    let txt = document.createTextNode(translate(text));
+    if (cell.firstChild) {
+      cell.insertBefore(txt, cell.firstChild);
+    } else {
+      cell.appendChild(txt);
+    }
+    return txt;
+  }
+};
+
+const addTooltip = (input, text) => {
+  if (text) {
+    input.setAttribute("data-tooltip", text);
+    input.classList.add("tooltip");
+  } else {
+    input.removeAttribute("data-tooltip");
+    input.classList.remove("tooltip");
+  }
+};
+
+const append = (parent, className, id, type) => {
+  let element = document.createElement(type);
+  if (id) element.id = id;
+  if (className) element.className = className;
+  if (parent) parent.appendChild(element);
+  return element;
+};
+
+const removeChildren = (node) => {
+  if (node) {
+    while (node.firstChild) {
+      node.removeChild(node.firstChild);
+    }
+  }
+};
+
 const createImage = (parent, className, source, alt) => {
-  let img = document.createElement("img");
-  img.className = className;
+  let img = append(parent, className, undefined, "img");
   img.src = source ? source : "";
-  img.alt = alt ? alt : img.src;
-  if (parent) parent.appendChild(img);
+  if (alt) img.alt = translate(alt);
   return img;
 };
 
-const addAnchor = (parent, text, url, newWindow) => {
-  let a = document.createElement("a");
+const createAnchor = (parent, className, text, url, newWindow) => {
+  let a = append(parent, className, undefined, "a");
   a.href = url;
-  if (newWindow) a.target = "_blank";
   addText(a, text);
-  parent.appendChild(a);
+  if (newWindow) a.target = " _blank";
   return a;
 };
 
 const createTextElement = (type, parent, text, className) => {
-  let c = document.createElement(type);
-  if (className) c.className = className;
-  if (text) addText(c, text);
-  if (parent) parent.appendChild(c);
+  let c = append(parent, className, undefined, type);
+  addText(c, text);
   return c;
 };
 
-const addRule = (parent, className = "highlight") => {
-  let hr = document.createElement("hr");
-  hr.className = className;
-  parent.appendChild(hr);
-  return hr;
+const addRule = (parent, className = "highlight") => append(parent, className, undefined, "hr");
+
+const createDiv = (parent, className, id) => append(parent, className, id, "div");
+
+const createButton = (parent, caption, imageName, action = undefined, className = "nav-button", id = undefined) => {
+  let btn = append(parent, className, id, "button");
+  btn.value = translate(caption);
+  if (action) {
+    btn.addEventListener("click", action, false);
+  }
+  if (imageName) {
+    createImage(btn, className, imageSource(imageName), btn.value);
+  } else {
+    addText(btn, btn.value);
+  }
+  return btn;
 };
 
-const createDiv = (parent, className, id) => {
-  let d = document.createElement("div");
-  if (id) d.id = id;
-  if (className) d.className = className;
-  if (parent) parent.appendChild(d);
-  return d;
+const createOptGroup = (text) => {
+  let grp = document.createElement("optgroup");
+  grp.label = text;
+  return grp;
 };
+
+const createOption = (value, text, tooltip, abbildung) => {
+  let opt = document.createElement("option");
+  opt.value = value;
+  opt.text = text;
+  opt.setAttribute("data-img", abbildung);
+  opt.setAttribute("data-desc", tooltip);
+  return opt;
+};
+
+const createSpan = (parent, className, id) => append(parent, className, id, "span");
+
+const createInput = (type, parent, className, id) => {
+  let inp = append(parent, className, id, "input");
+  inp.type = type;
+  return inp;
+};
+
+const createUl = (parent, className, id) => append(parent, className, id, "ul");
+
+const createLi = (parent, className, text, id) => {
+  let li = append(parent, className, id, "li");
+  addText(li, text);
+  return li;
+};
+
+const createTh = (parent, className, id) => append(parent, className, id, "th");
+
+const createTd = (parent, className, id) => append(parent, className, id, "td");
+
+const createTr = (parent, className, id) => append(parent, className, id, "tr");
+
+const createTextarea = (parent, className, id) => append(parent, className, id, "textarea");
+
+const createSelect = (parent, className, size, id) => {
+  let sel = append(parent, className, id, "select");
+  sel.multiple = false;
+  sel.size = size;
+  return sel;
+};
+
+const createThead = (parent, className, id) => append(parent, className, id, "thead");
+
+const createTbody = (parent, className, id) => append(parent, className, id, "tbody");
+
+const createTfoot = (parent, className, id) => append(parent, className, id, "tfoot");
+
+const createTable = (parent, className, id) => append(parent, className, id, "table");
+
+const createColgroup = (parent, className, id) => append(parent, className, id, "colgroup");
+
+const createCol = (parent, className, id) => append(parent, className, id, "col");
+
+const createCanvas = (parent, className, id) => append(parent, className, id, "canvas");
 
 const addModal = () => {
   let modal = document.getElementById("modal");
@@ -82,196 +178,6 @@ const addModal = () => {
   return modal;
 };
 
-const createButton = (parent, caption, imageName, action = undefined, className = "nav-button", id = undefined) => {
-  let btn = document.createElement("button");
-  if (id) btn.id = id;
-  btn.className = className;
-  btn.value = translate(caption);
-  if (action) {
-    btn.addEventListener("click", action, false);
-  }
-  if (imageName) {
-    createImage(btn, className, imageSource(imageName), btn.value);
-  } else {
-    addText(btn, btn.value);
-  }
-  if (parent) parent.appendChild(btn);
-  return btn;
-};
-
-const addText = (cell, text) => {
-  let txt = document.createTextNode(translate(text));
-  if (cell.firstChild) {
-    cell.insertBefore(txt, cell.firstChild);
-  } else {
-    cell.appendChild(txt);
-  }
-  return txt;
-};
-
-const addTooltip = (input, text) => {
-  if (text) {
-    input.setAttribute("data-tooltip", text);
-    input.classList.add("tooltip");
-  } else {
-    input.removeAttribute("data-tooltip");
-    input.classList.remove("tooltip");
-  }
-};
-
-const removeChildren = (node) => {
-  while (node.firstChild) {
-    node.removeChild(node.firstChild);
-  }
-};
-
-const createOptGroup = (text) => {
-  let grp = document.createElement("optgroup");
-  grp.label = text;
-  return grp;
-};
-
-const createOption = (value, text, tooltip, abbildung) => {
-  let opt = document.createElement("option");
-  opt.value = value;
-  opt.text = text;
-  opt.setAttribute("data-img", abbildung);
-  opt.setAttribute("data-desc", tooltip);
-  return opt;
-};
-
-const createSpan = (parent, className, id) => {
-  let spn = document.createElement("span");
-  if (id) spn.id = id;
-  spn.className = className;
-  if (parent) parent.appendChild(spn);
-  return spn;
-};
-
-const createInput = (type, parent, className, id) => {
-  let inp = document.createElement("input");
-  inp.type = type;
-  if (id) inp.id = id;
-  inp.className = className;
-  if (parent) parent.appendChild(inp);
-  return inp;
-};
-
-const createUl = (parent, className, id) => {
-  let ul = document.createElement("ul");
-  if (id) ul.id = id;
-  ul.className = className;
-  if (parent) parent.appendChild(ul);
-  return ul;
-};
-
-const createLi = (parent, className, text, id) => {
-  let li = document.createElement("li");
-  if (id) li.id = id;
-  li.className = className;
-  if (text) addText(li, text);
-  if (parent) parent.appendChild(li);
-  return li;
-};
-
-const createTh = (parent, className, id) => {
-  let th = document.createElement("th");
-  if (id) ul.id = id;
-  th.className = className;
-  if (parent) parent.appendChild(th);
-  return th;
-};
-
-const createTd = (parent, className, id) => {
-  let td = document.createElement("td");
-  if (id) td.id = id;
-  td.className = className;
-  if (parent) parent.appendChild(td);
-  return td;
-};
-
-const createTr = (parent, className, id) => {
-  let tr = document.createElement("tr");
-  if (id) tr.id = id;
-  tr.className = className;
-  if (parent) parent.appendChild(tr);
-  return tr;
-};
-
-const createTextarea = (parent, className, id) => {
-  let ta = document.createElement("textarea");
-  if (id) ta.id = id;
-  ta.className = className;
-  if (parent) parent.appendChild(ta);
-  return ta;
-};
-
-const createSelect = (parent, className, size, id) => {
-  let sel = document.createElement("select");
-  if (id) sel.id = id;
-  sel.className = className;
-  sel.multiple = false;
-  sel.size = size;
-  if (parent) parent.appendChild(sel);
-  return sel;
-};
-
-const createThead = (parent, className, id) => {
-  let th = document.createElement("thead");
-  if (id) th.id = id;
-  th.className = className;
-  if (parent) parent.appendChild(th);
-  return th;
-};
-
-const createTbody = (parent, className, id) => {
-  let tb = document.createElement("tbody");
-  if (id) tb.id = id;
-  tb.className = className;
-  if (parent) parent.appendChild(tb);
-  return tb;
-};
-
-const createTfoot = (parent, className, id) => {
-  let tf = document.createElement("tfoot");
-  if (id) tf.id = id;
-  tf.className = className;
-  if (parent) parent.appendChild(tf);
-  return tf;
-};
-
-const createTable = (parent, className, id) => {
-  let c = document.createElement("table");
-  if (id) c.id = id;
-  c.className = className;
-  if (parent) parent.appendChild(c);
-  return c;
-};
-
-const createColgroup = (parent, className, id) => {
-  let g = document.createElement("colgroup");
-  if (id) g.id = id;
-  g.className = className;
-  if (parent) parent.appendChild(g);
-  return g;
-};
-
-const createCol = (parent, className, id) => {
-  let c = document.createElement("col");
-  if (id) c.id = id;
-  c.className = className;
-  if (parent) parent.appendChild(c);
-  return c;
-};
-
-const createCanvas = (parent, className, id) => {
-  let c = document.createElement("canvas");
-  if (id) c.id = id;
-  c.className = className;
-  if (parent) parent.appendChild(c);
-  return c;
-};
-
 const reportError = (description, error) => {
   console.trace("%s: %o", description, error);
   let alertBox = document.getElementById("alert-box");
@@ -281,7 +187,7 @@ const reportError = (description, error) => {
     closer.onclick = () => {
       alertBox.style.display = "none";
     };
-    addText(closer, "CLOSE");
+    addText(closer, "X");
     createSpan(alertBox, undefined, "alert-message");
     let body = document.getElementsByTagName("BODY")[0];
     if (body) {
@@ -302,13 +208,14 @@ const reportError = (description, error) => {
   }
 };
 
-const showModal = (content, withCloser = true) => {
+const showModal = (content, withCloser = true, withLoader = () => {}) => {
   let modal = addModal();
 
   let contents = document.getElementById("modal-content");
   removeChildren(contents);
 
   contents.appendChild(content);
+  withLoader();
 
   if (withCloser) {
     let closer = createDiv(contents, "closebtn");
@@ -333,10 +240,9 @@ const setActiveTab = (event, tabName) => {
   }
 };
 
-const navLink = (title, href, action, id, className = "nav-button") => {
-  let li = createLi(undefined, className, undefined, id);
-  let a = addAnchor(li, title, href);
-  a.className = "nav-button";
+const navLink = (title, href, action, id) => {
+  let li = createLi(undefined, undefined, undefined, id);
+  let a = createAnchor(li, "nav-button", title, href);
   if (action) {
     a.addEventListener("click", action, false);
   }
@@ -345,11 +251,7 @@ const navLink = (title, href, action, id, className = "nav-button") => {
 
 const addHomeBack = ul => {
   ul.appendChild(navLink("HOME", fileUrl("index.html")));
-  ul.appendChild(
-    navLink("BACK", "#", () => {
-      history.back();
-    })
-  );
+  ul.appendChild(navLink("BACK", "#", () => history.back()));
 };
 
 const NavMenu = {
@@ -379,12 +281,12 @@ const addLogo = (home, offset) => {
     lingo.style = "float: right;"
 
     if (sessionId()) {
-      addAnchor(menu, "PROFILE", "/account");
-      addAnchor(menu, "LOGOUT", "/logout");
+      createAnchor(menu, undefined, "PROFILE", "/account");
+      createAnchor(menu, undefined, "LOGOUT", "/logout");
     } else {
-      addAnchor(menu, "HOME", "/");
+      createAnchor(menu, undefined, "HOME", "/");
     }
-    addAnchor(menu, "ABOUT", "/about.html", true);
+    createAnchor(menu, undefined, "ABOUT", "/about.html", true);
 
     return bar;
 };
@@ -484,7 +386,7 @@ const addFooter = () => {
 
   let api = createLi(ul);
   api.style = "float: left; margin-left: 0.5rem; position: relative;";
-  let a = addAnchor(api, "API", "/swagger-ui/index.html");
+  let a = createAnchor(api, "nav-button", "API", "/swagger-ui/index.html", true);
   a.style = api.style;
 
   let co = createLi(ul, undefined, "COPYRIGHT");

@@ -79,7 +79,7 @@
           funktionen
         ];
 
-        const decoderTyp = new Form("decoderTyp", "decoderTyp", decoderTypColumns, decoderTypActions, EditMode.UPDATE, decoderTypChildren);
+        const decoderTyp = new Form(formUrl("decoderTyp"), "decoderTyp", decoderTypColumns, decoderTypActions, formMode(EditMode.UPDATE), decoderTypChildren);
 
         decoderTyp.init();
       })
@@ -116,7 +116,6 @@
           </div>
         </div>
       </div>
-
     </div>
   </article>
 </section>

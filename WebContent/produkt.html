@@ -86,7 +86,8 @@
           teilen
         ];
 
-        const produkt = new Form("produkt", "produkt", produktColumns, produktActions, EditMode.UPDATE, produktChildren);
+        const produkt = new Form(formUlr("produkt"), "produkt", produktColumns, produktActions, formMode(EditMode.UPDATE), produktChildren);
+ 
         produkt.init();
       })
       .catch(error => reportError("load", error))

@@ -5,7 +5,7 @@
 @-webkit-keyframes animatetop {
   from {
     opacity: 0;
-    top: -300px;
+    top: -25rem;
   }
 
   to {
@@ -17,7 +17,7 @@
 @keyframes animatetop {
   from {
     opacity: 0;
-    top: -300px;
+    top: -25rem;
   }
 
   to {
@@ -42,10 +42,6 @@ a:hover {
 }
 
 a.nav-button {
-  padding: 0.3rem;
-}
-
-a.nav-button {
   background-color: LightSkyBlue;
   border: 0.1rem solid LightSkyBlue;
   border-radius: 0.3rem;
@@ -55,6 +51,7 @@ a.nav-button {
   margin-left: 0.1rem;
   margin-right: 0.1rem;
   margin-top: 0.1rem;
+  padding: 0.3rem;
   vertical-align: middle;
 }
 
@@ -104,7 +101,7 @@ button {
 }
 
 button[disabled] {
-  background-color: graytext;
+  background-color: GrayText;
 }
 
 button.form-control-add {
@@ -176,6 +173,7 @@ button.img-button {
   max-width: 1.1rem;
   min-height: 1.1rem;
   min-width: 1.1rem;
+  object-fit: scale-down;
   padding: 0 0 0 0;
   text-align: center;
   vertical-align: middle;
@@ -193,7 +191,7 @@ button.tabLinks {
   background-color: LightSkyBlue;
   border: 0.1rem solid LightSkyBlue;
   border-radius: 0.3rem;
-  color: white;
+  color: White;
   font-size: 1rem;
   height: 2.1rem;
   margin-left: 0.1rem;
@@ -223,18 +221,9 @@ button.tabLinks {
   padding: 0.3rem;
 }
 
-button.tabLinks[active] {
-  background-color: LightSkyBlue;
-  border: 0.1rem solid LightSkyBlue;
-  border-radius: 0.3rem;
-  color: Grey;
-  font-size: 1rem;
-  height: 2.1rem;
-  margin-left: 0.1rem;
-  margin-right: 0.1rem;
-  margin-top: 0.1rem;
-  padding: 0.3rem 0.3rem;
-  vertical-align: baseline;
+button.tabLinks.active {
+  background-color: PowderBlue;
+  color: Ivory;
 }
 
 caption {
@@ -274,7 +263,7 @@ dfn {
 
 div.autoclose-container {
   background-color: LightYellow;
-  border: 1px solid LightSkyBlue;
+  border: 0.1rem solid LightSkyBlue;
   display: block;
   margin: 0;
   padding: 0;
@@ -287,6 +276,11 @@ div.error-body {
 }
 
 div.error-head {
+}
+
+div.expanding-cell {
+  margin: 0 0 0 0.7rem;	
+  max-height: 2.5rem
 }
 
 div.form-btn {
@@ -341,10 +335,12 @@ div.form-row {
 }
 
 div.form-table {
+  background-color: LightYellow;
 }
 
 div.form-tbody {
   display: block;
+  background-color: LightYellow;
 }
 
 div.form-tfoot {
@@ -529,6 +525,7 @@ html {
 
 img {
   border-style: none;
+  object-fit: scale-down;
   text-align: center;
 }
 
@@ -536,9 +533,12 @@ img.expanding-cell-select,
 img.form-control,
 img.form-control-select,
 img.table-cell-select {
-  max-height: 3rem;
-  max-width: 8rem;
+  height: auto;
+  max-height: 2.5rem;
+  max-width: 7rem;
+  object-fit: scale-down;
   order: 2;
+  width: auto;
   writing-mode: vertical-lr;
 }
 
@@ -551,26 +551,31 @@ img.table-cell-select[data-disabled="false"] {
 img.img-button {
   border: 0;
   display: inline-grid;
-  height: 1.2rem;
-  margin: -1px -1px 1px -1px;
+  height: auto;
+  max-height: 1.2rem;
+  max-width: 1.2rem;
+  margin: -0.1rem -0.1rem 0.1rem -0.1rem;
+  object-fit: scale-down;
   padding: 0;
-  width: 1.2rem;
+  width: auto;
 }
 
 img.img-display {
   border: 0;
   height: 100%;
   margin: 0.1rem 0.3rem;
+  object-fit: scale-down;
   padding: 0;
   vertical-align: bottom;
   width: auto;
 }
 
 img.lingo {
-  border: 1px solid LightSkyBlue;
+  border: 0.1rem solid LightSkyBlue;
   float: right;
-  height: 20px;
+  height: 1.6rem;
   margin: 0.3rem 0.3rem;
+  object-fit: scale-down;
   padding: 0;
   vertical-align: middle;
   width: auto;
@@ -579,8 +584,9 @@ img.lingo {
 img.logo {
   border: 0;
   float: right;
-  height: 40px;
+  height: 3.3rem;
   margin: 0.1rem 0.5rem;
+  object-fit: scale-down;
   padding: 0;
   vertical-align: middle;
   width: auto;
@@ -589,36 +595,48 @@ img.logo {
 img.nav-button {
   background-color: inherit;
   border-style: none;
-  height: 1.3rem;
+  height: auto;
   margin: 0 0 0.1rem 0;
+  max-height: 1.3rem;
+  max-width: 1.3rem;
+  object-fit: scale-down;
   padding: 0;
   text-align: center;
   vertical-align: top;
-  width: 1.3rem;
+  width: auto;
 }
 
 img.image-select {
   background-color: Ivory;
+  height: auto;
   max-height: 3rem;
   max-width: 3rem;
+  object-fit: scale-down;
+  width: auto;
 }
 
 img.expanding-cell,
 img.table-cell {
   order: 2;
+  height: auto;
   margin-left: 1rem;
   max-height: 2.25rem;
   max-width: calc(100% - 2.7rem);
+  object-fit: scale-down;
   vertical-align: bottom;
+  width: auto;
 }
 
 img.thumb-display {
   border: 0;
+  height: auto;
   margin: 0.1rem 0 0.1rem 0;
   max-height: 5rem;
+  max-width: 100%;
+  object-fit: scale-down;
   padding: 0;
   vertical-align: bottom;
-  width: 100%;
+  width: auto;
 }
 
 input,
@@ -652,13 +670,13 @@ select.popup-control {
 }
 
 input:invalid {
-  border: red 1px dot-dot-dash;
+  border: red 0.1rem dot-dot-dash;
 }
 
 input[active],
 select[active],
 textarea[active] {
-  border: 0.1rem dotted gray;
+  border: 0.1rem dotted Gray;
   background-color: LemonChiffon;
 }
 
@@ -672,7 +690,7 @@ textarea[disabled] {
 input[focus],
 select[focus],
 textarea[focus] {
-  border: 0.1rem dotted gray;
+  border: 0.1rem dotted Gray;
   background-color: LemonChiffon;
 }
 
@@ -694,7 +712,7 @@ input[type="date"] {
 }
 
 input[type="file"].popup-control {
-  text-indent: -80px;
+  text-indent: -6.7rem;
 }
 
 input[type="number"]::-webkit-inner-spin-button,
@@ -713,7 +731,7 @@ input[type="url"],
 input[type="url"]:hover,
 .table-url:hover {
   text-decoration: none;
-  text-shadow: 1px 1px 1px DimGrey;
+  text-shadow: 0.1rem 0.1rem 0.1rem DimGrey;
 }
 
 label.form-label {
@@ -751,7 +769,7 @@ li.image-select {
 li.autoselect.selected,
 li.image-select.selected {
   background-color: Ivory;
-  border: 1px dashed LightSkyBlue;
+  border: 0.1rem dashed LightSkyBlue;
 }
 
 li.nav {
@@ -1129,6 +1147,7 @@ ul::-webkit-scrollbar-thumb {
 .closebtn {
   cursor: pointer;
   font-weight: bold;
+  height: 1rem;
   margin-right: 0.5rem;
   transition: 0.3s;
 }
@@ -1140,6 +1159,7 @@ ul::-webkit-scrollbar-thumb {
 .display-img {
   border-radius: 3rem;
   height: 50rem;
+  object-fit: contain;
   padding: 0.5rem;
 }
 
@@ -1285,7 +1305,7 @@ ul::-webkit-scrollbar-thumb {
 
 .the-datepicker__main {
   background-color: Ivory;
-  border: 1px solid Grey;
+  border: 0.1rem solid Grey;
   border-radius: 0.3rem;
   font-family: Arial, Helvetica, sans-serif;
   line-height: 1rem;
@@ -1395,7 +1415,7 @@ ul::-webkit-scrollbar-thumb {
 }
 
 .tooltip {
-  border-bottom: 1px dashed LightGrey;
+  border-bottom: 0.1rem dashed LightGrey;
   position: relative;
 }
 

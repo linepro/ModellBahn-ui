@@ -7,6 +7,8 @@ const Paged = {
   EXPAND: 2,
 };
 
+const buttonId = (id, action) => getFieldId(id, action) + "_action";
+
 class ActionButton {
   constructor(form, caption, image, execute, rel, className = "nav-button") {
     this.form = form;
@@ -17,17 +19,16 @@ class ActionButton {
     this.className = className;
   }
 
-  addButton(grid, row, cell) {
+  addButton(grid, row, cell, id) {
     let action = this;
 
-    return createButton(cell, action.caption, action.image, (event) => action.execute(event, grid, row), action.className);
+    return createButton(cell, action.caption, action.image, (event) => action.execute(event, grid, row), action.className, id);
   }
  
   addHeading(grid, headerRow) {
     let action = this;
 
-    let btn = action.addButton(grid, undefined, headerRow);
-    btn.id = getFieldId(grid.tableId, action.caption);
+    let btn = action.addButton(grid, undefined, headerRow, buttonId(grid.tableId, action.caption));
     btn.disabled = false;
     btn.style.visibility = "visible";
   }
@@ -35,8 +36,7 @@ class ActionButton {
   addFormHeading(grid, row, headerRow) {
     let action = this;
 
-    let btn = action.addButton(grid, row, headerRow);
-    btn.id = getFieldId(row.id, action.caption);
+    let btn = action.addButton(grid, row, headerRow, buttonId(grid.tableId, action.caption));
     btn.disabled = false;
     btn.style.visibility = "visible";
   }
@@ -44,14 +44,13 @@ class ActionButton {
   addRowButton(grid, row, cell) {
     let action = this;
 
-    let btn = action.addButton(grid, row, cell);
-    btn.id = getFieldId(row.id, action.caption);
+    let btn = action.addButton(grid, row, cell, buttonId(row.id, action.caption));
     btn.disabled = true;
     btn.style.visibility = "hidden";
   }
 
   bind(row) {
-    let btn = document.getElementById(getFieldId(row.id, this.caption));
+    let btn = document.getElementById(buttonId(row.id, this.caption));
     if (btn) {
       let action = this;
 
@@ -202,7 +201,8 @@ class ButtonColumn extends VirtualColumn {
     this.rowCount = this.actions.length - this.headingCount;
     this.length = Math.max(this.headingCount, this.rowCount) * 2.75;
     this.grid = undefined;
-    this.minWidth = this.length+"rem";
+    this.minWidth = this.length+"em";
+    this.type = "button";
   }
 
   addHeading(grid, headerRow) {
@@ -252,7 +252,7 @@ class ButtonColumn extends VirtualColumn {
     }
   }
 
-  addFormField(row, width) {
+  addFormField(row, unit) {
     let column = this;
 
     return {
@@ -280,6 +280,7 @@ class ChildColumn extends VirtualColumn {
     this.child = child;
     // requirement: div.id for location === entity fieldName
     this.fieldName = child.tableId;
+    this.type = "child";
   }
 
   addHeading(grid, headingRow) {
@@ -311,7 +312,7 @@ class ChildColumn extends VirtualColumn {
     return column.createControl(row);
   }
 
-  addFormField(row, width) {
+  addFormField(row, unit) {
     let column = this;
 
     return column.createControl(row);
@@ -445,16 +446,22 @@ class ItemGrid {
   }
 }
 
-class Form extends ItemGrid {
-  constructor(dataType, tableId, columns, actions, editMode, children) {
-    super(
+const formUrl = (dataType) =>
       location.search.includes("self=")
         ? new URLSearchParams(location.search).get("self")
-        : fetchUrl(dataType),
+        : fetchUrl(dataType);
+
+const formMode = (editMode) =>
+      location.search.includes("self=") ? editMode : EditMode.ADD;
+
+class Form extends ItemGrid {
+  constructor(dataUrl, tableId, columns, actions, editMode, children) {
+    super(
+      dataUrl,
       tableId,
       columns,
       actions,
-      location.search.includes("self=") ? editMode : EditMode.ADD,
+      editMode,
       children,
       "form"
     );
@@ -469,7 +476,7 @@ class Form extends ItemGrid {
 
     let header = createDiv(form, grid.classPrefix + "-thead", grid.tableId + "_thead");
 
-    let headRow = createDiv(header, grid.classPrefix +"-head", grid.tableId + "_head");
+    createDiv(header, grid.classPrefix +"-head", grid.tableId + "_head");
 
     let body = createDiv(form, grid.classPrefix +"-tbody", grid.tableId + "_tbody");
 
@@ -478,7 +485,7 @@ class Form extends ItemGrid {
     let rowEntry = new RowEntry(row, grid.editMode, grid.refresh, grid.classPrefix);
 
     rowEntry.columns = grid.columns
-      .map((column) => column.addFormField(rowEntry))
+      .map((column) => column.addFormField(rowEntry, 1))
       .filter((column) => column);
 
     grid.row = rowEntry;
@@ -489,7 +496,7 @@ class Form extends ItemGrid {
 
     let navRow = createDiv(foot, grid.classPrefix +"-foot", grid.tableId + "_foot");
 
-    let footer = createDiv(navRow, grid.classPrefix +"-footer");
+    let footer = createDiv(navRow, grid.classPrefix + "-footer");
     addText(footer, " ");
   }
 
@@ -513,6 +520,56 @@ class Form extends ItemGrid {
     super.fetch(grid.editMode === EditMode.ADD ? undefined : fetchUrl);
   }
 }
+
+const addableColumn = (column) => (column.editable != Editable.NEVER) && column.type && (column.type != "file" && column.type != "image" && column.type != "pdf");
+
+const popupAddForm = (columns, grid, row) => {
+  let frm = createDiv(undefined, "popup-form");
+
+  let tableId = grid.tableId + "PopUpAdd";
+
+  let addForm = new Form(grid.addUrl, tableId, columns.filter(c => addableColumn(c)), [], EditMode.ADD);
+
+  addForm.draw(frm);
+
+  let head = frm.querySelector("#" + tableId + "_head");
+
+  removeChildren(head);
+  createTextElement("h3", head, "ADD", "form-head");
+
+  let foot = frm.querySelector("#" + tableId + "_foot");
+
+  removeChildren(foot);
+
+  createButton(
+    foot,
+    "Save",
+    "save",
+    () =>
+      postRest(
+        grid.addUrl,
+        addForm.row.entity,
+        (jsonData) => {
+          let newRow = grid.addRow();
+          newRow.bind(jsonData, EditMode.UPDATE);
+          modal.style.display = "none";
+        },
+        (error) => reportError("saveRow", error)
+      )
+  );
+
+  createButton(foot, "Close", "close", () => modal.style.display = "none");
+
+  showModal(frm, false, () => addForm.bind({}, EditMode.ADD));
+}
+
+const popupAddAction = (columns) => 
+  new ActionButton(
+    true,
+    "Add",
+    "add",
+    async (event, grid, row) => popupAddForm(columns, grid, row)
+  );
 
 class Table extends ItemGrid {
   constructor(pageSize, apiUrl, tableId, columns, actions, editMode, children, classPrefix = "table") {
@@ -848,7 +905,7 @@ class ListEditTable extends PagedTable {
         uploadActions([dataType]),
         downloadActions([dataType]),
         searchAction(),
-        addAction(),
+        popupAddAction(columns),
         saveAction(),
         deleteAction()
       ],

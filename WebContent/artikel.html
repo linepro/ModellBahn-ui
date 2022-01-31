@@ -20,15 +20,16 @@
   <script type="text/javascript">
     async function init() {
       await layout(NavMenu.BACK)
-      .then(() => initDropDown(ANDERUNGS_TYP_DROP))
       .then(() => initDropDown(PRODUKT_DROP))
+      .then(() => initDropDown(UNTER_KATEGORIE_DROP))
+      .then(() => initDropDown(DECODER_DROP))
+      .then(() => initDropDown(STATUS_DROP))
       .then(() => initDropDown(WAHRUNG_DROP))
       .then(() => initDropDown(STEUERUNG_DROP))
       .then(() => initDropDown(MOTOR_TYP_DROP))
       .then(() => initDropDown(LICHT_DROP))
       .then(() => initDropDown(KUPPLUNG_DROP))
-      .then(() => initDropDown(DECODER_DROP))
-      .then(() => initDropDown(STATUS_DROP))
+      .then(() => initDropDown(ANDERUNGS_TYP_DROP))
       .then(() => initDropDown(PROTOKOLL_DROP))
       .then(() => initDropDown(KONFIGURATION_DROP))
       .then(() => initDropDown(ADRESS_TYP_DROP))
@@ -109,6 +110,7 @@
           ARTIKEL(Editable.NEVER, true),
           PRODUKT_SELECT(Editable.ADD, true),
           BEZEICHNUNG(Editable.UPDATE, true),
+          UNTER_KATEGORIE_SELECT(Editable.NEVER, false),
           KAUFDATUM(Editable.UPDATE, false),
           WAHRUNG_SELECT(Editable.UPDATE, false),
           PREIS(Editable.UPDATE, false),
@@ -127,14 +129,14 @@
         const artikelActions = [
           new ActionButton(
               true,
-              "produkt",
+              "Produkt",
               "produkt",
               (event, grid, row) => window.location.href = "produkt.html?self=" + actionLink(row.entity, "produkt"),
               "produkt"
             ),
           new ActionButton(
               true,
-              "vorbild",
+              "Vorbild",
               "vorbild",
               (event, grid, row) => window.location.href = "vorbild.html?self=" + actionLink(row.entity, "vorbild"),
               "vorbild"
@@ -148,7 +150,7 @@
           funktionen
         ];
 
-        const artikel = new Form(fetchUrl("artikel"), "artikel", artikelColumns, artikelActions, EditMode.UPDATE, artikelChildren);
+        const artikel = new Form(formUrl("artikel"), "artikel", artikelColumns, artikelActions, formMode(EditMode.UPDATE), artikelChildren);
 
         artikel.init();
       })
@@ -177,17 +179,14 @@
         </div>
         <div class="tabContainer">
           <div id="anderungenTab" class="tabContent">
-            <h3>Anderungen</h3>
             <div id="anderungen">
             </div>
           </div>
           <div id="decoderenTab" class="tabContent">
-            <h3>Decoderen</h3>
             <div id="decoderen">
             </div>
           </div>
           <div id="funktionenTab" class="tabContent">
-            <h3>Funktionen</h3>
             <div id="funktionen">
             </div>
           </div>

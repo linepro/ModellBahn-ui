@@ -17,7 +17,13 @@
     async function init() {
       await layout(NavMenu.REF_DATA)
       .then(() => {
-        const sondermodellen = new NamedItemTable("sondermodell", "sondermodellen");
+        const columns = [
+          NAMEN(Editable.ADD, true),
+          BEZEICHNUNG(Editable.UPDATE, true),
+          ABBILDUNG(Editable.UPDATE, false)
+        ];
+
+        const sondermodellen = new ListEditTable(10, "sondermodell", "sondermodellen", columns, EditMode.UPDATE);
 
         sondermodellen.init();
       })

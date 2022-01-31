@@ -22,10 +22,6 @@
       .then(() => initDropDown(DECODER_DROP))
       .then(() => initDropDown(STATUS_DROP))
       .then(() => {
-        const artikelUnterKategorieGetter = (entity) => {
-          return entity.produkt ? unterKategorieGetter(entity.produkt) : undefined
-        };
-
         const artikelenColumns = [
           ARTIKEL(Editable.NEVER, true),
           PRODUKT_SELECT(Editable.NEVER, false),

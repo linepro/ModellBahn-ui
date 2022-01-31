@@ -82,7 +82,7 @@
           funktionen
         ];
 
-        const decoder = new Form(fetchUrl("decoder"), "decoder", decoderColumns, decoderActions, EditMode.UPDATE, decoderChildren);
+        const decoder = new Form(formUrl("decoder"), "decoder", decoderColumns, decoderActions, formMode(EditMode.UPDATE), decoderChildren);
 
         decoder.init();
       })
@@ -109,16 +109,14 @@
           <button id="funktionenLink" class="tabLinks" onclick="setActiveTab(event, 'funktionenTab')">Funktionen</button>
         </div>
         <div class="tabContainer">
-	      <div id="cvsTab" class="tabContent">
-	        <h3>Cvs</h3>
-	        <div id="cvs">
-	        </div>
-	      </div>
-	      <div id="funktionenTab" class="tabContent">
-	        <h3>Funktionen</h3>
-	        <div id="funktionen">
-	        </div>
-	      </div>
+          <div id="cvsTab" class="tabContent">
+            <div id="cvs">
+            </div>
+          </div>
+          <div id="funktionenTab" class="tabContent">
+            <div id="funktionen">
+            </div>
+          </div>
         </div>
       </div>
     </div>

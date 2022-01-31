@@ -122,7 +122,7 @@
           saveAction()
         ];
 
-        const vorbild = new Form(fetchUrl("vorbild"), "vorbild", vorbildColumns, vorbildActions, EditMode.UPDATE);
+        const vorbild = new Form(formUrl("vorbild"), "vorbild", vorbildColumns, vorbildActions, formMode(EditMode.UPDATE));
 
         vorbild.initialize();
 

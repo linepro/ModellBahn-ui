@@ -52,7 +52,7 @@
           fahrzeugen
         ];
 
-        const zug = new Form("zug", "zug", zugColumns, zugActions, EditMode.UPDATE, zugChildren);
+        const zug = new Form(formUrl("zug"), "zug", zugColumns, zugActions, formMode(EditMode.UPDATE), zugChildren);
 
         zug.init();
       })
