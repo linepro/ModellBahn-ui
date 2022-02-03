@@ -36,15 +36,15 @@
       .then(() => initDropDown(STECKER_DROP))
       .then(() => {
         const anderungenColumns = [
-          new NumberColumn("ANDERUNG", "anderungId", fieldGetter, fieldSetter, Editable.NEVER, true),
-          new DropDownColumn("ANDERUNGS_TYP", "anderungsTyp", fieldGetter, fieldSetter, ANDERUNGS_TYP_DROP, Editable.UPDATE, true),
-          new DateColumn("DATUM", "anderungsDatum", dateGetter, dateSetter, Editable.UPDATE, true),
+          ANDERUNG_ID(Editable.NEVER, true),
+          ANDERUNGS_TYP_SELECT(Editable.UPDATE, true),
+          ANDERUNGS_DATUM(Editable.UPDATE, true),
           BEZEICHNUNG(Editable.UPDATE, true),
           MENGE(Editable.UPDATE, true)
         ];
 
         const anderungActions = [
-          addAction("anderungen"),
+          popupAddAction(anderungenColumns),
           saveAction(),
           deleteAction()
         ];
@@ -69,24 +69,27 @@
         const decoderSelect = new FilterBox(
           "DECODER",
           DECODER_DROP, [
-            checkBoxPanel("gerausch", "GERAUSCH"),
-            checkBoxPanel("motor", "MOTOR"),
-            dropDownPanel("protokoll", "PROTOKOLL", PROTOKOLL_DROP),
-            dropDownPanel("stecker", "STECKER", STECKER_DROP)
+            checkBoxPanel(fieldGetter("gerausch"), "GERAUSCH"),
+            checkBoxPanel(fieldGetter("motor"), "MOTOR"),
+            dropDownPanel(fieldGetter("protokoll"), "PROTOKOLL", PROTOKOLL_DROP),
+            dropDownPanel(fieldGetter("stecker"), "STECKER", STECKER_DROP)
           ], [
-            (e) => !e.artikelId && e.status === 'FREI'
+            (a, d) => d.artikelId == undefined && d.status == "FREI" && a.artikelId != d.artikelId
           ]);
 
         const decoderenActions = [
-          addAction("add", (event, grid, row) => decoderSelect.show(
-                (opt) => postRest(
-                  grid.addUrl,
-                  opt,
-                  (jsonData) => grid.refresh(),
-                  (error) => reportError("addDecoder", error)
-                )
+          addAction("add", (event, grid, row) =>
+            decoderSelect.show(
+              grid, 
+              row,
+              (opt) => postRest(
+                grid.addUrl,
+                opt,
+                (jsonData) => grid.refresh(),
+                (error) => reportError("addDecoder", error)
               )
-            ),
+            )
+          ),
           saveAction("update", (event, grid, row) => grid.refresh()),
           deleteAction("delete", (event, grid, row) => grid.refresh())
         ];
@@ -115,13 +118,13 @@
           WAHRUNG_SELECT(Editable.UPDATE, false),
           PREIS(Editable.UPDATE, false),
           MENGE(Editable.UPDATE, true),
-          new NumberColumn("VERBLEIBENDE", "verbleibende", fieldGetter, fieldSetter, Editable.UPDATE, true),
+          VERBLEIBENDE(Editable.UPDATE, true),
           STEUERUNG_SELECT(Editable.UPDATE, false),
           MOTOR_TYP_SELECT(Editable.UPDATE, false),
           LICHT_SELECT(Editable.UPDATE, false),
           KUPPLUNG_SELECT(Editable.UPDATE, false),
           ANMERKUNG(Editable.UPDATE, false),
-          new TextColumn("BELADUNG", "beladung", fieldGetter, fieldSetter, Editable.UPDATE, false, 30),
+          BELADUNG(Editable.UPDATE, false),
           ABBILDUNG(Editable.UPDATE, false),
           STATUS_SELECT(Editable.UPDATE, true)
         ];

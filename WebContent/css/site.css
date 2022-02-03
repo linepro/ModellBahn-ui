@@ -382,6 +382,18 @@ div.img-button {
   vertical-align: top;
 }
 
+div.modal-content .popup-form {
+  min-width: 50rem;
+}
+
+div.modal-content .form-table {
+  background-color: LightYellow;
+}
+
+div.modal-content .form-thead {
+  height: 3.5rem;
+}
+
 div.popup-field {
   align-items: baseline;
   display: inline-flex;
@@ -414,7 +426,7 @@ div.popup-section {
   min-width: 20rem;
   overflow: hidden;
   padding-top: 0.5rem;
-  width: 100%;
+  width: 98%;
 }
 
 div.thumb-container {
@@ -825,6 +837,11 @@ select optgroup option {
 select option {
   background-color: Ivory;
   text-align: left;
+}
+
+select.popup-control {
+  min-height: 30rem;
+  width: 99%;
 }
 
 small {

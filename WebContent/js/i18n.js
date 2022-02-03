@@ -80,7 +80,7 @@ const loadTranslations = async (language) => {
 };
 
 const toggleLanguage = async () => {
-  setLanguage(getLanguage() === DEFAULT_LANGUAGE ? ALTERNATE_LANGUAGE : DEFAULT_LANGUAGE);
+  setLanguage(getLanguage() == DEFAULT_LANGUAGE ? ALTERNATE_LANGUAGE : DEFAULT_LANGUAGE);
   location.reload();
 };
 

@@ -273,7 +273,7 @@ const addLogo = (home, offset) => {
 
     let logo = createDiv(bar, "logo dropdown");
 
-    let logoImg = createImage(logo, "logo", imageSource("ModellBahn", ".svg"));
+    createImage(logo, "logo", imageSource("ModellBahn", ".svg"));
     
     let menu = createDiv(logo, "dropdown-content");
 
@@ -327,7 +327,7 @@ const addNavBar = (menuStyle) => {
   let nav = document.createElement("nav");
   header.appendChild(nav);
 
-  if (menuStyle === NavMenu.HOME) {
+  if (menuStyle == NavMenu.HOME) {
     let home = createDiv(nav, "home");
 
     createTextElement("h1", home, "MODELLBAHN", "title");
@@ -357,11 +357,11 @@ const addNavBar = (menuStyle) => {
 
     addHomeBack(opts);
 
-    if (menuStyle === NavMenu.INVENTORY) {
+    if (menuStyle == NavMenu.INVENTORY) {
       inventory().filter((li) => document.location.href !== li.firstChild.href)
                  .sort((a, b) => a.innerText.localeCompare(b.innerText))
                  .forEach((li) => opts.appendChild(li));
-    } else if (menuStyle === NavMenu.REF_DATA) {
+    } else if (menuStyle == NavMenu.REF_DATA) {
       refData().filter((li) => document.location.href !== li.firstChild.href)
                .sort((a, b) => a.innerText.localeCompare(b.innerText))
                .forEach((li) => opts.appendChild(li));

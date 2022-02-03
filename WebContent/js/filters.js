@@ -3,10 +3,8 @@
 
 class FilterOption {
   constructor(
-    id,
     option
   ) {
-    this.id = id;
     this.display = option.display;
     this.value = option.value;
     this.chk = undefined;
@@ -20,37 +18,35 @@ class FilterOption {
 
   filter(val) {
     let opt = this;
-    let inc = opt.value === val;
-    console.log({ opt: opt.value, inc: inc, val: val});
-    return inc;
+    return opt.value == val;
   }
 
-  init(updated) {
+  init(opts, updated) {
     let opt = this;
+    let optId = getFieldId(opts.id, opt.value);
 
     let div = createDiv(undefined, "popup-field");
     let lbl = createTextElement("label", div, opt.display,  "popup-label");
-    lbl.htmlFor = opt.id;
+    lbl.htmlFor = optId;
 
-    let chk = createInput("checkbox", div, opt.id, "popup-control");
+    let chk = createInput("checkbox", div, optId, "popup-control");
     chk.addEventListener("change", (event) => updated(event), false);
 
     opt.chk = chk;
+
+    opts.appendChild(div);
 
     return div;
   }
 }
 
-const checkBoxPanel = (fieldName, caption) => new FilterPanel(fieldName, caption, [ new FilterOption(getFieldId(fieldName, caption), { display: caption, value: true })]);
-const dropDownPanel = (fieldName, caption, dropDown) => new FilterPanel(fieldName, caption, dropDown.options.map(o => new FilterOption(getFieldId(fieldName, o.display), o)));
-
 class FilterPanel {
   constructor (
-    fieldName,
+    fieldExtractor,
     caption,
     options
   ) {
-    this.fieldName = fieldName;
+    this.fieldExtractor = fieldExtractor;
     this.caption = caption;
     this.options = options;
     this.displayed = [];
@@ -63,7 +59,7 @@ class FilterPanel {
 
     if (!chk.length) return true;
 
-    let fld = val[pnl.fieldName];
+    let fld = pnl.fieldExtractor(val);
 
     return chk.map(c => c.filter(fld))
               .reduce((p, c) => p || c, false);
@@ -71,21 +67,21 @@ class FilterPanel {
 
   init(row, items, updated) {
     let pnl = this;
-    let fldVals = items.map(i => i.entity[pnl.fieldName])
-                       .filter((v, i, a) => a.indexOf(v) === i);
+    let fldVals = items.map(i => pnl.fieldExtractor(i.entity))
+                       .filter((v, i, a) => a.indexOf(v) == i);
 
     if (fldVals.length > 1) {
       let vals = pnl.options;
 
       if (pnl.options.length > 1) {
         vals = pnl.options
-                  .filter(o => fldVals.find(i => i === o.value));
+                  .filter(o => fldVals.find(i => i == o.value));
 
         if (vals.length <= 1) return;
       }
 
-      let opts = createDiv(row, "popup-filter");
-      vals.forEach(o => opts.appendChild(o.init(updated)));
+      let opts = createDiv(row, "popup-filter", getFieldId(row.id, pnl.caption));
+      vals.forEach(o => o.init(opts, updated));
 
       pnl.displayed = vals;
     }
@@ -93,6 +89,9 @@ class FilterPanel {
     return row;
  }
 }
+
+const checkBoxPanel = (fieldExtractor, caption) => new FilterPanel(fieldExtractor, caption, [ new FilterOption({ display: caption, value: true })]);
+const dropDownPanel = (fieldExtractor, caption, dropDown) => new FilterPanel(fieldExtractor, caption, dropDown.options.map(o => new FilterOption(o)));
 
 class FilterBox {
   constructor(
@@ -110,7 +109,7 @@ class FilterBox {
   entity(val) {
     let box = this;
 
-    return box.dropDown.options.find(o => o.value === val).entity;
+    return box.dropDown.options.find(o => o.value == val).entity;
   }
 
   visible(val) {
@@ -130,44 +129,49 @@ class FilterBox {
          .forEach(o => o.style.display = box.visible(box.entity(o.value)));
   }
 
-  filter(item) {
+  filter(entity, item) {
     let filters = this.filters;
 
     if (!filters || filters.length == 0) return true;
 
-    return filters.reduce((p, c) => p || c(item.entity), false);
+    return filters.reduce((p, c) => p || c(entity, item.entity), false);
   }
 
   selected(list) {
     let box = this;
     let selected = list.selectedIndex;
     
-    if (selected === -1) return;
+    if (selected == -1) return;
 
     return box.entity(list.options[list.selectedIndex].value);
   }
 
-  show(action) {
+  show(grid, row, action) {
     let box = this;
+
+    let entity = grid?.parent?.row?.entity ? grid?.parent?.row?.entity : row?.entity;
 
     let frm = createDiv(undefined, "popup-form");
     createTextElement("h3", frm, box.heading, "popup-heading");
 
     let fil = createDiv(frm, "popup-section");
 
-    let sel = createDiv(frm, "popup-control");
+    let sel = createDiv(frm, "popup-section");
 
     let items = box.dropDown
                    .options
-                   .filter(o => box.filter(o), false);
+                   .filter(o => box.filter(entity, o), false);
 
-    let list = createSelect(sel, "popup-control", 10);
+    let list = createSelect(sel, "popup-control", 10); // force length
     items.forEach(o => list.appendChild(createOption(o.value, o.display, o.tooltip, o.image)));
     list.selectedIndex = -1;
 
     if (box.panels.length) {
       box.panels.forEach(p => p.init(fil, items, () => box.filterList(list)));
     }
+
+    // hide fil if empty
+    if (fil.childElementCount == 0) fil.style.display = "none";
 
     let foot = createDiv(frm, "popup-foot");
 

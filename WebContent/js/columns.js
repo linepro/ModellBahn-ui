@@ -44,10 +44,10 @@ const isEditable = (column) => (column.editable !== Editable.NEVER);
 
 const shouldDisable = (editable, editMode, entity) => {
   if (entity) {
-    return !((editMode === EditMode.ADD && editable !== Editable.NEVER) ||
-             (editMode === EditMode.UPDATE && editable === Editable.UPDATE));
+    return !((editMode == EditMode.ADD && editable !== Editable.NEVER) ||
+             (editMode == EditMode.UPDATE && editable == Editable.UPDATE));
   } else {
-    return editable === Editable.NEVER || editMode !== EditMode.ADD;
+    return editable == Editable.NEVER || editMode !== EditMode.ADD;
   }
 };
 
@@ -185,7 +185,7 @@ class Column extends VirtualColumn {
 
     let ctl = createInput("text", undefined, className, getFieldId(row.id, column.fieldName));
     ctl = column.initialise(ctl);
-    ctl.readOnly = column.editable === Editable.NEVER || row.editMode === EditMode.VIEW;
+    ctl.readOnly = column.editable == Editable.NEVER || row.editMode == EditMode.VIEW;
     ctl.required = column.required;
     ctl.addEventListener("change", (event) => column.updateEntity(event, row), false);
     ctl.disabled = true;
@@ -239,10 +239,10 @@ class Column extends VirtualColumn {
 
     let ctl = document.getElementById(getFieldId(row.id, column.fieldName));
     if (ctl) {
-      let value = column.fieldGetter(row.entity, column.fieldName);
-      if (row.editMode === EditMode.ADD && !value) {
+      let value = column.fieldGetter(row.entity);
+      if (row.editMode == EditMode.ADD && !value) {
           // apply the default to a new row
-          column.fieldSetter(row.entity, column.getControlValue(ctl), column.fieldName);
+          column.fieldSetter(row.entity, column.getControlValue(ctl));
       }
       column.setControlValue(ctl, value);
       ctl.disabled = shouldDisable(column.editable, row.editMode, row.entity);
@@ -599,11 +599,11 @@ class DateColumn extends PopupColumn {
       datepicker.options.translator.setMonthShortTranslation(TheDatepicker.Month.November, translate("NOV"));
       datepicker.options.translator.setMonthShortTranslation(TheDatepicker.Month.December, translate("DEC"));
 
-      datepicker.options.onOpenAndClose((event, isOpening) => {
+      datepicker.options.onOpenAndClose((e, isOpening) => {
         if (!isOpening) {
           let date = datepicker.getSelectedDate();
           column.setControlValue(dte, date);
-          column.updateEntity(event, row);
+          column.updateEntity(e, row);
           datepicker.destroy();
         }
       });
@@ -637,7 +637,7 @@ class DateColumn extends PopupColumn {
 
     let dte = super.bind(row);
     if (dte) {
-      let value = column.fieldGetter(row.entity, column.fieldName);
+      let value = column.fieldGetter(row.entity);
       dte.defaultValue = dateToLocalString(value);
     }
   }
@@ -763,7 +763,7 @@ class FileColumn extends Column {
   bind(row) {
     let column = this;
 
-    let src = column.fieldGetter(row.entity, column.fieldName);
+    let src = column.fieldGetter(row.entity);
 
     let img = document.getElementById(getFieldId(row.id, column.fieldName));
     if (img) {
@@ -909,7 +909,7 @@ class PdfColumn extends FileColumn {
   showContent(event, row) {
     let column = this;
 
-    let pdf = column.fieldGetter(row.entity, column.fieldName);
+    let pdf = column.fieldGetter(row.entity);
     if (pdf) {
       let viewer = pdfViewer();
 
@@ -940,12 +940,12 @@ class DropDownColumn extends Column {
       fieldSetter,
       editable,
       required,
-      dropDown.length + (editable === Editable.NEVER ? 0 : 3.5)
+      dropDown.length + (editable == Editable.NEVER ? 0 : 3.5)
     );
 
     this.options = dropDown.options;
     this.grouped = dropDown.grouped;
-    this.dropSize = (editable === Editable.NEVER) ? 1 : dropSize;
+    this.dropSize = (editable == Editable.NEVER) ? 1 : dropSize;
     this.type = "dropDown";
   }
 
@@ -954,7 +954,7 @@ class DropDownColumn extends Column {
 
     inp = super.initialise(inp);
 
-    if (column.editable === Editable.NEVER) {
+    if (column.editable == Editable.NEVER) {
       inp.type = "text";
       return inp;
     }
@@ -982,7 +982,7 @@ class DropDownColumn extends Column {
 
   createControl(row, className) {
     let sel = super.createControl(row, className);
-    if (sel.nodeName === "SELECT") {
+    if (sel.nodeName == "SELECT") {
         let column = this;
 
         sel.addEventListener("input", (event) => column.updateEntity(event, row), false);
@@ -991,7 +991,7 @@ class DropDownColumn extends Column {
   }
 
   getControlValue(sel) {
-    if (sel.nodeName === "SELECT") {
+    if (sel.nodeName == "SELECT") {
       return super.getControlValue(sel);
     } else {
       return sel.selectedOptions ? sel.selectedOptions[0].value : "";
@@ -1001,12 +1001,12 @@ class DropDownColumn extends Column {
   setControlValue(sel, value) {
     let column = this;
 
-    if (sel.nodeName === "SELECT") {
+    if (sel.nodeName == "SELECT") {
       let index = column.required ? -1 : 0;
       let options = sel.options;
 
       for (let i = 0; i < options.length; i++) {
-        if (options[i].value === value) {
+        if (options[i].value == value) {
           index = i;
           options[i].selected = true;
         } else {
@@ -1017,7 +1017,7 @@ class DropDownColumn extends Column {
     } else {
       let options = column.options;
       for (let option of options) {
-        if (value === option.value) {
+        if (value == option.value) {
           sel.value = option.display;
           return;
         }
@@ -1064,7 +1064,7 @@ class AutoSelectColumn extends PopupColumn {
       let options = column.options;
 
       for (let option of options) {
-        if (option.value === value) {
+        if (option.value == value) {
           sel.value = option.display;
           sel.dataset["value"] = value;
           sel.dispatchEvent(new Event("input"));
@@ -1107,7 +1107,7 @@ class AutoSelectColumn extends PopupColumn {
             item.dataset["text"] = opt.display;
             item.dataset["value"] = opt.value;
             item.addEventListener("click", (event) => column.selected(event, row, item), false);
-            if (opt.value === item.dataset["value"]) {
+            if (opt.value == item.dataset["value"]) {
                item.classList.add("selected");
             } else {
                item.classList.remove("selected");
@@ -1264,7 +1264,7 @@ class ImageSelectColumn extends PopupColumn {
       let options = column.options;
 
       for (let option of options) {
-        if (option.value === value) {
+        if (option.value == value) {
           column.updateImage(img, option);
           return;
         }
@@ -1286,7 +1286,7 @@ class ImageSelectColumn extends PopupColumn {
       column.fieldSetter(row.entity, option.dataset["value"], column.fieldName);
     }
 
-    document.removeEventListener("keydown", (event) => column.input(event, row, list), false);
+    document.removeEventListener("keydown", (e) => column.input(e, row, list), false);
     closeAutoClose();
   }
 
@@ -1303,7 +1303,7 @@ class ImageSelectColumn extends PopupColumn {
           item.dataset["tool"] = opt.display;
 
           item.addEventListener("click", (event) => column.selected(event, row, item), false);
-          if (img.dataset["value"] === item.dataset["value"]) {
+          if (img.dataset["value"] == item.dataset["value"]) {
             item.classList.add("selected");
             item.focus();
            } else {
@@ -1351,7 +1351,7 @@ class ImageSelectColumn extends PopupColumn {
 
           case "Escape":
             event.preventDefault();
-            document.removeEventListener("keydown", (event) => column.input(event, row, list), false);
+            document.removeEventListener("keydown", (e) => column.input(e, row, list), false);
             closeAutoClose();
             return;
 
@@ -1376,11 +1376,11 @@ class ImageSelectColumn extends PopupColumn {
 
       let list = createUl(container, "image-select", img.id + "_list");
 
-      document.addEventListener("keydown", (event) => column.input(event, row, list), false);
+      document.addEventListener("keydown", (e) => column.input(e, row, list), false);
 
       addAutoClose(() => {
         img.parentElement.removeChild(container);
-        document.removeEventListener("keydown", (event) => column.input(event, row, list), false);
+        document.removeEventListener("keydown", (e) => column.input(e, row, list), false);
         });
 
       column.addOptions(row, img, list);
@@ -1477,7 +1477,7 @@ class ThumbColumn extends VirtualColumn {
     let img = document.getElementById(getFieldId(row.id, column.fieldName));
 
     if (img) {
-      let src = column.fieldGetter(row.entity, column.fieldName);
+      let src = column.fieldGetter(row.entity);
       img.src = src ? src : "";
     }
 

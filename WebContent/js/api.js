@@ -44,7 +44,7 @@ const getContent = async (response) => {
 const checkResponse = async (response) => {
   if (response.redirected) {
     window.location.href = response.redirect();
-  } else if (response.ok || response.status === 404) {
+  } else if (response.ok || response.status == 404) {
     return getContent(response);
   } else {
     let payload = await getContent(response);
@@ -64,7 +64,7 @@ const doneCursor = (cursor) => {
   document.activeElement.style.cursor = cursor;
 };
 
-const headers = (contentType, accept = "application/json, application/hal+json", contentEncoding) => {
+const headers = (contentType, accept = "application/json, application/hal+json", contentEncoding = undefined) => {
   let httpHeaders = {
     "Accept": accept,
     "Accept-Encoding": "gzip, deflate, br",
@@ -126,7 +126,7 @@ const putRest = async (endPoint, data, success, failure) => {
 
 const setRest = async (endPoint, fieldName, value, success, failure) => {
   let cursor = waitCursor();
-  await fetch(endPoint + "?" + fieldName + "=" + value, {
+  await fetch(endPoint + (fieldName ? "?" + fieldName + "=" + value : ""), {
     method: "PUT",
     headers: headers()
   })
@@ -160,7 +160,7 @@ const download = async (endPoint, success, failure) => {
   .finally(() => doneCursor(cursor));
 };
 
-const upload = async (endPoint, fieldName, fileData, fileName, success, failure, method = "PUT", encoding) => {
+const upload = async (endPoint, fieldName, fileData, fileName, success, failure, method = "PUT", encoding = undefined) => {
   let cursor = waitCursor();
   let formData = new FormData();
   formData.append(fieldName, fileData, fileName);

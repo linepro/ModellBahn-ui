@@ -97,7 +97,7 @@ const deleteAction = (rel = "delete", completed = undefined) =>
         if (deleteUrl) {
           await deleteRest(
             deleteUrl,
-            () => completed ? completed(event, grid, row) : grid.removeRow(row),
+            (jsonData) => completed ? completed(event, grid, row, jsonData) : grid.removeRow(row),
             (error) => reportError("deleteRow", error)
           );
         } else {
@@ -120,14 +120,14 @@ const saveAction = (rel = "update", completed = undefined) =>
           await putRest(
             updateUrl,
             row.entity,
-            (jsonData) => completed ? completed(event, grid, row) : row.bind(jsonData, row.editMode),
+            (jsonData) => completed ? completed(event, grid, row, jsonData) : row.bind(jsonData, row.editMode),
             (error) => reportError("updateRow", error)
           );
         } else {
           await postRest(
             grid.addUrl,
             row.entity,
-            (jsonData) => completed ? completed(event, grid, row) : row.bind(jsonData, EditMode.UPDATE),
+            (jsonData) => completed ? completed(event, grid, row, jsonData) : row.bind(jsonData, EditMode.UPDATE),
             (error) => reportError("saveRow", error)
           );
         }
@@ -278,7 +278,7 @@ class ChildColumn extends VirtualColumn {
     super();
 
     this.child = child;
-    // requirement: div.id for location === entity fieldName
+    // requirement: div.id for location == entity fieldName
     this.fieldName = child.tableId;
     this.type = "child";
   }
@@ -365,6 +365,10 @@ class ItemGrid {
     this.columns = columns
       .concat(actions ? [new ButtonColumn(actions)] : [])
       .concat(children ? children.map((child) => new ChildColumn(child)) : []);
+    this.children = children;
+    if (this.children) {
+      this.children.forEach((child) => child.parent = this);
+    }
     this.actions = actions;
     this.editMode = editMode;
     this.initialized = false;
@@ -375,9 +379,8 @@ class ItemGrid {
     return createTextElement("h3");
   }
 
-  initialize(parent = undefined) {
+  initialize() {
     let grid = this;
-    grid.parent = parent;
 
     if (!grid.initialized) {
       let h1 = document.getElementById("heading");
@@ -517,7 +520,7 @@ class Form extends ItemGrid {
     let grid = this;
 
     fetchUrl = fetchUrl ? fetchUrl : grid.currentUrl;
-    super.fetch(grid.editMode === EditMode.ADD ? undefined : fetchUrl);
+    super.fetch(grid.editMode == EditMode.ADD ? undefined : fetchUrl);
   }
 }
 
@@ -617,7 +620,7 @@ class Table extends ItemGrid {
   addBody(table) {
     let grid = this;
 
-    let body = createTbody(table, grid.classPrefix + "-tbody", grid.tableId + "_tbody");
+    createTbody(table, grid.classPrefix + "-tbody", grid.tableId + "_tbody");
 
     for (let rowNum = 0; rowNum < grid.pageSize; rowNum++) {
       grid.appendTableRow();
@@ -669,7 +672,7 @@ class Table extends ItemGrid {
     let grid = this;
 
     let free = grid.rows.filter(
-      (row) => !row.entity || row.editMode === EditMode.ADD
+      (row) => !row.entity || row.editMode == EditMode.ADD
     );
 
     return free.length ? free[0] : grid.rows[0];
@@ -760,7 +763,7 @@ class ExpandingTable extends Table {
     let grid = this;
 
     let free = grid.rows.filter(
-      (row) => !row.entity || row.editMode === EditMode.ADD
+      (row) => !row.entity || row.editMode == EditMode.ADD
     );
 
     return free.length ? free[0] : grid.appendTableRow();
@@ -775,11 +778,11 @@ class ExpandingTable extends Table {
 
     for (
       let rowNum = 0;
-      rowNum < Math.max(entities.length, grid.pageSize);
+      rowNum < Math.max(entities.length, grid.rows.length);
       rowNum++
     ) {
       let row =
-        rowNum < grid.pageSize ? grid.rows[rowNum] : grid.appendTableRow();
+        rowNum < grid.rows.length ? grid.rows[rowNum] : grid.appendTableRow();
       let entity =
         entities.length > 0 && rowNum < entities.length
           ? entities[rowNum]

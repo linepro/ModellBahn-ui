@@ -77,8 +77,10 @@ const DECODER_DROP = dropDown(apiUrl("decoder"), optionExtractor, decoderOption)
 const DECODER_STATUS_DROP = dropDown(apiUrl("enums/decoderStatus"), optionExtractor, bezeichnungOption);
 const DECODER_TYP_DROP = dropDown(apiUrl("decoderTyp"), optionExtractor, produktOption);
 const EPOCH_DROP = dropDown(apiUrl("epoch"), optionExtractor, bezeichnungOption);
+const FAHRZEUG_DROP = dropDown(apiUrl("artikel"), optionExtractor, artikelOption);
 const GATTUNG_DROP = dropDown(apiUrl("gattung"), optionExtractor, bezeichnungOption);
 const HERSTELLER_DROP = dropDown(apiUrl("hersteller"), optionExtractor, bezeichnungOption);
+const KATEGORIE_DROP = dropDown(apiUrl("kategorie"), optionExtractor, bezeichnungOption);
 const KONFIGURATION_DROP = dropDown(apiUrl("enums/konfiguration"), optionExtractor, bezeichnungOption);
 const KUPPLUNG_DROP = dropDown(apiUrl("kupplung"), optionExtractor, bezeichnungOption);
 const LAND_DROP = dropDown(apiUrl("enums/land"), optionExtractor, bezeichnungOption);
@@ -98,10 +100,10 @@ const VORBILD_DROP = dropDown(apiUrl("vorbild"), optionExtractor, vorbildOption)
 const WAHRUNG_DROP = dropDown(apiUrl("enums/wahrung"), optionExtractor, bezeichnungOption);
 const ZUG_TYP_DROP = dropDown(apiUrl("zugTyp"), optionExtractor, bezeichnungOption);
 
-const artikelIdGetter = (entity) => entity ? entity.artikelId : undefined;
-const artikelIdSetter = (entity, value) => entity.artikelId = value;
-const decoderIdGetter = (entity) => entity ? entity.decoderId : undefined;
-const decoderIdSetter = (entity, decoderId) => entity.decoderId = decoderId;
+const fieldGetter = (fieldName) => (entity) => entity ? entity[fieldName] : undefined;
+const fieldSetter = (fieldName) => (entity, value) => entity[fieldName] = value;
+const dateGetter = (fieldName) => (entity) => entity && entity[fieldName] ? new Date(Date.parse(entity[fieldName])) : undefined;
+const dateSetter = (fieldName) => (entity, value) => entity[fieldName] = value;
 const produktGetter = (entity) => entity ? entity.hersteller + "/" + entity.bestellNr : undefined;
 const produktSetter = (entity, value) => {
   let parts = value.split("/");
@@ -120,185 +122,109 @@ const unterKategorieSetter = (entity, value) => {
   entity.kategorie = parts[0];
   entity.unterKategorie = parts[1];
 };
-const vorbildGetter = (entity) => entity ? entity.gattung : undefined;
-const vorbildSetter = (entity, value) => entity.gattung = value;
 
-const fieldGetter = (entity, fieldName) => entity ? entity[fieldName] : undefined;
-const fieldSetter = (entity, value, fieldName) => entity[fieldName] = value;
-const dateGetter = (entity, fieldName) => entity && entity[fieldName] ? new Date(Date.parse(entity[fieldName])) : undefined;
-const dateSetter = (entity, value, fieldName) => entity[fieldName] = value;
-const noOpSetter = () => {};
+const ACHSFOLG_SELECT = (editable = Editable.UPDATE, required = false) => new AutoSelectColumn("ACHSFOLG", "achsfolg", fieldGetter("achsfolg"), fieldSetter("achsfolg"), ACHSFOLG_DROP, editable, required);
+const ADRESS_TYP_SELECT = (editable = Editable.UPDATE, required = true) => new DropDownColumn("ADRESS_TYP", "adressTyp", fieldGetter("adressTyp"), fieldSetter("adressTyp"), ADRESS_TYP_DROP, editable, required);
+const ANDERUNGS_TYP_SELECT = (editable = Editable.UPDATE, required = true) => new DropDownColumn("ANDERUNGS_TYP", "anderungsTyp", fieldGetter("anderungsTyp"), fieldSetter("anderungsTyp"), ANDERUNGS_TYP_DROP, editable, required);
+const ANTRIEB_SELECT = (editable, required) => new DropDownColumn("ANTRIEB", "antrieb", fieldGetter("antrieb"), fieldSetter("antrieb"), ANTRIEB_DROP, editable, required);
+const ARTIKEL_SELECT = (editable = Editable.ADD, required = false) => new DropDownColumn("ARTIKEL", "artikel", fieldGetter("artikelId"), fieldSetter("artikelId"), ARTIKEL_DROP, editable, required);
+const AUFBAU_SELECT = (editable = Editable.UPDATE, required = true) => new ImageSelectColumn("AUFBAU", "aufbau", fieldGetter("aufbau"), fieldSetter("aufbau"), editable, required);
+const BAHNVERWALTUNG_SELECT = (editable = Editable.UPDATE, required = false) => new AutoSelectColumn("BAHNVERWALTUNG", "bahnverwaltung", fieldGetter("bahnverwaltung"), fieldSetter("bahnverwaltung"), BAHNVERWALTUNG_DROP, editable, required);
+const DECODER_SELECT = (editable = Editable.ADD, required = false) => new DropDownColumn("DECODER", "decoderId", fieldGetter("decoderId"), fieldSetter("decoderId"), DECODER_DROP, editable, required);
+const DECODER_STATUS_SELECT = (editable, required) => new DropDownColumn("DECODER_STATUS", "status", fieldGetter("status"), fieldSetter("status"), DECODER_STATUS_DROP, editable, required);
+const DECODER_TYP_SELECT = (editable = Editable.UPDATE, required = true) => new DropDownColumn("DECODER_TYP", "decoderTyp", produktGetter, produktSetter, DECODER_TYP_DROP, editable, required);
+const FAHRZEUG_SELECT = (editable, required) => new DropDownColumn("ARTIKEL", "artikel", fieldGetter("artikelId"), fieldSetter("artikelId"), FAHRZEUG_DROP, editable, required);
+const GATTUNG_SELECT = (editable = Editable.UPDATE, required = true) => new AutoSelectColumn("GATTUNG", "gattung", fieldGetter("gattung"), fieldSetter("gattung"), GATTUNG_DROP, editable, required);
+const HERSTELLER_SELECT = (editable = Editable.UPDATE, required = true) => new AutoSelectColumn("HERSTELLER", "hersteller", fieldGetter("hersteller"), fieldSetter("hersteller"), HERSTELLER_DROP, editable, required);
+const KONFIGURATION_SELECT = (editable = Editable.UPDATE, required = true) => new DropDownColumn("KONFIGURATION", "konfiguration", fieldGetter("konfiguration"), fieldSetter("konfiguration"), KONFIGURATION_DROP, editable, required);
+const KUPPLUNG_SELECT = (editable = Editable.UPDATE, required = false) => new ImageSelectColumn("KUPPLUNG", "kupplung", fieldGetter("kupplung"), fieldSetter("kupplung"), KUPPLUNG_DROP, editable, required);
+const LAND_SELECT = (editable = Editable.UPDATE, required = false) => new AutoSelectColumn("LAND", "land", fieldGetter("land"), fieldSetter("land"), LAND_DROP, editable, required);
+const LEISTUNGSUBERTRAGUNG_SELECT = (editable, required) => new DropDownColumn("LEISTUNGSUBERTRAGUNG", "leistungsubertragung", fieldGetter("leistungsubertragung"), fieldSetter("leistungsubertragung"), LEISTUNGSUBERTRAGUNG_DROP, editable, required);
+const LICHT_SELECT = (editable = Editable.UPDATE, required = false) => new ImageSelectColumn("LICHT", "licht", fieldGetter("licht"), fieldSetter("licht"), LICHT_DROP, editable, required);
+const MASSSTAB_SELECT = (editable = Editable.UPDATE, required = true) => new DropDownColumn("MASSSTAB", "massstab", fieldGetter("massstab"), fieldSetter("massstab"), MASSSTAB_DROP, editable, required);
+const MOTOR_TYP_SELECT = (editable = Editable.UPDATE, required = false) => new ImageSelectColumn("MOTOR_TYP", "motorTyp", fieldGetter("motorTyp"), fieldSetter("motorTyp"), MOTOR_TYP_DROP, editable, required);
+const PRODUKT_SELECT = (editable = Editable.UPDATE, required = true) => new AutoSelectColumn("PRODUKT", "produkt", produktGetter, produktSetter, PRODUKT_DROP, editable, required);
+const PROTOKOLL_SELECT = (editable = Editable.UPDATE, required = false) => new ImageSelectColumn("PROTOKOLL", "protokoll", fieldGetter("protokoll"), fieldSetter("protokoll"), PROTOKOLL_DROP, editable, required);
+const SONDERMODELL_SELECT  = (editable = Editable.UPDATE, required = true) =>  new DropDownColumn("SONDERMODELL", "sondermodell", fieldGetter("sondermodell"), fieldSetter("sondermodell"), SONDERMODELL_DROP, editable, required);
+const SPURWEITE_SELECT = (editable = Editable.UPDATE, required = true) => new DropDownColumn("SPURWEITE", "spurweite", fieldGetter("spurweite"), fieldSetter("spurweite"), SPURWEITE_DROP, editable, required);
+const STATUS_SELECT = (editable = Editable.UPDATE, required = true) => new DropDownColumn("STATUS", "status", fieldGetter("status"), fieldSetter("status"), STATUS_DROP, editable, required);
+const STECKER_SELECT = (editable = Editable.UPDATE, required = true) => new DropDownColumn("STECKER", "stecker", fieldGetter("stecker"), fieldSetter("stecker"), STECKER_DROP, editable, required);
+const STEUERUNG_SELECT = (editable = Editable.UPDATE, required = false) => new ImageSelectColumn("STEUERUNG", "steuerung", fieldGetter("steuerung"), fieldSetter("steuerung"), STEUERUNG_DROP, editable, required);
+const TEIL_SELECT = (editable = Editable.ADD, required = true) => new DropDownColumn("TEIL", "teil", fieldGetter("teil"), fieldSetter("teil"), PRODUKT_DROP, editable, required);
+const UNTER_KATEGORIE_SELECT = (editable = Editable.UPDATE, required = true) => new DropDownColumn("KATEGORIE", "unterKategorie", unterKategorieGetter, unterKategorieSetter, UNTER_KATEGORIE_DROP, editable, required);
+const VORBILD_SELECT = (editable = Editable.UPDATE, required = true) => new DropDownColumn("VORBILD", "vorbild", fieldGetter("vorbild"), fieldSetter("vorbild"), VORBILD_DROP, editable, required);
+const WAHRUNG_SELECT = (editable = Editable.UPDATE, required = false) => new AutoSelectColumn("WAHRUNG", "wahrung", fieldGetter("wahrung"), fieldSetter("wahrung"), WAHRUNG_DROP, editable, required);
+const ZUG_TYP_SELECT = (editable = Editable.UPDATE, required = true) => new DropDownColumn("ZUG_TYP", "zugTyp", fieldGetter("zugTyp"), fieldSetter("zugTyp"), ZUG_TYP_DROP, editable, required);
+const EPOCH_SELECT = (editable = Editable.UPDATE, required = true) => new ImageSelectColumn("EPOCH", "epoch", fieldGetter("epoch"), fieldSetter("epoch"), EPOCH_DROP, editable, required);
 
-const ACHSFOLG_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new AutoSelectColumn("ACHSFOLG", "achsfolg", getter, setter, ACHSFOLG_DROP, editable, required);
-
-const ADRESS_TYP_SELECT = (editable = Editable.UPDATE, required = true, getter = fieldGetter, setter = fieldSetter) =>
-  new DropDownColumn("ADRESS_TYP", "adressTyp", getter, setter, ADRESS_TYP_DROP, editable, required);
-
-const ARTIKEL_SELECT = (editable, required, getter = artikelIdGetter, setter = artikelIdSetter) =>
-  new DropDownColumn("ARTIKEL", "artikel", getter, setter, ARTIKEL_DROP, editable, required);
-
-const BAHNVERWALTUNG_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new AutoSelectColumn("BAHNVERWALTUNG", "bahnverwaltung", getter, setter, BAHNVERWALTUNG_DROP, editable, required);
-
-const DECODER_SELECT = (editable = Editable.UPDATE, required = false, getter = decoderIdGetter, setter = decoderIdSetter) =>
-  new DropDownColumn("DECODER", "decoderId", getter, setter, DECODER_DROP, editable, required);
-
-const DECODER_STATUS_SELECT = (editable, required, getter = fieldGetter, setter = fieldSetter) =>
-  new DropDownColumn("DECODER_STATUS", "status", getter, setter, DECODER_STATUS_DROP, editable, required);
-
-const DECODER_TYP_SELECT = (editable = Editable.UPDATE, required = true, getter = produktGetter, setter = produktSetter) =>
-  new DropDownColumn("DECODER_TYP", "decoderTyp", getter, setter, DECODER_TYP_DROP, editable, required);
-
-const GATTUNG_SELECT = (editable = Editable.UPDATE, required = true, getter = fieldGetter, setter = fieldSetter) =>
-  new AutoSelectColumn("GATTUNG", "gattung", getter, setter, GATTUNG_DROP, editable, required);
-
-const HERSTELLER_SELECT = (editable = Editable.UPDATE, required = true, getter = fieldGetter, setter = fieldSetter) =>
-  new AutoSelectColumn("HERSTELLER", "hersteller", getter, setter, HERSTELLER_DROP, editable, required);
-
-const KONFIGURATION_SELECT = (editable = Editable.UPDATE, required = true, getter = fieldGetter, setter = fieldSetter) =>
-  new DropDownColumn("KONFIGURATION", "konfiguration", getter, setter, KONFIGURATION_DROP, editable, required);
-
-const KUPPLUNG_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new ImageSelectColumn("KUPPLUNG", "kupplung", getter, setter, KUPPLUNG_DROP, editable, required);
-
-const LAND_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new AutoSelectColumn("LAND", "land", getter, setter, LAND_DROP, editable, required);
-
-const LICHT_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new ImageSelectColumn("LICHT", "licht", getter, setter, LICHT_DROP, editable, required);
-
-const MASSSTAB_SELECT = (editable = Editable.UPDATE, required = true, getter = fieldGetter, setter = fieldSetter) =>
-  new DropDownColumn("MASSSTAB", "massstab", getter, setter, MASSSTAB_DROP, editable, required);
-
-const MOTOR_TYP_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new ImageSelectColumn("MOTOR_TYP", "motorTyp", getter, setter, MOTOR_TYP_DROP, editable, required);
-
-const PRODUKT_SELECT = (editable = Editable.UPDATE, required = true, getter = produktGetter, setter = produktSetter) =>
-  new AutoSelectColumn("PRODUKT", "produkt", getter, setter, PRODUKT_DROP, editable, required);
-
-const PROTOKOLL_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new ImageSelectColumn("PROTOKOLL", "protokoll", getter, setter, PROTOKOLL_DROP, editable, required);
-
-const SPURWEITE_SELECT = (editable = Editable.UPDATE, required = true, getter = fieldGetter, setter = fieldSetter) =>
-  new DropDownColumn("SPURWEITE", "spurweite", getter, setter, SPURWEITE_DROP, editable, required);
-
-const STATUS_SELECT = (editable = Editable.UPDATE, required = true, getter = fieldGetter, setter = fieldSetter) =>
-  new DropDownColumn("STATUS", "status", getter, setter, STATUS_DROP, editable, required);
-
-const STECKER_SELECT = (editable = Editable.UPDATE, required = true, getter = fieldGetter, setter = fieldSetter) =>
-  new DropDownColumn("STECKER", "stecker", getter, setter, STECKER_DROP, editable, required);
-
-const STEUERUNG_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new ImageSelectColumn("STEUERUNG", "steuerung", getter, setter, STEUERUNG_DROP, editable, required);
-
-const UNTER_KATEGORIE_SELECT = (editable = Editable.UPDATE, required = true, getter = unterKategorieGetter, setter = unterKategorieSetter) =>
-  new DropDownColumn("KATEGORIE", "unterKategorie", getter, setter, UNTER_KATEGORIE_DROP, editable, required);
-
-const WAHRUNG_SELECT = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new AutoSelectColumn("WAHRUNG", "wahrung", getter, setter, WAHRUNG_DROP, editable, required);
-
-const ZUG_TYP_SELECT = (editable = Editable.UPDATE, required = true, getter = fieldGetter, setter = fieldSetter) =>
-  new DropDownColumn("ZUG_TYP", "zugTyp", getter, setter, ZUG_TYP_DROP, editable, required);
-
-const ABBILDUNG = (editable = Editable.UPDATE, required = false, getter = fieldGetter) =>
-  new ImageColumn("ABBILDUNG", "abbildung", getter, editable, required);
-
-const ADRESS = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new NumberColumn("ADRESS", "adress", getter, setter, editable, required, 65535, 1);
-
-const ANLEITUNGEN = (editable = Editable.UPDATE, required = false, getter = fieldGetter) =>
-  new PdfColumn("ANLEITUNGEN", "anleitungen", getter, editable, required);
-
-const ANMERKUNG = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new TextColumn("ANMERKUNG", "anmerkung", getter, setter, editable, required, 30);
-
-const ARTIKEL = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new TextColumn("ARTIKEL", "artikelId", getter, setter, editable, required, 5, "^[A-Z0-9]+$");
-
-const AUSSERDIENST = (editable = Editable.UPDATE, required = false, getter = dateGetter, setter = dateSetter) =>
-  new DateColumn("AUSSERDIENST", "ausserdienst", getter, setter, editable, required);
-
-const BAUZEIT = (editable = Editable.UPDATE, required = false, getter = dateGetter, setter = dateSetter) =>
-  new DateColumn("BAUZEIT", "bauzeit", getter, setter, editable, required);
-
-const BESTELL_NR = (editable = Editable.ADD, required = true, getter = fieldGetter, setter = fieldSetter) =>
-  new TextColumn("BESTELL_NR", "bestellNr", getter, setter, editable, required, 10);
-
-const BETREIBSNUMMER = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new TextColumn("BETREIBSNUMMER", "betreibsnummer", getter, setter, editable, required, 30);
-
-const BEZEICHNUNG = (editable = Editable.UPDATE, required = true, getter = fieldGetter, setter = fieldSetter) =>
-  new TextColumn("BEZEICHNUNG", "bezeichnung", getter, setter, editable, required, 50);
-
-const CV = (editable = Editable.ADD, required = true, getter = fieldGetter, setter = fieldSetter) =>
-  new NumberColumn("CV", "cv", getter, setter, editable, required, 127, 1);
-
-const DECODER = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new TextColumn("DECODER", "decoderId", getter, setter, editable, required, 5, "^[A-Z0-9]+$");
-
-const END_YEAR = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new NumberColumn("END_YEAR", "endYear", getter, setter, editable, required, 2100, 1800, 0, false);
-
-const EXPLOSIONSZEICHNUNG = (editable = Editable.UPDATE, required = false, getter = fieldGetter) =>
-  new PdfColumn("EXPLOSIONSZEICHNUNG", "explosionszeichnung", getter, editable, required);
-
-const FAHRSTUFE = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new NumberColumn("FAHRSTUFE", "fahrstufe", getter, setter, editable, required, 127, 1);
-
-const FUNKTION = (editable = Editable.ADD, required = true, getter = fieldGetter, setter = fieldSetter) =>
-  new TextColumn("FUNKTION", "funktion", getter, setter, editable, required, 3, "^F([12]d|3[012]|d)$|^K(1[012345]|d)$|^S[0123456]$");
-
-const GERAUSCH = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new BoolColumn("GERAUSCH", "gerausch", getter, setter, editable, required);
-
-const HERSTELLER = (editable = Editable.ADD, required = true, getter = fieldGetter, setter = fieldSetter) =>
-  new TextColumn("HERSTELLER", "hersteller", getter, setter, editable, required, 3);
-
-const I_MAX = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new NumberColumn("I_MAX", "iMax", getter, setter, editable, required, 5000, 1);
-
-const KAUFDATUM = (editable = Editable.UPDATE, required = false, getter = dateGetter, setter = dateSetter) =>
-  new DateColumn("KAUFDATUM", "kaufdatum", getter, setter, editable, required);
-
-const LANGE = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new NumberColumn("LANGE", "lange", getter, setter, editable, required, 100, 0, 2, true);
-
-const MAXIMAL = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new NumberColumn("MAXIMAL", "maximal", getter, setter, editable, required, 255, 0);
-
-const MENGE = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new NumberColumn("MENGE", "menge", getter, setter, editable, required, 100000, 1);
-
-const MINIMAL = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new NumberColumn("MINIMAL", "minimal", getter, setter, editable, required, 255, 0);
-
-const NAMEN = (editable = Editable.ADD, required = true, getter = fieldGetter, setter = fieldSetter) =>
-  new TextColumn("NAMEN", "name", getter, setter, editable, required, 30, "^[A-Z0-9.-]+$");
-
-const POSITION = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new NumberColumn("POSITION", "position", getter, setter, editable, required, 30, 0);
-
-const PREIS = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new NumberColumn("PREIS", "preis", getter, setter, editable, required, 9000, 0, 2);
-
-const PROGRAMMABLE = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new BoolColumn("PROGRAMMABLE", "programmable", getter, setter, editable, required);
-
-const SPAN = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new NumberColumn("SPAN", "span", getter, setter, editable, required, 16, 1);
-
-const START_YEAR = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new NumberColumn("START_YEAR", "startYear", getter, setter, editable, required, 2100, 1800, 0, false);
-
-const URL = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new UrlColumn("URL", "url", getter, setter, editable, required);
-
-const WERKSEINSTELLUNG = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new NumberColumn("WERKSEINSTELLUNG", "werkseinstellung", getter, setter, editable, required, 65535, 1);
-
-const ZUG = (editable = Editable.UPDATE, required = false, getter = fieldGetter, setter = fieldSetter) =>
-  new TextColumn("ZUG", "zug", getter, setter, editable, required, 30);
+const ABBILDUNG = (editable = Editable.UPDATE, required = false) => new ImageColumn("ABBILDUNG", "abbildung", fieldGetter("abbildung"), editable, required);
+const ADRESS = (editable = Editable.UPDATE, required = false) => new NumberColumn("ADRESS", "adress", fieldGetter("adress"), fieldSetter("adress"), editable, required, 65535, 1);
+const ANDERUNGS_DATUM = (editable = Editable.UPDATE, required = true) => new DateColumn("DATUM", "anderungsDatum", dateGetter("anderungsDatum"), dateSetter("anderungsDatum"), editable, required);
+const ANDERUNG_ID = (editable = Editable.UPDATE, required = false) => new NumberColumn("ANDERUNG", "anderungId", fieldGetter("anderungId"), fieldSetter("anderungId"), editable, required);
+const ANFAHRZUGKRAFT = (editable, required) => new NumberColumn("ANFAHRZUGKRAFT", "anfahrzugkraft", fieldGetter("anfahrzugkraft"), fieldSetter("anfahrzugkraft"), editable, required, 300000, 0);
+const ANLEITUNGEN = (editable = Editable.UPDATE, required = false) => new PdfColumn("ANLEITUNGEN", "anleitungen", fieldGetter("anleitungen"), editable, required);
+const ANMERKUNG = (editable = Editable.UPDATE, required = false) => new TextColumn("ANMERKUNG", "anmerkung", fieldGetter("anmerkung"), fieldSetter("anmerkung"), editable, required, 30);
+const ARTIKEL = (editable = Editable.UPDATE, required = false) => new TextColumn("ARTIKEL", "artikelId", fieldGetter("artikelId"), fieldSetter("artikelId"), editable, required, 5, "^[A-Z0-9]+$");
+const AUFBAU = (editable, required) => new TextColumn("AUFBAU", "aufbau", fieldGetter("aufbau"), fieldSetter("aufbau"), editable, required, 50);
+const AUSSERDIENST = (editable = Editable.UPDATE, required = false) => new DateColumn("AUSSERDIENST", "ausserdienst", dateSetter("ausserdienst"), dateSetter("ausserdienst"), editable, required);
+const BAUZEIT = (editable = Editable.UPDATE, required = false) => new DateColumn("BAUZEIT", "bauzeit", dateGetter("bauzeit"), dateSetter("bauzeit"), editable, required);
+const BELADUNG = (editable = Editable.UPDATE, required = true) => new TextColumn("BELADUNG", "beladung", fieldGetter("beladung"), fieldSetter("beladung"), editable, required, 30);
+const BESTELL_NR = (editable = Editable.ADD, required = true) => new TextColumn("BESTELL_NR", "bestellNr", fieldGetter("bestellNr"), fieldSetter("bestellNr"), editable, required, 10);
+const BETREIBSNUMMER = (editable = Editable.UPDATE, required = false) => new TextColumn("BETREIBSNUMMER", "betreibsnummer", fieldGetter("betreibsnummer"), fieldSetter("betreibsnummer"), editable, required, 30);
+const BEZEICHNUNG = (editable = Editable.UPDATE, required = true) => new TextColumn("BEZEICHNUNG", "bezeichnung", fieldGetter("bezeichnung"), fieldSetter("bezeichnung"), editable, required, 50);
+const CV = (editable = Editable.ADD, required = true) => new NumberColumn("CV", "cv", fieldGetter("cv"), fieldSetter("cv"), editable, required, 127, 1);
+const DECODER = (editable = Editable.UPDATE, required = false) => new TextColumn("DECODER", "decoderId", fieldGetter("decoderId"), fieldSetter("decoderId"), editable, required, 5, "^[A-Z0-9]+$");
+const DIENSTGEWICHT = (editable, required) => new NumberColumn("DIENSTGEWICHT", "dienstgewicht", fieldGetter("dienstgewicht"), fieldSetter("dienstgewicht"), editable, required, 1000, 0);
+const DM_LAUFRAD_HINTEN = (editable, required) => new NumberColumn("DM_LAUFRAD_HINTEN", "dmLaufradHinten", fieldGetter("dmLaufradHinten"), fieldSetter("dmLaufradHinten"), editable, required, 4000, 0);
+const DM_LAUFRAD_VORN = (editable, required) => new NumberColumn("DM_LAUFRAD_VORN", "dmLaufradVorn", fieldGetter("dmLaufradVorn"), fieldSetter("dmLaufradVorn"), editable, required, 4000, 0);
+const DM_TREIBRAD = (editable, required) => new NumberColumn("DM_TREIBRAD", "dmTreibrad", fieldGetter("dmTreibrad"), fieldSetter("dmTreibrad"), editable, required, 4000, 0);
+const DM_ZYLINDER = (editable, required) => new NumberColumn("DM_ZYLINDER", "dmZylinder", fieldGetter("dmZylinder"), fieldSetter("dmZylinder"), editable, required, 3000, 0);
+const DREHGESTELLBAUART = (editable, required) => new TextColumn("DREHGESTELLBAUART", "drehgestellBauart", fieldGetter("drehgestellBauart"), fieldSetter("drehgestellBauart"), editable, required, 30);
+const END_YEAR = (editable = Editable.UPDATE, required = false) => new NumberColumn("END_YEAR", "endYear", fieldGetter("endYear"), fieldSetter("endYear"), editable, required, 2100, 1800, 0, false);
+const EXPLOSIONSZEICHNUNG = (editable = Editable.UPDATE, required = false) => new PdfColumn("EXPLOSIONSZEICHNUNG", "explosionszeichnung", fieldGetter("explosionszeichnung"), editable, required);
+const FAHRMOTOREN = (editable, required) => new NumberColumn("FAHRMOTOREN", "fahrmotoren", fieldGetter("fahrmotoren"), fieldSetter("fahrmotoren"), editable, required, 5, 0);
+const FAHRSTUFE = (editable = Editable.UPDATE, required = false) => new NumberColumn("FAHRSTUFE", "fahrstufe", fieldGetter("fahrstufe"), fieldSetter("fahrstufe"), editable, required, 127, 1);
+const FUNKTION = (editable = Editable.ADD, required = true) => new TextColumn("FUNKTION", "funktion", fieldGetter("funktion"), fieldSetter("funktion"), editable, required, 3, "^F([12]d|3[012]|d)$|^K(1[012345]|d)$|^S[0123456]$");
+const GERAUSCH = (editable = Editable.UPDATE, required = false) => new BoolColumn("GERAUSCH", "gerausch", fieldGetter("gerausch"), fieldSetter("gerausch"), editable, required);
+const GESCHWINDIGKEIT = (editable, required) => new NumberColumn("GESCHWINDIGKEIT", "geschwindigkeit", fieldGetter("geschwindigkeit"), fieldSetter("geschwindigkeit"), editable, required, 300, 0);
+const HERSTELLER = (editable = Editable.ADD, required = true) => new TextColumn("HERSTELLER", "hersteller", fieldGetter("hersteller"), fieldSetter("hersteller"), editable, required, 3);
+const I_MAX = (editable = Editable.UPDATE, required = false) => new NumberColumn("I_MAX", "iMax", fieldGetter("iMax"), fieldSetter("iMax"), editable, required, 5000, 1);
+const KAPAZITAT = (editable, required) => new NumberColumn("KAPAZITAT", "kapazitat", fieldGetter("kapazitat"), fieldSetter("kapazitat"), editable, required, 3000, 0, 2);
+const KAUFDATUM = (editable = Editable.UPDATE, required = false) => new DateColumn("KAUFDATUM", "kaufdatum", dateGetter("kaufdatum"), dateGetter("kaufdatum"), editable, required);
+const KESSELUBERDRUCK = (editable, required) => new NumberColumn("KESSELUBERDRUCK", "kesseluberdruck", fieldGetter("kesseluberdruck"), fieldSetter("kesseluberdruck"), editable, required, 100, 0, 2);
+const KLASSE = (editable, required) => new NumberColumn("KLASSE", "klasse", fieldGetter("klasse"), fieldSetter("klasse"), editable, required, 4, 0);
+const KOLBENHUB = (editable, required) => new NumberColumn("KOLBENHUB", "kolbenhub", fieldGetter("kolbenhub"), fieldSetter("kolbenhub"), editable, required, 3000, 0);
+const LANGE = (editable = Editable.UPDATE, required = false) => new NumberColumn("LANGE", "lange", fieldGetter("lange"), fieldSetter("lange"), editable, required, 100, 0, 2, true);
+const LEISTUNG = (editable, required) => new NumberColumn("LEISTUNG", "leistung", fieldGetter("leistung"), fieldSetter("leistung"), editable, required, 100000, 0);
+const MAXIMAL = (editable = Editable.UPDATE, required = false) => new NumberColumn("MAXIMAL", "maximal", fieldGetter("maximal"), fieldSetter("maximal"), editable, required, 255, 0);
+const MENGE = (editable = Editable.UPDATE, required = false) => new NumberColumn("MENGE", "menge", fieldGetter("menge"), fieldSetter("menge"), editable, required, 100000, 1);
+const MINIMAL = (editable = Editable.UPDATE, required = false) => new NumberColumn("MINIMAL", "minimal", fieldGetter("minimal"), fieldSetter("minimal"), editable, required, 255, 0);
+const MITTELWAGEN = (editable, required) => new NumberColumn("MITTELWAGEN", "mittelwagen", fieldGetter("mittelwagen"), fieldSetter("mittelwagen"), editable, required, 30, 0);
+const MOTORBAUART = (editable, required) => new TextColumn("MOTORBAUART", "motorbauart", fieldGetter("motorbauart"), fieldSetter("motorbauart"), editable, required, 30);
+const NAMEN = (editable = Editable.ADD, required = true) => new TextColumn("NAMEN", "name", fieldGetter("name"), fieldSetter("name"), editable, required, 30, "^[A-Z0-9.-]+$");
+const POSITION = (editable = Editable.UPDATE, required = false) => new NumberColumn("POSITION", "position", fieldGetter("position"), fieldSetter("position"), editable, required, 30, 0);
+const PREIS = (editable = Editable.UPDATE, required = false) => new NumberColumn("PREIS", "preis", fieldGetter("preis"), fieldSetter("preis"), editable, required, 9000, 0, 2);
+const PROGRAMMABLE = (editable = Editable.UPDATE, required = false) => new BoolColumn("PROGRAMMABLE", "programmable", fieldGetter("programmable"), fieldSetter("programmable"), editable, required);
+const REICHWEITE = (editable, required) => new NumberColumn("REICHWEITE", "reichweite", fieldGetter("reichweite"), fieldSetter("reichweite"), editable, required, 3000, 0);
+const ROSTFLACHE = (editable, required) => new NumberColumn("ROSTFLACHE", "rostflache", fieldGetter("rostflache"), fieldSetter("rostflache"), editable, required, 3000, 0, 2);
+const SITZPLATZE_KL1 = (editable, required) => new NumberColumn("SITZPLATZE_KL1", "sitzplatzeKL1", fieldGetter("sitzplatzeKL1"), fieldSetter("sitzplatzeKL1"), editable, required, 300, 0);
+const SITZPLATZE_KL2 = (editable, required) => new NumberColumn("SITZPLATZE_KL2", "sitzplatzeKL2", fieldGetter("sitzplatzeKL2"), fieldSetter("sitzplatzeKL2"), editable, required, 300, 0);
+const SITZPLATZE_KL3 = (editable, required) => new NumberColumn("SITZPLATZE_KL3", "sitzplatzeKL3", fieldGetter("sitzplatzeKL3"), fieldSetter("sitzplatzeKL3"), editable, required, 300, 0);
+const SITZPLATZE_KL4 = (editable, required) => new NumberColumn("SITZPLATZE_KL4", "sitzplatzeKL4", fieldGetter("sitzplatzeKL4"), fieldSetter("sitzplatzeKL4"), editable, required, 300, 0);
+const SPAN = (editable = Editable.UPDATE, required = false) => new NumberColumn("SPAN", "span", fieldGetter("span"), fieldSetter("span"), editable, required, 16, 1);
+const START_YEAR = (editable = Editable.UPDATE, required = false) => new NumberColumn("START_YEAR", "startYear", fieldGetter("startYear"), fieldSetter("startYear"), editable, required, 2100, 1800, 0, false);
+const TELEFON = (editable = Editable.UPDATE, required = false) => new PhoneColumn("TELEFON", "telefon", fieldGetter("telefon"), fieldSetter("telefon"), editable, required);
+const THUMBNAIL = () => new ThumbColumn("abbildung", "abbildung", fieldGetter("abbildung"));
+const TRIEBKOPFE = (editable, required) => new NumberColumn("TRIEBKOPFE", "triebkopf", fieldGetter("triebkopf"), fieldSetter("triebkopf"), editable, required, 2, 0);
+const UBERHITZERFLACHE = (editable, required) => new NumberColumn("UBERHITZERFLACHE", "uberhitzerflache", fieldGetter("uberhitzerflache"), fieldSetter("uberhitzerflache"), editable, required, 3000, 0, 2);
+const URL = (editable = Editable.UPDATE, required = false) => new UrlColumn("URL", "url", fieldGetter("url"), fieldSetter("url"), editable, required);
+const VERBLEIBENDE = (editable = Editable.UPDATE, required = true) => new NumberColumn("VERBLEIBENDE", "verbleibende", fieldGetter("verbleibende"), fieldSetter("verbleibende"), editable, required);
+const VERDAMPFUNG = (editable, required) => new NumberColumn("VERDAMPFUNG", "verdampfung", fieldGetter("verdampfung"), fieldSetter("verdampfung"), editable, required, 3000, 0, 2);
+const WASSERVORRAT = (editable, required) => new NumberColumn("WASSERVORRAT", "wasservorrat", fieldGetter("wasservorrat"), fieldSetter("wasservorrat"), editable, required, 3000, 0, 2);
+const WERKSEINSTELLUNG = (editable = Editable.UPDATE, required = false) => new NumberColumn("WERKSEINSTELLUNG", "werkseinstellung", fieldGetter("werkseinstellung"), fieldSetter("werkseinstellung"), editable, required, 65535, 1);
+const WERT = (editable = Editable.UPDATE, required = false) => new NumberColumn("WERT", "wert", fieldGetter("wert"), fieldSetter("wert"), editable, required, 65535, 1);
+const ZUG = (editable = Editable.UPDATE, required = false) => new TextColumn("ZUG", "zug", fieldGetter("zug"), fieldSetter("zug"), editable, required, 30);
+const ZYLINDER = (editable, required) => new NumberColumn("ZYLINDER", "zylinder", fieldGetter("zylinder"), fieldSetter("zylinder"), editable, required, 36, 0);
 
 const IMPORT_DATA = (entities, complete = (entity) => alert(entity + " " + translate("UPLOAD_COMPLETE"))) => {
 
@@ -312,6 +238,7 @@ const IMPORT_DATA = (entities, complete = (entity) => alert(entity + " " + trans
   let fil = createDiv(inp, "popup-field");
 
   let entz = createDiv(frm, "popup-section");
+  entz.style.flexDirection = "row";
 
   let lbl = createTextElement("label", fil, "FILE", "popup-label");
   lbl.htmlFor = "importFile";
@@ -333,6 +260,7 @@ const IMPORT_DATA = (entities, complete = (entity) => alert(entity + " " + trans
   enc.add(createOption("ISO-8859-1", "ISO-8859-1"));
   enc.add(createOption("UTF-8", "UTF-8"));
   enc.selectedIndex = 0;
+  enc.style.order = 3;
 
   let errh = createDiv(frm, "popup-head");
   let eh = createDiv(errh, "error-head");
@@ -352,7 +280,7 @@ const IMPORT_DATA = (entities, complete = (entity) => alert(entity + " " + trans
             "data",
             sel.files[0],
             sel.files[0].name,
-            (data) => complete(translate(e)),
+            () => complete(translate(e)),
             (errors) => {
               txt.value = errors;
             },

@@ -36,6 +36,7 @@
   "BETREIBSNUMMER": { "message": "Betreibsnummer" },
   "BEZEICHNUNG": { "message": "Bezeichnung" },
   "CHANGE": { "message": "Kennwort ändern" },
+  "CONSIST": { "message": "Zusammenstellung" },
   "COPYRIGHT": { "message": "Copyright © 2018 - 2021 John & Andrew Goff" },
   "CV": { "message": "CV" },
   "CVS": { "message": "CVS" },

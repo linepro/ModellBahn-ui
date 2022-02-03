@@ -27,14 +27,14 @@ const dropDown = (apiQuery, valuesExtractor, rowExtractor) => {
 };
 
 const initDropDown = async (drop, force) => {
-  if (drop.options.length === 0 || force) {
+  if (drop.options.length == 0 || force) {
     await getRest(
       drop.apiQuery,
       (jsonData) => drop.valuesExtractor(jsonData)
         .forEach(o => {
           let opt = drop.rowExtractor(o);
           if (opt.group) {
-            let group = drop.grouped.find(g => g.name === opt.group);
+            let group = drop.grouped.find(g => g.name == opt.group);
             if (!group) {
               group = {
                 name: opt.group,
@@ -47,7 +47,7 @@ const initDropDown = async (drop, force) => {
           drop.options.push(opt);
           drop.length = Math.max(drop.length, opt.display.length);
         }),
-      (error) => reportError("init " + dropDown.apiQuery, error)
+      (error) => reportError("init " + drop.apiQuery, error)
     );
   }
 };

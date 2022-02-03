@@ -24,7 +24,7 @@
 
         const unterKategorieActions = [
           searchAction(),
-          addAction(),
+          popupAddAction(unterKategorieColumns),
           saveAction(),
           deleteAction()
         ];
@@ -44,7 +44,7 @@
           unterKategorien
         ];
 
-        const kategorie = new Form("kategorie", "kategorie", kategorieColumns, kategorieActions, EditMode.UPDATE, kategorieChildren);
+        const kategorie = new Form(formUrl("kategorie"), "kategorie", kategorieColumns, kategorieActions, formMode(EditMode.UPDATE), kategorieChildren);
 
         kategorie.init();
       })

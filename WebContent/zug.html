@@ -13,26 +13,88 @@
   <script type="text/javascript" src="js/columns.js"></script>
   <script type="text/javascript" src="js/fields.js"></script>
   <script type="text/javascript" src="js/grids.js"></script>
+  <script type="text/javascript" src="js/filters.js"></script>
   <script type="text/javascript">
     async function init() {
       await layout(NavMenu.BACK)
       .then(() => initDropDown(ZUG_TYP_DROP))
-      .then(() => initDropDown(ARTIKEL_DROP))
-      .then(() => initDropDown(UNTER_KATEGORIE_DROP))
+      .then(() => initDropDown(FAHRZEUG_DROP))
+      .then(() => initDropDown(KATEGORIE_DROP))
       .then(() => {
         const fahrzeugColumns = [
           POSITION(Editable.NEVER),
-          ARTIKEL_SELECT(Editable.UPDATE, true),
+          FAHRZEUG_SELECT(Editable.ADD, true),
           UNTER_KATEGORIE_SELECT(Editable.NEVER, false),
           BEZEICHNUNG(Editable.NEVER, false),
           LANGE(Editable.NEVER, false),
-          new ThumbColumn("abbildung", "abbildung", fieldGetter)
+          THUMBNAIL()
         ];
-       
+
+        const fahrzeugSelect = new FilterBox(
+            "FAHRZEUG",
+            FAHRZEUG_DROP, [
+              dropDownPanel(fieldGetter("kategorie"), "KATEGORIE", KATEGORIE_DROP)
+            ], [
+              (z, f) => !z.fahrzeugen.map(i => i.artikelId).includes(f.artikelId)
+            ]);
+
+        // Should use forwards and backwards from users viewpoint
+        const moveUpAction = () =>
+          new ActionButton(
+            false,
+            "Up",
+            "right",
+            async (event, grid, row) => {
+              let updateUrl = actionLink(row.entity, "aufsteigen");
+              if (updateUrl) {
+                await setRest(
+                  updateUrl,
+                  undefined,
+                  undefined,
+                  (jsonData) => grid.parent.bind(jsonData),
+                  (error) => reportError("up", error)
+                );
+              }
+            },
+          "aufsteigen"
+        );
+
+        const moveDownAction = () =>
+          new ActionButton(
+            false,
+            "Down",
+            "left",
+            async (event, grid, row) => {
+              let updateUrl = actionLink(row.entity, "absteigen");
+              if (updateUrl) {
+                await setRest(
+                  updateUrl,
+                  undefined,
+                  undefined,
+                  (jsonData) => grid.parent.bind(jsonData),
+                  (error) => reportError("down", error)
+                );
+              }
+            },
+          "absteigen"
+        );
+
         const fahrzeugActions = [
-          addAction(),
-          setAction("artikelId"),
-          deleteAction()
+          addAction("add", (event, grid, row, jsonData) =>
+            fahrzeugSelect.show(
+              grid, 
+              row,
+              (opt) => postRest(
+                grid.addUrl,
+                opt,
+                (jsonData) => grid.parent.bind(jsonData),
+                (error) => reportError("addConsist", error)
+              )
+            )
+          ),
+          moveDownAction(),
+          moveUpAction(),
+          deleteAction("delete", (event, grid, row, jsonData) => grid.parent.bind(jsonData))
         ];
 
         const fahrzeugen = new ExpandingTable(2, "fahrzeugen", "fahrzeugen", fahrzeugColumns, fahrzeugActions, EditMode.UPDATE);
