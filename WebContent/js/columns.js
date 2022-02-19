@@ -870,8 +870,7 @@ class ImageColumn extends FileColumn {
 
     let img = document.getElementById(getFieldId(row.id, column.fieldName));
     if (img && img.src) {
-      let xl = createImage(undefined, "display-img", img.src);
-      showModal(xl);
+      window.open(pdf, column.heading, "popup").focus();
     }
   }
 
@@ -911,11 +910,7 @@ class PdfColumn extends FileColumn {
 
     let pdf = column.fieldGetter(row.entity);
     if (pdf) {
-      let viewer = pdfViewer();
-
-      viewer.load(pdf);
-
-      showModal(viewer.element);
+      window.open(pdf, column.heading, "popup").focus();
     }
   }
 }

@@ -128,7 +128,7 @@ const ADRESS_TYP_SELECT = (editable = Editable.UPDATE, required = true) => new D
 const ANDERUNGS_TYP_SELECT = (editable = Editable.UPDATE, required = true) => new DropDownColumn("ANDERUNGS_TYP", "anderungsTyp", fieldGetter("anderungsTyp"), fieldSetter("anderungsTyp"), ANDERUNGS_TYP_DROP, editable, required);
 const ANTRIEB_SELECT = (editable, required) => new DropDownColumn("ANTRIEB", "antrieb", fieldGetter("antrieb"), fieldSetter("antrieb"), ANTRIEB_DROP, editable, required);
 const ARTIKEL_SELECT = (editable = Editable.ADD, required = false) => new DropDownColumn("ARTIKEL", "artikel", fieldGetter("artikelId"), fieldSetter("artikelId"), ARTIKEL_DROP, editable, required);
-const AUFBAU_SELECT = (editable = Editable.UPDATE, required = true) => new ImageSelectColumn("AUFBAU", "aufbau", fieldGetter("aufbau"), fieldSetter("aufbau"), editable, required);
+const AUFBAU_SELECT = (editable = Editable.UPDATE, required = true) => new ImageSelectColumn("AUFBAU", "aufbau", fieldGetter("aufbau"), fieldSetter("aufbau"), AUFBAU_DROP, editable, required);
 const BAHNVERWALTUNG_SELECT = (editable = Editable.UPDATE, required = false) => new AutoSelectColumn("BAHNVERWALTUNG", "bahnverwaltung", fieldGetter("bahnverwaltung"), fieldSetter("bahnverwaltung"), BAHNVERWALTUNG_DROP, editable, required);
 const DECODER_SELECT = (editable = Editable.ADD, required = false) => new DropDownColumn("DECODER", "decoderId", fieldGetter("decoderId"), fieldSetter("decoderId"), DECODER_DROP, editable, required);
 const DECODER_STATUS_SELECT = (editable, required) => new DropDownColumn("DECODER_STATUS", "status", fieldGetter("status"), fieldSetter("status"), DECODER_STATUS_DROP, editable, required);
@@ -150,7 +150,7 @@ const SPURWEITE_SELECT = (editable = Editable.UPDATE, required = true) => new Dr
 const STATUS_SELECT = (editable = Editable.UPDATE, required = true) => new DropDownColumn("STATUS", "status", fieldGetter("status"), fieldSetter("status"), STATUS_DROP, editable, required);
 const STECKER_SELECT = (editable = Editable.UPDATE, required = true) => new DropDownColumn("STECKER", "stecker", fieldGetter("stecker"), fieldSetter("stecker"), STECKER_DROP, editable, required);
 const STEUERUNG_SELECT = (editable = Editable.UPDATE, required = false) => new ImageSelectColumn("STEUERUNG", "steuerung", fieldGetter("steuerung"), fieldSetter("steuerung"), STEUERUNG_DROP, editable, required);
-const TEIL_SELECT = (editable = Editable.ADD, required = true) => new DropDownColumn("TEIL", "teil", fieldGetter("teil"), fieldSetter("teil"), PRODUKT_DROP, editable, required);
+const TEIL_SELECT = (editable = Editable.ADD, required = true) => new DropDownColumn("TEIL", "teil", produktTeilGetter, produktTeilSetter, PRODUKT_DROP, editable, required);
 const UNTER_KATEGORIE_SELECT = (editable = Editable.UPDATE, required = true) => new DropDownColumn("KATEGORIE", "unterKategorie", unterKategorieGetter, unterKategorieSetter, UNTER_KATEGORIE_DROP, editable, required);
 const VORBILD_SELECT = (editable = Editable.UPDATE, required = true) => new DropDownColumn("VORBILD", "vorbild", fieldGetter("vorbild"), fieldSetter("vorbild"), VORBILD_DROP, editable, required);
 const WAHRUNG_SELECT = (editable = Editable.UPDATE, required = false) => new AutoSelectColumn("WAHRUNG", "wahrung", fieldGetter("wahrung"), fieldSetter("wahrung"), WAHRUNG_DROP, editable, required);
