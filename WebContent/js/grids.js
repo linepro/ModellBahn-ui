@@ -358,21 +358,50 @@ class ItemGrid {
     children = undefined,
     classPrefix = ""
   ) {
-    this.currentUrl = fetchUrl;
-    this.refresh = async () => this.fetch(this.currentUrl);
-    this.addUrl = fetchUrl.split("?")[0]; // true for parents
+
     this.tableId = tableId;
     this.columns = columns
-      .concat(actions ? [new ButtonColumn(actions)] : [])
-      .concat(children ? children.map((child) => new ChildColumn(child)) : []);
+        .concat(actions ? [new ButtonColumn(actions)] : [])
+        .concat(children ? children.map((child) => new ChildColumn(child)) : []);
+
     this.children = children;
     if (this.children) {
       this.children.forEach((child) => child.parent = this);
     }
+
     this.actions = actions;
     this.editMode = editMode;
     this.initialized = false;
     this.classPrefix = classPrefix;
+
+    this.setUrls(fetchUrl);
+  }
+
+  setUrls(fetchUrl) {
+    let grid = this;
+    let url = new URL(fetchUrl);
+    let params = new URLSearchParams(url.search);
+
+    grid.currentUrl = fetchUrl;
+    grid.addUrl = url.href.replace(url.search, "");
+
+    grid.refresh = async () => this.fetch(this.currentUrl);
+
+    let pageParams = new URLSearchParams();
+    let page = params.get("page");
+    if (page) {
+      pageParams.append("page", page);
+      params.delete("page");
+    }
+
+    let size = params.get("size");
+    if (size) {
+      pageParams.append("size", size);
+      params.delete("size");
+    }
+
+    grid.pageParams = pageParams;
+    grid.filters = params;
   }
 
   createCaption() {
@@ -413,8 +442,7 @@ class ItemGrid {
   bind(jsonData, fetchUrl) {
     let grid = this;
 
-    grid.currentUrl = fetchUrl ? fetchUrl : grid.currentUrl;
-    grid.refresh = async () => grid.fetch(grid.currentUrl);
+    grid.setUrls(fetchUrl ? fetchUrl : grid.currentUrl);
   }
 
   async fetch(fetchUrl) {
@@ -422,8 +450,19 @@ class ItemGrid {
     let place = document.getElementById(grid.tableId);
 
     if (fetchUrl) {
+      let url = new URL(fetchUrl);
+
+      // Append page and filters....
+      let params = new URLSearchParams(grid.filters.toString());
+      if (url.searchParams.has("page")) {
+        params.set("page", url.searchParams.get("page"));
+      }
+      if (url.searchParams.has("size")) {
+        params.set("page", url.searchParams.get("size"));
+      }
+
       await getRest(
-        fetchUrl,
+        url.href,
         (jsonData) => {
           grid.bind(jsonData, fetchUrl);
           place.dispatchEvent(new CustomEvent("refresh", {data: jsonData, url: fetchUrl}));
@@ -781,12 +820,16 @@ class ExpandingTable extends Table {
       rowNum < Math.max(entities.length, grid.rows.length);
       rowNum++
     ) {
-      let row =
-        rowNum < grid.rows.length ? grid.rows[rowNum] : grid.appendTableRow();
+      let row = 
+        rowNum < grid.rows.length ?
+          grid.rows[rowNum] :
+          grid.appendTableRow();
+
       let entity =
         entities.length > 0 && rowNum < entities.length
           ? entities[rowNum]
           : undefined;
+
       row.bind(entity, grid.editMode);
     }
   }
@@ -817,6 +860,7 @@ class PagedTable extends Table {
     this.prevLink = undefined;
     this.next = undefined;
     this.nextLink = undefined;
+    this.paging = undefined;
   }
 
   async fetchPrev() {
@@ -829,6 +873,16 @@ class PagedTable extends Table {
     let grid = this;
 
     await grid.fetch(grid.nextLink);
+  }
+
+  async gotoPage(page) {
+    let grid = this;
+
+    let url = new URL(grid.currentUrl);
+
+    url.searchParams.set("page", page);
+
+    await grid.fetch(url.href);
   }
 
   addPrev(navRow) {
@@ -853,6 +907,19 @@ class PagedTable extends Table {
     return next;
   }
 
+  addPage(navRow) {
+    let grid = this;
+
+    let pageCell = createTd(navRow, "table-page");
+    pageCell.colspan = grid.columns.length - 2;
+
+    let pageSel = createSelect(pageCell, "table-page", 1, grid.tableId + "Page");
+    pageSel.addEventListener("change", (event) => grid.gotoPage(event.target.selectedIndex), false);
+    pageSel.disabled = true;
+    pageSel.style.visibility = "hidden";
+    return pageSel;
+  }
+
   addFooter(table) {
     let grid = this;
 
@@ -862,9 +929,7 @@ class PagedTable extends Table {
 
     grid.prev = grid.addPrev(navRow);
 
-    for (let i = 0 ; i < grid.columns.length - 2; i++) {
-      createTd(navRow, grid.classPrefix +"-footer");
-    }
+    grid.paging = grid.addPage(navRow);
 
     grid.next = grid.addNext(navRow);
   }
@@ -886,12 +951,40 @@ class PagedTable extends Table {
     grid.next.disabled = !nextLink;
     grid.next.style.visibility = nextLink ? "visible" : "hidden";
 
+    let pageInfo = jsonData.page;
+    if (pageInfo && pageInfo.totalPages > 0) {
+      if (grid.paging.length < pageInfo.totalPages) {
+        for (let p = grid.paging.length; p < pageInfo.totalPages; p++) {
+          grid.paging.add(createOption(p, p+1, null, null));
+        }
+      } else if (grid.paging.length > pageInfo.totalPages) {
+        for (let p = grid.paging.length-1; p > pageInfo.totalPages; p--) {
+          grid.paging.remove(p);
+        }
+      }
+
+      grid.pageParams.set("page", pageInfo.number);
+      grid.pageParams.set("size", pageInfo.size);
+
+      grid.paging.selectedIndex = pageInfo.number;
+      grid.paging.disabled = false;
+      grid.paging.style.visibility = "visible";
+    } else {
+      grid.paging.disabled = true;
+      grid.paging.style.visibility = "hidden";
+
+      grid.pageParams.remove("page");
+      grid.pageParams.remove("size");
+    }
+
     for (let rowNum = 0; rowNum < grid.pageSize; rowNum++) {
       let row = grid.rows[rowNum];
+
       let entity =
         entities.length > 0 && rowNum < entities.length
           ? entities[rowNum]
           : undefined;
+
       row.bind(entity, grid.editMode);
     }
   }

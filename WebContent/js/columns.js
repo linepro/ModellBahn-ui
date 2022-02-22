@@ -841,7 +841,21 @@ class FileColumn extends Column {
   }
 
   showContent(event, row) {
-    // Do nothimg.
+    let column = this;
+
+    let href = column.fieldGetter(row.entity);
+
+    if (href) {
+      let ref = window.open(href, column.heading, "popup");
+
+      if (ref == null || ref.closed) {
+        ref = window.open(href, column.heading);
+      }
+
+      if (ref != null) {
+        ref.focus();
+      }
+    }
   }
 }
 
@@ -863,15 +877,6 @@ class ImageColumn extends FileColumn {
     );
 
     this.type = "image";
-  }
-
-  showContent(event, row) {
-    let column = this;
-
-    let img = document.getElementById(getFieldId(row.id, column.fieldName));
-    if (img && img.src) {
-      window.open(pdf, column.heading, "popup").focus();
-    }
   }
 
   setControlValue(img, value) {
@@ -903,15 +908,6 @@ class PdfColumn extends FileColumn {
   setControlValue(img, value) {
     img.src = value ? imageSource("pdf") : imageSource("add-document");
     img.dispatchEvent(new Event("input"));
-  }
-
-  showContent(event, row) {
-    let column = this;
-
-    let pdf = column.fieldGetter(row.entity);
-    if (pdf) {
-      window.open(pdf, column.heading, "popup").focus();
-    }
   }
 }
 

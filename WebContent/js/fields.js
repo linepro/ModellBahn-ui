@@ -217,7 +217,7 @@ const TELEFON = (editable = Editable.UPDATE, required = false) => new PhoneColum
 const THUMBNAIL = () => new ThumbColumn("abbildung", "abbildung", fieldGetter("abbildung"));
 const TRIEBKOPFE = (editable, required) => new NumberColumn("TRIEBKOPFE", "triebkopf", fieldGetter("triebkopf"), fieldSetter("triebkopf"), editable, required, 2, 0);
 const UBERHITZERFLACHE = (editable, required) => new NumberColumn("UBERHITZERFLACHE", "uberhitzerflache", fieldGetter("uberhitzerflache"), fieldSetter("uberhitzerflache"), editable, required, 3000, 0, 2);
-const URL = (editable = Editable.UPDATE, required = false) => new UrlColumn("URL", "url", fieldGetter("url"), fieldSetter("url"), editable, required);
+const WEBSITE = (editable = Editable.UPDATE, required = false) => new UrlColumn("URL", "url", fieldGetter("url"), fieldSetter("url"), editable, required);
 const VERBLEIBENDE = (editable = Editable.UPDATE, required = true) => new NumberColumn("VERBLEIBENDE", "verbleibende", fieldGetter("verbleibende"), fieldSetter("verbleibende"), editable, required);
 const VERDAMPFUNG = (editable, required) => new NumberColumn("VERDAMPFUNG", "verdampfung", fieldGetter("verdampfung"), fieldSetter("verdampfung"), editable, required, 3000, 0, 2);
 const WASSERVORRAT = (editable, required) => new NumberColumn("WASSERVORRAT", "wasservorrat", fieldGetter("wasservorrat"), fieldSetter("wasservorrat"), editable, required, 3000, 0, 2);

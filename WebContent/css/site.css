@@ -824,17 +824,17 @@ section {
   width: inherit;
 }
 
-select optgroup {
+tbody select optgroup {
   background-color: Ivory;
   text-align: left;
 }
 
-select optgroup option {
+tbody select optgroup option {
   background-color: Ivory;
   padding-left: 0.5rem;
 }
 
-select option {
+tbody select option {
   background-color: Ivory;
   text-align: left;
 }
@@ -842,6 +842,16 @@ select option {
 select.popup-control {
   min-height: 30rem;
   width: 99%;
+}
+
+select.table-page {
+  align-self: center;
+  background-color: LightSkyBlue;
+  width: auto;
+}
+
+select.table-page option {
+  background-color: LightSkyBlue;
 }
 
 small {
@@ -1066,7 +1076,7 @@ tr.table-row {
   width: 100%;
 }
 
-tr:hover {
+tbody tr:hover {
   background-color: Khaki;
 }
 

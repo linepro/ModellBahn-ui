@@ -401,7 +401,7 @@ const layout = async menuStyle => {
 };
 
 const errorHandler = (error) => {
-  if (error.message.toLowerCase().includes("script error")) {
+  if (error.message.toLowerCase().includes("script error") || error.message.toLowerCase().includes("syntaxerror")) {
     reportError("Script Error: See Browser Console for Detail", error);
   } else {
     reportError(
