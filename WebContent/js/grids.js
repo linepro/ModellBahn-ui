@@ -484,6 +484,10 @@ class ItemGrid {
   }
 
   async search() {
+    let grid = this;
+
+    grid.filters;
+
     return Promise.resolve();
   }
 }

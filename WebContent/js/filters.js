@@ -93,7 +93,7 @@ class FilterPanel {
 const checkBoxPanel = (fieldExtractor, caption) => new FilterPanel(fieldExtractor, caption, [ new FilterOption({ display: caption, value: true })]);
 const dropDownPanel = (fieldExtractor, caption, dropDown) => new FilterPanel(fieldExtractor, caption, dropDown.options.map(o => new FilterOption(o)));
 
-class FilterBox {
+class FilteredSelectBox {
   constructor(
     heading,
     dropDown,
@@ -187,6 +187,41 @@ class FilterBox {
     add.enabled = false;
 
     list.addEventListener("select", (e, btn) => btn.enabled = e.target.selectedIndex !== -1, false);
+
+    createButton(foot, "cancel", "cancel", () => modal.style.display = "none");
+
+    showModal(frm, false);
+  }
+}
+
+class FilterBox {
+  constructor(
+    heading,
+    fields
+  ) {
+    this.heading = heading;
+    this.fields = fields;
+  }
+
+  show(grid, row, action) {
+    let box = this;
+
+    let filters = grid.filters;
+
+    let frm = createDiv(undefined, "popup-form");
+    createTextElement("h3", frm, box.heading, "popup-heading");
+
+    let fil = createDiv(frm, "popup-section");
+
+    let foot = createDiv(frm, "popup-foot");
+
+    let modal = addModal();
+
+    let search = createButton(foot, "search", "search", () => {});
+    search.enabled = false;
+
+    let clear = createButton(foot, "clear", "clear", () => {});
+    clear.enabled = false;
 
     createButton(foot, "cancel", "cancel", () => modal.style.display = "none");
 
