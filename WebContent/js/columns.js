@@ -270,14 +270,14 @@ class BoolColumn extends Column {
       required,
       2
     );
-    this.type = "bool";
+    this.type = "checkbox";
   }
 
   initialise(chk) {
     let column = this;
 
     chk = super.initialise(chk);
-    chk.type = "checkbox";
+    chk.type = column.type;
     chk.classList.add(column.fieldName);
     return chk;
   }
@@ -325,7 +325,7 @@ class NumberColumn extends Column {
     let column = this;
 
     num = super.initialise(num);
-    num.type = "number";
+    num.type = column.type;
     num.min = column.min;
     num.max = column.max;
     num.step = column.places > 0 ? 1 / column.places : 1;
@@ -365,12 +365,12 @@ class PhoneColumn extends Column {
       editable,
       required,
       10);
-    this.type = "phone";
+    this.type = "tel";
   }
 
   initialise(tel) {
     tel = super.initialise(tel);
-    tel.type = "tel";
+    tel.type = column.type;
     return tel;
   }
 }
@@ -403,7 +403,7 @@ class TextColumn extends Column {
     let column = this;
 
     txt = super.initialise(txt);
-    txt.type = "text";
+    txt.type = column.type;
     txt.maxLength = column.length;
     if (column.pattern) {
       txt.pattern = column.pattern;
@@ -439,7 +439,7 @@ class UrlColumn extends TextColumn {
 
   initialise(rul) {
     rul = super.initialise(rul);
-    rul.type = "url";
+    rul.type = column.type;
     rul.class = "table-url";
     rul.addEventListener("click", () => {
         if (rul.value) {

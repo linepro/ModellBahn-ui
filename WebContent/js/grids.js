@@ -181,14 +181,6 @@ const downloadActions = (entities, complete) =>
     () => EXPORT_DATA(entities, complete)
   );
 
-const searchAction = () =>
-  new ActionButton(
-    true,
-    "Search",
-    "search",
-    async (event, grid, row) => grid.search()
-  );
-
 class ButtonColumn extends VirtualColumn {
   constructor(actions = []) {
     super();
@@ -401,7 +393,6 @@ class ItemGrid {
     }
 
     grid.pageParams = pageParams;
-    grid.filters = params;
   }
 
   createCaption() {
@@ -450,19 +441,8 @@ class ItemGrid {
     let place = document.getElementById(grid.tableId);
 
     if (fetchUrl) {
-      let url = new URL(fetchUrl);
-
-      // Append page and filters....
-      let params = new URLSearchParams(grid.filters.toString());
-      if (url.searchParams.has("page")) {
-        params.set("page", url.searchParams.get("page"));
-      }
-      if (url.searchParams.has("size")) {
-        params.set("page", url.searchParams.get("size"));
-      }
-
       await getRest(
-        url.href,
+        fetchUrl,
         (jsonData) => {
           grid.bind(jsonData, fetchUrl);
           place.dispatchEvent(new CustomEvent("refresh", {data: jsonData, url: fetchUrl}));
@@ -484,10 +464,6 @@ class ItemGrid {
   }
 
   async search() {
-    let grid = this;
-
-    grid.filters;
-
     return Promise.resolve();
   }
 }
@@ -623,6 +599,9 @@ class Table extends ItemGrid {
 
     this.pageSize = pageSize;
     this.rows = [];
+    this.filters = [];
+    this.searchBtn = undefined;
+    this.clearBtn = undefined;
   }
 
   removeRow(row) {
@@ -650,6 +629,51 @@ class Table extends ItemGrid {
     return rowEntry;
   }
 
+  async setFilters() {
+    let grid = this;
+
+    let params = new URLSearchParams();
+    grid.filters
+        .forEach(f => { 
+          if (f.control.value) {
+            params.set(f.name, f.control.value)
+          }
+        });
+    
+    await grid.search(params);
+  }
+
+  async clearFilters() {
+    let grid = this;
+
+    let params = new URLSearchParams();
+    grid.filters.forEach(f => f.control.value = "");  
+    
+    await grid.search(params);
+  }
+
+  addSearchRow(header) {
+    let grid = this;
+
+    let searchRow = createTr(header, "search-head", getRowId(grid.tableId, "search"));
+
+    grid.columns.forEach(column => {
+      if (column.type == "button") {
+        let cell = createTh(searchRow, "search-heading-btn");
+        grid.searchBtn = createButton(cell, "Search", "search", () => grid.setFilters(), "nav-button", getFieldId(searchRow.id, "search"));
+        grid.clearBtn = createButton(cell, "Clear", "clear", () => grid.clearFilters(), "nav-button", getFieldId(searchRow.id, "clear"));
+      } else {
+        let cell = createTh(searchRow, "search-heading");
+        if (column.type == "text" || column.type == "number") {
+          grid.filters.push({
+            name: column.fieldName,
+            control: createInput(column.type, cell, "search-cell", getFieldId(searchRow.id, column.fieldName))
+          });
+        }
+      }
+    });
+  }
+
   addHeader(table) {
     let grid = this;
 
@@ -658,6 +682,8 @@ class Table extends ItemGrid {
     let headings = createTr(header, grid.classPrefix +"-head", grid.tableId + "_head");
 
     grid.columns.forEach((column) => column.addHeading(grid, headings));
+
+    grid.searchBar = grid.addSearchRow(header);
   }
 
   addBody(table) {
@@ -752,6 +778,41 @@ class Table extends ItemGrid {
     }
 
     return [];
+  }
+
+  async search(params) {
+    let grid = this;
+
+    let url = new URL(grid.currentUrl);
+
+    if (grid.pageSize) {
+      params.set("page", 0);
+      params.set("size", grid.pageSize);
+    }
+
+    grid.filters
+        .forEach(f => url.searchParams.delete(f.name));
+
+    params.forEach((v,k) => url.searchParams.set(k, v));
+
+    await grid.fetch(url.href);
+  }
+
+  bind(jsonData, fetchUrl) {
+    let grid = this;
+
+    let url = new URL(fetchUrl);
+
+    grid.filters
+        .forEach(f => {
+          if (url.searchParams.has(f.name)) {
+             f.control.value = url.searchParams.get(f.name);
+          } else {
+             f.control.value = "";
+          }
+        });
+
+    super.bind(jsonData, fetchUrl);
   }
 }
 
@@ -915,7 +976,7 @@ class PagedTable extends Table {
     let grid = this;
 
     let pageCell = createTd(navRow, "table-page");
-    pageCell.colspan = grid.columns.length - 2;
+    pageCell.colSpan = grid.columns.length - 2;
 
     let pageSel = createSelect(pageCell, "table-page", 1, grid.tableId + "Page");
     pageSel.addEventListener("change", (event) => grid.gotoPage(event.target.selectedIndex), false);
@@ -977,8 +1038,8 @@ class PagedTable extends Table {
       grid.paging.disabled = true;
       grid.paging.style.visibility = "hidden";
 
-      grid.pageParams.remove("page");
-      grid.pageParams.remove("size");
+      grid.pageParams.delete("page");
+      grid.pageParams.delete("size");
     }
 
     for (let rowNum = 0; rowNum < grid.pageSize; rowNum++) {
@@ -1004,7 +1065,6 @@ class ListEditTable extends PagedTable {
       [
         uploadActions([dataType]),
         downloadActions([dataType]),
-        searchAction(),
         popupAddAction(columns),
         saveAction(),
         deleteAction()

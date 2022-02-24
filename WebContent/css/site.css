@@ -273,9 +273,11 @@ div.autoclose-container {
 }
 
 div.error-body {
+  background-color: inherit;
 }
 
 div.error-head {
+  background-color: inherit;
 }
 
 div.expanding-cell {
@@ -681,6 +683,11 @@ select.popup-control {
   order: 2;
 }
 
+input.search-cell,
+select.search-cell {
+  color: gray;
+}
+
 input:invalid {
   border: red 0.1rem dot-dot-dash;
 }
@@ -1007,12 +1014,14 @@ th.expanding-heading-btn {
   vertical-align: middle;
 }
 
+th.search-heading,
 th.table-heading {
   height: 2rem;
   text-align: center;
   vertical-align: middle;
 }
 
+th.search-heading-btn,
 th.table-heading-btn {
   height: 2rem;
   text-align: right;
@@ -1059,15 +1068,20 @@ tr.expanding-row {
   width: 100%;
 }
 
-tr.table-foot {
-  font-weight: bold;
-  height: fit-content;
-  width: 100%;
+tr.search-head {
+ background-color: LightSkyBlue;
 }
 
+tr.search-head,
 tr.table-head {
   font-weight: bold;
   height: 2rem;
+  width: 100%;
+}
+
+tr.table-foot {
+  font-weight: bold;
+  height: fit-content;
   width: 100%;
 }
 
@@ -1080,11 +1094,11 @@ tbody tr:hover {
   background-color: Khaki;
 }
 
-tr:nth-child(even) {
+tbody tr:nth-child(even) {
   background-color: CornSilk;
 }
 
-tr:nth-child(even):hover {
+tbody tr:nth-child(even):hover {
   background-color: Khaki;
 }
 
