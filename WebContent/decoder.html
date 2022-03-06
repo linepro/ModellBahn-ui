@@ -17,8 +17,6 @@
   <script type="text/javascript">
     async function init() {
       await layout(NavMenu.BACK)
-      .then(() => initDropDown(DECODER_TYP_DROP))
-      .then(() => initDropDown(ARTIKEL_DROP))
       .then(() => initDropDown(PROTOKOLL_DROP))
       .then(() => initDropDown(KONFIGURATION_DROP))
       .then(() => initDropDown(ADRESS_TYP_DROP))
@@ -51,24 +49,24 @@
         const funktionen = new ExpandingTable(10, undefined, "funktionen", funktiononenColumns, funktionenActions, EditMode.UPDATE);
 
         const decoderColumns = [
-          DECODER(Editable.NEVER, true),
-          DECODER_TYP_SELECT(Editable.NEVER, true),
-          BEZEICHNUNG(Editable.NEVER, true),
-          ARTIKEL_SELECT(Editable.NEVER, false),
+          DECODER_ID(),
+          DECODER_TYP_BEZEICHNUNG(),
+          BEZEICHNUNG(Editable.NEVER, false),
+          ARTIKEL_BEZEICHNUNG(),
           PROTOKOLL_SELECT(Editable.UPDATE, true),
           FAHRSTUFE(Editable.UPDATE, false),
-          ADRESS_TYP_SELECT(Editable.NEVER),
+          ADRESS_TYP_SELECT(Editable.NEVER, false),
           ADRESS(Editable.UPDATE, true),
-          GERAUSCH(Editable.NEVER, true),
-          I_MAX(Editable.NEVER, true),
-          KONFIGURATION_SELECT(Editable.NEVER, true),
-          STECKER_SELECT(Editable.NEVER, true),
-          KAUFDATUM(Editable.UPDATE, true),
-          WAHRUNG_SELECT(Editable.UPDATE, true),
-          PREIS(Editable.UPDATE, true),
-          ANMERKUNG(Editable.UPDATE, true),
+          GERAUSCH(Editable.NEVER, false),
+          I_MAX(Editable.NEVER, false),
+          KONFIGURATION_BEZEICHNUNG(),
+          STECKER_SELECT(Editable.NEVER, false),
+          KAUFDATUM(Editable.UPDATE, false),
+          WAHRUNG_SELECT(Editable.UPDATE, false),
+          PREIS(Editable.UPDATE, false),
+          ANMERKUNG(Editable.UPDATE, false),
           DECODER_STATUS_SELECT(Editable.UPDATE, true),
-          ANLEITUNGEN(Editable.NEVER)
+          ANLEITUNGEN(Editable.NEVER, false)
         ];
        
         const decoderActions = [

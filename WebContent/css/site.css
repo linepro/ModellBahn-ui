@@ -685,7 +685,10 @@ select.popup-control {
 
 input.search-cell,
 select.search-cell {
+  border: 1pt LightSkyBlue;
   color: gray;
+  margin: 0.3rem 2px 0.3rem 2px;
+  padding: 2px 0 2px 0;
 }
 
 input:invalid {

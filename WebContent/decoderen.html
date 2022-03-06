@@ -14,22 +14,29 @@
   <script type="text/javascript">
     async function init() {
       await layout(NavMenu.INVENTORY)
-      .then(() => initDropDown(DECODER_TYP_DROP))
-      .then(() => initDropDown(ARTIKEL_DROP))
-      .then(() => initDropDown(PROTOKOLL_DROP))
       .then(() => initDropDown(DECODER_STATUS_DROP))
       .then(() => {
-        const decoderenColumns = [
-          DECODER(Editable.NEVER, true),
-          DECODER_TYP_SELECT(Editable.NEVER, true),
+        const columns = [
+          DECODER_ID(),
+          DECODER_TYP_BEZEICHNUNG(),
           BEZEICHNUNG(Editable.NEVER, false),
-          ARTIKEL_SELECT(Editable.NEVER, false),
-          PROTOKOLL_SELECT(Editable.NEVER, true),
-          ADRESS(Editable.NEVER, true),
-          DECODER_STATUS_SELECT(Editable.NEVER, true)
+          ARTIKEL_BEZEICHNUNG(),
+          PROTOKOLL_BEZEICHNUNG(),
+          ADRESS(Editable.NEVER, false),
+          DECODER_STATUS_SELECT(Editable.NEVER, false)
         ];
        
-        const decoderenActions = [
+        const search = [
+          DECODER_ID_SEARCH(),
+          DECODER_TYP_SEARCH(),
+          BEZEICHNUNG_SEARCH(),
+          ARTIKEL_SEARCH(),
+          PROTOKOLL_SEARCH(),
+          ADRESS_SEARCH(),
+          DECODER_STATUS_SEARCH()
+        ];
+       
+        const actions = [
           uploadActions(["decoder","decoderCv","decoderFunktion"]),
           downloadActions(["decoder","decoderCv","decoderFunktion"]),
           newAction("decoder.html"),
@@ -37,7 +44,7 @@
           deleteAction()
         ];
 
-        const decoderen = new PagedTable(10, "decoder", "decoderen", decoderenColumns, decoderenActions, EditMode.UPDATE);
+        const decoderen = new PagedTable(10, "decoder", "decoderen", columns, actions, EditMode.UPDATE, search);
 
         decoderen.init();
       })

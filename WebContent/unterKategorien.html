@@ -18,8 +18,8 @@
       await layout(NavMenu.BACK)
       .then(() => {
         const unterKategorieColumns = [
-          NAMEN(Editable.ADD),
-          BEZEICHNUNG(Editable.UPDATE)
+          NAMEN(Editable.ADD, true),
+          BEZEICHNUNG(Editable.UPDATE, true)
         ];
 
         const unterKategorieActions = [

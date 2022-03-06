@@ -16,16 +16,22 @@
   <script type="text/javascript">
     async function init() {
       await layout(NavMenu.REF_DATA)
-      .then(() => initDropDown(HERSTELLER_DROP))
-      .then(() => initDropDown(PROTOKOLL_DROP))
       .then(() => initDropDown(STECKER_DROP))
       .then(() => {
         const columns = [
-          HERSTELLER_SELECT(Editable.NEVER),
-          BESTELL_NR(Editable.NEVER),
-          PROTOKOLL_SELECT(Editable.NEVER, true),
-          GERAUSCH(Editable.NEVER, true),
-          STECKER_SELECT(Editable.NEVER, true)
+          HERSTELLER_BEZEICHNUNG(),
+          BESTELL_NR(Editable.NEVER, false),
+          PROTOKOLL_BEZEICHNUNG(),
+          GERAUSCH(Editable.NEVER, false),
+          STECKER_SELECT(Editable.NEVER, false)
+        ];
+       
+        const search = [
+          HERSTELLER_SEARCH(),
+          BESTELL_NR_SEARCH(),
+          PROTOKOLL_SEARCH(),
+          GERAUSCH_SEARCH(),
+          STECKER_SEARCH()
         ];
        
         const actions = [

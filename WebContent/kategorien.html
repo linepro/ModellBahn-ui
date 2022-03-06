@@ -17,12 +17,17 @@
     async function init() {
       await layout(NavMenu.REF_DATA)
       .then(() => {
-        const kategorienColumns = [
+        const columns = [
           NAMEN(Editable.NEVER, true),
-          BEZEICHNUNG(Editable.NEVER, true)
+          BEZEICHNUNG(Editable.NEVER, false)
         ];
-       
-        const kategorienActions = [
+
+        const search = [
+          NAMEN_SEARCH(),
+          BEZEICHNUNG_SEARCH()
+        ];
+
+        const actions = [
           uploadActions(["kategorie","unterKategorie"]),
           downloadActions(["kategorie","unterKategorie"]),
           newAction("unterKategorien.html"),
@@ -30,7 +35,7 @@
           deleteAction()
         ];
 
-        const kategorien = new PagedTable(10, "kategorie", "kategorien", kategorienColumns, kategorienActions, EditMode.UPDATE);
+        const kategorien = new PagedTable(10, "kategorie", "kategorien", columns, actions, EditMode.UPDATE, search);
 
         kategorien.init();
       })

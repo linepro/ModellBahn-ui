@@ -50,18 +50,18 @@
         const anderungen = new ExpandingTable(5, "anderungen", "anderungen", anderungenColumns, anderungActions, EditMode.UPDATE);
 
         const decoderenColumns = [
-          DECODER(Editable.NEVER, false),
-          BEZEICHNUNG(Editable.UPDATE, true),
+          DECODER_ID(),
+          BEZEICHNUNG(Editable.UPDATE, false),
           PROTOKOLL_SELECT(Editable.UPDATE, true),
           FAHRSTUFE(Editable.UPDATE, false),
-          ADRESS_TYP_SELECT(Editable.NEVER),
+          ADRESS_TYP_SELECT(Editable.NEVER, false),
           ADRESS(Editable.UPDATE, true),
-          GERAUSCH(Editable.NEVER, true),
-          I_MAX(Editable.NEVER, true),
-          KONFIGURATION_SELECT(Editable.NEVER, true),
-          STECKER_SELECT(Editable.NEVER, true),
-          ANMERKUNG(Editable.UPDATE, true),
-          ANLEITUNGEN(Editable.NEVER)
+          GERAUSCH(Editable.NEVER, false),
+          I_MAX(Editable.NEVER, false),
+          KONFIGURATION_BEZEICHNUNG(),
+          STECKER_SELECT(Editable.NEVER, false),
+          ANMERKUNG(Editable.UPDATE, false),
+          ANLEITUNGEN(Editable.NEVER, false)
         ];
 
         const decoderSelect = new FilteredSelectBox(
@@ -95,9 +95,9 @@
         const decoderen = new ExpandingTable(5, "decoderen", "decoderen", decoderenColumns, decoderenActions, EditMode.UPDATE);
 
         const funktionenColumns = [
-          DECODER(Editable.NEVER, true),
-          ADRESS(Editable.NEVER, true),
-          FUNKTION(Editable.NEVER, true),
+          DECODER_ID(),
+          ADRESS(Editable.NEVER, false),
+          FUNKTION(Editable.NEVER, false),
           BEZEICHNUNG(Editable.UPDATE, true)
         ];
 
@@ -108,7 +108,7 @@
         const funktionen = new ExpandingTable(5, "funktionen", "funktionen", funktionenColumns, funktionenActions, EditMode.UPDATE);
 
         const artikelColumns = [
-          ARTIKEL(Editable.NEVER, true),
+          ARTIKEL_ID(),
           PRODUKT_SELECT(Editable.ADD, true),
           BEZEICHNUNG(Editable.UPDATE, true),
           UNTER_KATEGORIE_SELECT(Editable.NEVER, false),

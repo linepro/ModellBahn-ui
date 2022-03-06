@@ -17,13 +17,7 @@
     async function init() {
       await layout(NavMenu.REF_DATA)
       .then(() => {
-        const columns = [
-          NAMEN(Editable.ADD, true),
-          BEZEICHNUNG(Editable.UPDATE, true),
-          ABBILDUNG(Editable.UPDATE, false)
-        ];
-
-        const motorTypen = new ListEditTable(10, "motorTyp", "motorTypen", columns, EditMode.UPDATE);
+        const motorTypen = new NamedAbbildungTable("motorTyp", "motorTypen");
 
         motorTypen.init();
       })

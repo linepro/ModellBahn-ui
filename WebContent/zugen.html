@@ -14,16 +14,21 @@
   <script type="text/javascript">
     async function init() {
       await layout(NavMenu.INVENTORY)
-      .then(() => initDropDown(ZUG_TYP_DROP))
       .then(() => {
-        const zugenColumns = [
-          NAMEN(Editable.ADD),
-          ZUG_TYP_SELECT(Editable.ADD),
-          BEZEICHNUNG(Editable.ADD),
-          LANGE(Editable.NEVER)
+        const columns = [
+          NAMEN(Editable.ADD, true),
+          ZUG_TYP_BEZEICHNUNG(),
+          BEZEICHNUNG(Editable.ADD, false),
+          LANGE(Editable.NEVER, false)
         ];
-       
-        const zugenActions = [
+
+        const search = [
+          NAMEN_SEARCH(),
+          ZUG_TYP_SEARCH(),
+          BEZEICHNUNG_SEARCH()
+        ];
+
+        const actions = [
           uploadActions(["zug","consist"]),
           downloadActions(["zug","consist"]),
           newAction("zug.html"),
@@ -31,7 +36,8 @@
           deleteAction()
         ];
 
-        const zugen = new PagedTable(10, "zug", "zugen", zugenColumns, zugenActions, EditMode.UPDATE);
+        const zugen = new PagedTable(10, "zug", "zugen", columns, actions, EditMode.UPDATE, search);
+
         zugen.init();
       })
       .catch(error => reportError("load", error));

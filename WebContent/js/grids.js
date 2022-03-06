@@ -594,12 +594,12 @@ const popupAddAction = (columns) =>
   );
 
 class Table extends ItemGrid {
-  constructor(pageSize, apiUrl, tableId, columns, actions, editMode, children, classPrefix = "table") {
+  constructor(pageSize, apiUrl, tableId, columns, actions, editMode, children, classPrefix = "table", searchColumns = []) {
     super(apiUrl, tableId, columns, actions, editMode, children, classPrefix);
 
     this.pageSize = pageSize;
     this.rows = [];
-    this.filters = [];
+    this.searchColumns = searchColumns;
     this.searchBtn = undefined;
     this.clearBtn = undefined;
   }
@@ -633,13 +633,10 @@ class Table extends ItemGrid {
     let grid = this;
 
     let params = new URLSearchParams();
-    grid.filters
-        .forEach(f => { 
-          if (f.control.value) {
-            params.set(f.name, f.control.value)
-          }
-        });
-    
+
+    grid.searchColumns
+        .forEach(column => column.apply(params));
+
     await grid.search(params);
   }
 
@@ -647,31 +644,36 @@ class Table extends ItemGrid {
     let grid = this;
 
     let params = new URLSearchParams();
-    grid.filters.forEach(f => f.control.value = "");  
-    
+
+    grid.searchColumns
+        .forEach(column => column.clear());
+
     await grid.search(params);
   }
 
   addSearchRow(header) {
     let grid = this;
 
-    let searchRow = createTr(header, "search-head", getRowId(grid.tableId, "search"));
+    if (grid.searchColumns.length) {
+      let searchRow = createTr(header, "search-head", getRowId(grid.tableId, "search"));
 
-    grid.columns.forEach(column => {
-      if (column.type == "button") {
-        let cell = createTh(searchRow, "search-heading-btn");
-        grid.searchBtn = createButton(cell, "Search", "search", () => grid.setFilters(), "nav-button", getFieldId(searchRow.id, "search"));
-        grid.clearBtn = createButton(cell, "Clear", "clear", () => grid.clearFilters(), "nav-button", getFieldId(searchRow.id, "clear"));
-      } else {
+      grid.columns.forEach(column => {
         let cell = createTh(searchRow, "search-heading");
-        if (column.type == "text" || column.type == "number") {
-          grid.filters.push({
-            name: column.fieldName,
-            control: createInput(column.type, cell, "search-cell", getFieldId(searchRow.id, column.fieldName))
-          });
+
+        if (column.type == "button") {
+          cell.className = "search-heading-btn";
+
+          grid.searchBtn = createButton(cell, "Search", "search", () => grid.setFilters(), "nav-button", getFieldId(searchRow.id, "search"));
+          grid.clearBtn = createButton(cell, "Clear", "clear", () => grid.clearFilters(), "nav-button", getFieldId(searchRow.id, "clear"));
+        } else {
+          let search = grid.searchColumns.find(s => s.heading == column.heading);
+
+          if (search) {
+            search.create(cell, searchRow.id);
+          }
         }
-      }
-    });
+      });
+    }
   }
 
   addHeader(table) {
@@ -790,10 +792,8 @@ class Table extends ItemGrid {
       params.set("size", grid.pageSize);
     }
 
-    grid.filters
-        .forEach(f => url.searchParams.delete(f.name));
-
-    params.forEach((v,k) => url.searchParams.set(k, v));
+    grid.searchColumns
+        .forEach(c => c.apply(url.searchParams));
 
     await grid.fetch(url.href);
   }
@@ -803,14 +803,8 @@ class Table extends ItemGrid {
 
     let url = new URL(fetchUrl);
 
-    grid.filters
-        .forEach(f => {
-          if (url.searchParams.has(f.name)) {
-             f.control.value = url.searchParams.get(f.name);
-          } else {
-             f.control.value = "";
-          }
-        });
+    grid.searchColumns
+        .forEach(c => c.bind(url.searchParams));
 
     super.bind(jsonData, fetchUrl);
   }
@@ -908,7 +902,7 @@ class PagedTable extends Table {
     columns,
     actions,
     editMode,
-    children = undefined
+    searchColumns = []
   ) {
     super(
       pageSize,
@@ -917,8 +911,9 @@ class PagedTable extends Table {
       columns,
       actions,
       editMode,
-      children,
-      "table"
+      undefined,
+      "table",
+      searchColumns
     );
 
     this.prev = undefined;
@@ -1056,7 +1051,7 @@ class PagedTable extends Table {
 }
 
 class ListEditTable extends PagedTable {
-  constructor(pageSize, dataType, elementName, columns) {
+  constructor(pageSize, dataType, elementName, columns, searchColumns = []) {
     super(
       pageSize,
       dataType,
@@ -1069,7 +1064,8 @@ class ListEditTable extends PagedTable {
         saveAction(),
         deleteAction()
       ],
-      EditMode.UPDATE
+      EditMode.UPDATE,
+      searchColumns
     );
     this.dataType = dataType;
   }
@@ -1078,16 +1074,36 @@ class ListEditTable extends PagedTable {
 class NamedItemTable extends ListEditTable {
   constructor(
     dataType,
-    elementName
+    elementName,
+    columns = [],
+    searchColumns = []
   ) {
     super(
       10,
       dataType,
       elementName,
       [
-        NAMEN(),
-        BEZEICHNUNG()
-      ]
+        NAMEN(Editable.ADD, true),
+        BEZEICHNUNG(Editable.UPDATE, true),
+      ].concat(columns),
+      [
+       NAMEN_SEARCH(), 
+       BEZEICHNUNG_SEARCH()
+      ].concat(searchColumns)
+    );
+  }
+}
+
+class NamedAbbildungTable extends NamedItemTable {
+  constructor(
+    dataType,
+    elementName
+  ) {
+    super(
+      dataType,
+      elementName,
+      [ABBILDUNG(Editable.UPDATE, false)],
+      []
     );
   }
 }

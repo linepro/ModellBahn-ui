@@ -22,14 +22,24 @@
       .then(() => initDropDown(BAHNVERWALTUNG_DROP))
       .then(() => {
         const columns = [
-          GATTUNG_SELECT(Editable.NEVER, true),
-          UNTER_KATEGORIE_SELECT(Editable.NEVER, true),
+          GATTUNG_BEZEICHNUNG(),
+          UNTER_KATEGORIE_BEZEICHNUNG(),
           BAHNVERWALTUNG_SELECT(Editable.NEVER, false),
           HERSTELLER(Editable.NEVER, false),
           BAUZEIT(Editable.NEVER, false),
           AUSSERDIENST(Editable.NEVER, false),
           MENGE(Editable.NEVER, false),
           ABBILDUNG(Editable.NEVER, false)
+        ];
+
+        const search = [
+          GATTUNG_SEARCH(),
+          UNTER_KATEGORIE_SEARCH(),
+          BAHNVERWALTUNG_SEARCH(),
+          HERSTELLER_SEARCH(),
+          BAUZEIT_SEARCH(),
+          AUSSERDIENST_SEARCH(),
+          MENGE_SEARCH()
         ];
 
         const actions = [
@@ -40,7 +50,7 @@
           deleteAction()
         ];
 
-        const vorbilder = new PagedTable(10, "vorbild", "vorbilder", columns, actions, EditMode.UPDATE);
+        const vorbilder = new PagedTable(10, "vorbild", "vorbilder", columns, actions, EditMode.UPDATE, search);
 
         vorbilder.init();
       })

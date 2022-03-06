@@ -118,6 +118,26 @@ const createInput = (type, parent, className, id) => {
   return inp;
 };
 
+const createCheckBox = (parent, className, id, triState = false) => {
+  let chk = createInput("checkbox", parent, className, id);
+  if (triState) {
+    chk.addEventListener("change", () => {
+      // unchecked -> checked -> indeterminate -> unchecked
+      if (!chk.checked && !chk.indeterminate) {
+        chk.checked = true;
+        chk.indeterminate = false;
+      } else if (chk.checked && !chk.indeterminate) {
+        chk.checked = false;
+        chk.indeterminate = true;
+      } else {
+        chk.checked = false;
+        chk.indeterminate = false;
+      }
+    }, false);
+  }
+  return chk;
+};
+
 const createUl = (parent, className, id) => append(parent, className, id, "ul");
 
 const createLi = (parent, className, text, id) => {

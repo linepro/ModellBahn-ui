@@ -16,24 +16,33 @@
   <script type="text/javascript">
     async function init() {
       await layout(NavMenu.INVENTORY)
-      .then(() => initDropDown(HERSTELLER_DROP))
-      .then(() => initDropDown(UNTER_KATEGORIE_DROP))
-      .then(() => initDropDown(MASSSTAB_DROP))
-      .then(() => initDropDown(SPURWEITE_DROP))
-      .then(() => initDropDown(EPOCH_DROP))
-      .then(() => initDropDown(BAHNVERWALTUNG_DROP))
-      .then(() => initDropDown(GATTUNG_DROP))
       .then(() => {
-        const produktenColumns = [
-          HERSTELLER_SELECT(Editable.NEVER, true),
-          BESTELL_NR(Editable.NEVER, true),
-          UNTER_KATEGORIE_SELECT(Editable.NEVER, true),
-          MASSSTAB_SELECT(Editable.NEVER, false),
-          SPURWEITE_SELECT(Editable.NEVER, false),
-          BEZEICHNUNG(Editable.NEVER, true)
+        const columns = [
+          HERSTELLER_BEZEICHNUNG(),
+          BESTELL_NR(Editable.NEVER, false),
+          BEZEICHNUNG(Editable.NEVER, false),
+          UNTER_KATEGORIE_BEZEICHNUNG(),
+          MASSSTAB_BEZEICHNUNG(),
+          SPURWEITE_BEZEICHNUNG(),
+          GATTUNG_BEZEICHNUNG(),
+          EPOCH_BEZEICHNUNG(),
+          BAHNVERWALTUNG_BEZEICHNUNG(),
+          ABBILDUNG(Editable.NEVER, false)
         ];
        
-        const produktenActions = [
+        const search = [
+          HERSTELLER_SEARCH(),
+          BESTELL_NR_SEARCH(),
+          BEZEICHNUNG_SEARCH(),
+          UNTER_KATEGORIE_SEARCH(),
+          MASSSTAB_SEARCH(),
+          SPURWEITE_SEARCH(),
+          GATTUNG_SEARCH(),
+          EPOCH_SEARCH(),
+          BAHNVERWALTUNG_SEARCH()
+        ];
+
+        const actions = [
           uploadActions(["produkt","teil"]),
           downloadActions(["produkt","teil"]),
           newAction("produkt.html"),
@@ -41,7 +50,7 @@
           deleteAction()
         ];
 
-        const produkten = new PagedTable(10, "produkt", "produkten", produktenColumns, produktenActions, EditMode.UPDATE);
+        const produkten = new PagedTable(10, "produkt", "produkten", columns, actions, EditMode.UPDATE, search);
 
         produkten.init();
       })

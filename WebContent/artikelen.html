@@ -17,23 +17,28 @@
   <script type="text/javascript">
     async function init() {
       await layout(NavMenu.INVENTORY)
-      .then(() => initDropDown(PRODUKT_DROP))
-      .then(() => initDropDown(UNTER_KATEGORIE_DROP))
-      .then(() => initDropDown(DECODER_DROP))
       .then(() => initDropDown(STATUS_DROP))
       .then(() => {
-        const artikelenColumns = [
-          ARTIKEL(Editable.NEVER, true),
-          PRODUKT_SELECT(Editable.NEVER, false),
-          UNTER_KATEGORIE_SELECT(Editable.NEVER, false),
-          BEZEICHNUNG(Editable.NEVER),
-          DECODER_SELECT(Editable.NEVER, false),
+        const columns = [
+          ARTIKEL_ID(),
+          PRODUKT_BEZEICHNUNG(),
+          UNTER_KATEGORIE_BEZEICHNUNG(),
+          BEZEICHNUNG(Editable.NEVER, false),
           ANMERKUNG(Editable.NEVER, false),
-          ABBILDUNG(Editable.UPDATE, false),
-          STATUS_SELECT(Editable.NEVER, true)
+          ABBILDUNG(Editable.NEVER, false),
+          STATUS_SELECT(Editable.NEVER, false)
         ];
 
-        const artikelenActions = [
+        const search = [
+          ARTIKEL_SEARCH(),
+          PRODUKT_SEARCH(),
+          UNTER_KATEGORIE_SEARCH(),
+          BEZEICHNUNG_SEARCH(),
+          ANMERKUNG_SEARCH(),
+          STATUS_SEARCH()
+        ];
+
+        const actions = [
           uploadActions(["artikel", "anderung"]),
           downloadActions(["artikel", "anderung"]),
           newAction("artikel.html"),
@@ -41,7 +46,7 @@
           deleteAction()
         ];
 
-        const artikelen = new PagedTable(10, "artikel", "artikelen", artikelenColumns, artikelenActions, EditMode.UPDATE);
+        const artikelen = new PagedTable(10, "artikel", "artikelen", columns, actions, EditMode.UPDATE, search);
 
         artikelen.init();
       })

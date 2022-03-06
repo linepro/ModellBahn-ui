@@ -26,21 +26,21 @@
       .then(() => {
         const vorbildColumns = [
           NAMEN(Editable.NEVER, true),
-          GATTUNG_SELECT(Editable.ADD, true),
-          UNTER_KATEGORIE_SELECT(Editable.UPDATE),
-          BAHNVERWALTUNG_SELECT(Editable.UPDATE),
-          HERSTELLER(Editable.UPDATE),
-          BAUZEIT(Editable.UPDATE),
-          MENGE(Editable.UPDATE),
-          BETREIBSNUMMER(Editable.UPDATE),
+          GATTUNG_SELECT(Editable.ADD, false),
+          UNTER_KATEGORIE_SELECT(Editable.UPDATE, true),
+          BAHNVERWALTUNG_SELECT(Editable.UPDATE, false),
+          HERSTELLER(Editable.UPDATE, false),
+          BAUZEIT(Editable.UPDATE, false),
+          MENGE(Editable.UPDATE, false),
+          BETREIBSNUMMER(Editable.UPDATE, false),
           ANTRIEB_SELECT(Editable.UPDATE, false),
-          ACHSFOLG_SELECT(Editable.UPDATE),
+          ACHSFOLG_SELECT(Editable.UPDATE, false),
           ANFAHRZUGKRAFT(Editable.UPDATE, false),
           LEISTUNG(Editable.UPDATE, false),
           DIENSTGEWICHT(Editable.UPDATE, false),
           GESCHWINDIGKEIT(Editable.UPDATE, false),
-          LANGE(Editable.UPDATE),
-          AUSSERDIENST(Editable.UPDATE),
+          LANGE(Editable.UPDATE, false),
+          AUSSERDIENST(Editable.UPDATE, false),
           DM_TREIBRAD(Editable.UPDATE, false),
           DM_LAUFRAD_VORN(Editable.UPDATE, false),
           DM_LAUFRAD_HINTEN(Editable.UPDATE, false),
@@ -66,7 +66,7 @@
           TRIEBKOPFE(Editable.UPDATE, false),
           MITTELWAGEN(Editable.UPDATE, false),
           DREHGESTELLBAUART(Editable.UPDATE, false),
-          ABBILDUNG(Editable.NEVER)
+          ABBILDUNG(Editable.NEVER, false)
         ];
 
         const DAMPF_COLUMNS = [ ZYLINDER, DM_ZYLINDER, KOLBENHUB, KESSELUBERDRUCK, ROSTFLACHE, UBERHITZERFLACHE, WASSERVORRAT, VERDAMPFUNG ];

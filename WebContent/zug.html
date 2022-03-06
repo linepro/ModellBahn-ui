@@ -22,7 +22,7 @@
       .then(() => initDropDown(KATEGORIE_DROP))
       .then(() => {
         const fahrzeugColumns = [
-          POSITION(Editable.NEVER),
+          POSITION(),
           FAHRZEUG_SELECT(Editable.ADD, true),
           UNTER_KATEGORIE_SELECT(Editable.NEVER, false),
           BEZEICHNUNG(Editable.NEVER, false),
@@ -103,7 +103,7 @@
           NAMEN(Editable.ADD, true),
           ZUG_TYP_SELECT(Editable.UPDATE, true),
           BEZEICHNUNG(Editable.UPDATE, true),
-          LANGE(Editable.NEVER)
+          LANGE(Editable.NEVER, false)
         ];
        
         const zugActions = [

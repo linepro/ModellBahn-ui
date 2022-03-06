@@ -19,15 +19,17 @@
       .then(() => initDropDown(LAND_DROP))
       .then(() => {
         const columns = [
-          NAMEN(Editable.ADD, true),
-          BEZEICHNUNG(Editable.UPDATE, true),
           LAND_SELECT(Editable.UPDATE, true),
           TELEFON(Editable.UPDATE, false),
           WEBSITE(Editable.UPDATE, true),
           ABBILDUNG(Editable.UPDATE, false)
         ];
 
-        const herstellern = new ListEditTable(10, "hersteller", "herstellern", columns, EditMode.UPDATE);
+        const searchColumns = [
+          LAND_SEARCH()
+        ];
+
+        const herstellern = new NamedItemTable("hersteller", "herstellern", columns, searchColumns);
 
         herstellern.init();
       })

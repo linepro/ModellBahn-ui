@@ -19,13 +19,15 @@
       .then(() => initDropDown(LAND_DROP))
       .then(() => {
         const columns = [
-          NAMEN(Editable.ADD, true),
-          BEZEICHNUNG(Editable.UPDATE, true),
           LAND_SELECT(Editable.UPDATE, true),
           ABBILDUNG(Editable.UPDATE, false)
         ];
 
-        const bahnverwaltungen = new ListEditTable(10, "bahnverwaltung", "bahnverwaltungen", columns, EditMode.UPDATE);
+        const searchColumns = [
+          LAND_SEARCH()
+        ];
+
+        const bahnverwaltungen = new NamedItemTable("bahnverwaltung", "bahnverwaltungen", columns, searchColumns);
 
         bahnverwaltungen.init();
       })

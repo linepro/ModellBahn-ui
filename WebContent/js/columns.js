@@ -370,7 +370,7 @@ class PhoneColumn extends Column {
 
   initialise(tel) {
     tel = super.initialise(tel);
-    tel.type = column.type;
+    tel.type = "tel";
     return tel;
   }
 }
@@ -1473,5 +1473,106 @@ class ThumbColumn extends VirtualColumn {
     }
 
     return img;
+  }
+}
+
+class SearchColumn {
+  constructor(
+    heading,
+    fields
+  ) {
+    this.heading = heading;
+    this.fields = fields;
+    this.binders = [];
+    this.setters = [];
+    this.clearers = [];
+  }
+
+  create(cell, id) {
+    let column = this;
+
+    let defaultWidth = (95 / column.fields.length) + "%";
+    column.fields
+          .forEach(f => {
+            let ctl;
+            let binder;
+            let setter;
+            let clearer;
+
+            switch(f.type)
+            {
+            case "checkbox": 
+              ctl = createCheckBox(cell, "search-cell", getFieldId(id, f.fieldName), true);
+
+              binder = (params) => params.has(f.fieldName) ? ctl.checked = params.get(f.fieldName) : ctl.checked = false, ctl.indeterminate = true;
+              setter = (params) => ctl.indeterminate ? params.delete(f.fieldName) : params.set(f.fieldName, ctl.checked);
+              clearer = () => ctl.checked = false, ctl.indeterminate = true;
+              break;
+
+            case "select": 
+              ctl = createSelect(cell, "search-cell", getFieldId(id, f.fieldName));
+              ctl.add(createOption(undefined, ""));
+              f.dropDown
+               .options
+               .forEach(opt => ctl.add(createOption(opt.value, opt.display)));
+
+              binder = (params) => {
+                if (params.has(f.fieldName)) {
+                  let value = params.get(f.fieldName);
+                  for (let i = 0; i < ctl.options.length; i++) {
+                    if (ctl.options[i].value == value) {
+                      ctl.selectedIndex = i;
+                      return;
+                    }
+                  }
+                }
+                ctl.selectedIndex = 0;
+              };
+              setter = (params) => ctl.selectedIndex > 0 ? params.set(f.fieldName, ctl.value) : params.delete(f.fieldName);
+              clearer = () => ctl.selectedIndex = 0;
+              break;
+
+            default:
+              ctl = createInput("text", cell, "search-cell", getFieldId(id, f.fieldName));
+
+              if (f.type == "date") { 
+                ctl.pattern = "((?>19|20|21)[0-9]{2}-(?>0[1-9]|1[0-2]){1}-(?>0[1-9]|[1-2][0-9]|3[0-1]))( (?>[0-1][0-9]|2[0-3]){1}:(?>[0-5][0-9]){1}:(?>[0-5][0-9]){1}){0,1}";
+              } else if (f.type == "number") { 
+                ctl.pattern = "[0-9]+(.[0-9]+){0,1}";
+              }
+
+              binder = (params) => params.has(f.fieldName) ? ctl.value = params.get(f.fieldName) : ctl.value = "";
+              setter = (params) => ctl.value ?  params.set(f.fieldName, ctl.value) : params.delete(f.fieldName);
+              clearer = () => ctl.value = "";
+              break;
+            }
+
+            ctl.style.width = f.width ? f.width : defaultWidth;
+
+            column.binders.push(binder);
+            column.setters.push(setter);
+            column.clearers.push(clearer);
+          });
+  }
+
+  bind(searchParams) {
+    let column = this;
+
+    column.binders
+          .forEach(b => b(searchParams));
+  }
+
+  clear() {
+    let column = this;
+
+    column.clearers
+          .forEach(c => c());
+  }
+
+  apply(searchParams) {
+    let column = this;
+
+    column.setters
+          .forEach(s => s(searchParams));
   }
 }

@@ -13,7 +13,7 @@ class FilterOption {
   isChecked() {
     let opt = this;
 
-    return opt.chk.checked;
+    return opt.chk.checked && !opt.chk.inderterimate;
   }
 
   filter(val) {
@@ -29,7 +29,7 @@ class FilterOption {
     let lbl = createTextElement("label", div, opt.display,  "popup-label");
     lbl.htmlFor = optId;
 
-    let chk = createInput("checkbox", div, optId, "popup-control");
+    let chk = createCheckBox(div, optId, "popup-control");
     chk.addEventListener("change", (event) => updated(event), false);
 
     opt.chk = chk;
@@ -228,4 +228,3 @@ class FilterBox {
     showModal(frm, false);
   }
 }
-

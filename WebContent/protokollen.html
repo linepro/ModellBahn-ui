@@ -17,13 +17,7 @@
     async function init() {
       await layout(NavMenu.REF_DATA)
       .then(() => {
-        const columns = [
-          NAMEN(Editable.ADD, true),
-          BEZEICHNUNG(Editable.UPDATE, true),
-          ABBILDUNG(Editable.UPDATE, false)
-        ];
-
-        const protokollen = new ListEditTable(10, "protokoll", "protokollen", columns, EditMode.UPDATE);
+        const protokollen = new NamedAbbildungTable("protokoll", "protokollen");
 
         protokollen.init();
       })

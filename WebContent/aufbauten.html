@@ -17,13 +17,7 @@
     async function init() {
       await layout(NavMenu.REF_DATA)
       .then(() => {
-        const columns = [
-          NAMEN(Editable.ADD, true),
-          BEZEICHNUNG(Editable.UPDATE, true),
-          ABBILDUNG(Editable.UPDATE, false)
-        ];
-
-        const aufbauten = new ListEditTable(10, "aufbau", "aufbauten", columns, EditMode.UPDATE);
+        const aufbauten = new NamedAbbildungTable("aufbau", "aufbauten");
 
         aufbauten.init();
       })
