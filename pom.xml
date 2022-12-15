@@ -83,7 +83,7 @@
         <maven-scm-plugin.version>2.0.0-M2</maven-scm-plugin.version>
         <maven-site-plugin.version>4.0.0-M3</maven-site-plugin.version>
         <maven-surefire-plugin.version>3.0.0-M7</maven-surefire-plugin.version>
-        <versions-maven-plugin.version>2.11.0</versions-maven-plugin.version>
+        <versions-maven-plugin.version>2.14.1</versions-maven-plugin.version>
         <wagon-ssh.version>3.5.2</wagon-ssh.version>
 
         <destDir>${project.build.outputDirectory}/META-INF/resources/webjars/${project.artifactId}/${project.version}</destDir>
